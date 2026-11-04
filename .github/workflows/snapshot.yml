@@ -1,83 +1,45 @@
 name: Snapshot xăng dầu
 on:
   schedule:
-    # UTC → Việt Nam UTC+7: 23:16 ngày trước = 06:16; 02:00 = 09:00;
-    # 05:00 = 12:00; 08:00 = 15:00. GitHub có thể chạy trễ lịch.
-    - cron: '16 23 * * *'
-    - cron: '0 2,5,8 * * *'
+    # UTC -> Viet Nam UTC+7: 06:16, 09:00, 12:00, 15:00
+    - cron: "16 23 * * *"
+    - cron: "0 2,5,8 * * *"
   workflow_dispatch:
-    inputs:
-      force_deploy:
-        description: 'Xuất bản cả snapshot khi chỉ có WTI đổi nhỏ'
-        type: boolean
-        default: false
   push:
     branches: [main]
-    paths: ['dist/**', 'scripts/**', '.github/workflows/snapshot.yml', 'package*.json']
+    paths: ["dist/**", "scripts/**", ".github/workflows/snapshot.yml", "package*.json"]
 permissions:
   contents: write
-  pages: write
-  id-token: write
 concurrency:
   group: fuel-snapshot
   cancel-in-progress: false
 jobs:
   snapshot:
     runs-on: ubuntu-latest
-    outputs:
-      deploy: ${{ steps.decision.outputs.deploy }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm test
       - name: Lấy nguồn phía server
         id: fetch
         run: node scripts/fetch-snapshot.mjs
-      - name: Lưu snapshot (kể cả WTI thay đổi nhỏ)
+      - name: Lưu snapshot kể cả WTI thay đổi nhỏ
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add dist/snapshot.json
           if ! git diff --cached --quiet; then
-            git commit -m 'data: cập nhật snapshot [skip ci]'
+            git commit -m "data: cập nhật snapshot [skip ci]"
             git push
-          fi
-      - name: Quyết định xuất bản
-        id: decision
-        env:
-          EVENT: ${{ github.event_name }}
-          FORCE: ${{ inputs.force_deploy }}
-          MATERIAL: ${{ steps.fetch.outputs.deploy }}
-        run: |
-          if [ "$EVENT" = 'push' ] || [ "$FORCE" = 'true' ] || [ "$MATERIAL" = 'true' ]; then
-            echo 'deploy=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'deploy=false' >> "$GITHUB_OUTPUT"
           fi
       - uses: actions/upload-artifact@v4
         with:
           name: source-status
           path: .run/result.json
-      - uses: actions/configure-pages@v5
-        if: steps.decision.outputs.deploy == 'true'
-      - uses: actions/upload-pages-artifact@v3
-        if: steps.decision.outputs.deploy == 'true'
-        with:
-          path: dist
-  deploy:
-    needs: snapshot
-    if: needs.snapshot.outputs.deploy == 'true'
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Xuất bản trang tĩnh
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # Chưa deploy: Pages yêu cầu nâng cấp gói cho repo Private.
+      # Điều kiện deploy đã được tính và lưu trong .run/result.json.
+      # Thêm hosting sau khi chủ trạm chọn Pages hoặc Netlify.
