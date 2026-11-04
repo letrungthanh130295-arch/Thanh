@@ -1,0 +1,522 @@
+{
+  "mode": "mixed",
+  "capturedAt": "2026-11-04T08:16:30.342Z",
+  "official": {
+    "effectiveAt": "2026-11-03T22:00:00+07:00",
+    "publishedAt": "2026-11-03T21:56:00+07:00",
+    "prices": [
+      23203,
+      23231,
+      28876,
+      23974
+    ],
+    "changes": [
+      -1020,
+      -928,
+      -1370,
+      378
+    ],
+    "sourceUrl": "https://moit.gov.vn/tin-tuc/thong-tin-ve-dieu-hanh-gia-xang-dau-ngay-3-11-2026.html",
+    "source": "Bộ Công Thương · thông báo 03/11/2026",
+    "isSample": false,
+    "fund": {
+      "gasolineProvision": 700,
+      "dieselProvision": 0,
+      "fuelOilProvision": 0,
+      "use": 0
+    }
+  },
+  "pump": {
+    "effectiveAt": "2026-11-03T22:00:00+07:00",
+    "items": [
+      [
+        "E5 RON 92-II",
+        23200
+      ],
+      [
+        "E10 RON 95-III",
+        23230
+      ],
+      [
+        "E10 RON 95-V",
+        24230
+      ],
+      [
+        "DO 0,05S-II",
+        28870
+      ],
+      [
+        "DO 0,001S-V",
+        30270
+      ],
+      [
+        "Dầu hỏa 2-K",
+        29010
+      ],
+      [
+        "FO 3,5S",
+        23970
+      ],
+      [
+        "FO 180S-0,5S",
+        29590
+      ]
+    ],
+    "source": "Ảnh thông báo Chi nhánh Petrolimex Vũng Tàu do chủ trạm cung cấp",
+    "isSample": false
+  },
+  "platts": {
+    "date": "2026-11-03",
+    "previousDate": "2026-11-02",
+    "items": [
+      {
+        "name": "A92",
+        "unit": "USD/thùng",
+        "value": 114.28,
+        "previous": 119.5
+      },
+      {
+        "name": "A95",
+        "unit": "USD/thùng",
+        "value": 115.53,
+        "previous": 120
+      },
+      {
+        "name": "97",
+        "unit": "USD/thùng",
+        "value": 116.64,
+        "previous": 132.83
+      },
+      {
+        "name": "DO 0,05%S",
+        "unit": "USD/thùng",
+        "value": 164.08,
+        "previous": 164.1
+      },
+      {
+        "name": "DO 0,25%S",
+        "unit": "USD/thùng",
+        "value": 160.2,
+        "previous": 159.89
+      },
+      {
+        "name": "DO 10ppm",
+        "unit": "USD/thùng",
+        "value": 166.8,
+        "previous": 167.04
+      },
+      {
+        "name": "DO 50ppm",
+        "unit": "USD/thùng",
+        "value": 167.78,
+        "previous": 168.31
+      },
+      {
+        "name": "Dầu hỏa",
+        "unit": "USD/thùng",
+        "value": 166.4,
+        "previous": 166.83
+      },
+      {
+        "name": "Marine",
+        "unit": "USD/tấn",
+        "value": 926.46,
+        "previous": 923.53
+      },
+      {
+        "name": "FO180",
+        "unit": "USD/tấn",
+        "value": 826,
+        "previous": 812.36
+      },
+      {
+        "name": "FO380",
+        "unit": "USD/tấn",
+        "value": 833.94,
+        "previous": 830.01
+      },
+      {
+        "name": "Naphtha",
+        "unit": "USD/thùng",
+        "value": 114.56,
+        "previous": 114.62
+      }
+    ],
+    "sessions": [
+      {
+        "date": "2026-11-03",
+        "values": [
+          114.28,
+          115.53,
+          116.64,
+          164.08,
+          160.2,
+          166.8,
+          167.78,
+          166.4,
+          926.46,
+          826,
+          833.94,
+          114.56
+        ]
+      },
+      {
+        "date": "2026-11-02",
+        "values": [
+          119.5,
+          120,
+          132.83,
+          164.1,
+          159.89,
+          167.04,
+          168.31,
+          166.83,
+          923.53,
+          812.36,
+          830.01,
+          114.62
+        ]
+      },
+      {
+        "date": "2026-10-30",
+        "values": [
+          127.64,
+          128.14,
+          136.56,
+          166.11,
+          157.84,
+          170.02,
+          166.93,
+          165.24,
+          914.72,
+          820.8,
+          818.22,
+          112.68
+        ]
+      },
+      {
+        "date": "2026-10-29",
+        "values": [
+          135.1,
+          135.6,
+          null,
+          162.74,
+          null,
+          167.26,
+          null,
+          null,
+          null,
+          821.72,
+          null,
+          null
+        ]
+      },
+      {
+        "date": "2026-10-28",
+        "values": [
+          138.8,
+          139.3,
+          140.26,
+          166.49,
+          168.94,
+          171.01,
+          178.48,
+          177.52,
+          890.23,
+          807.61,
+          804.11,
+          110.27
+        ]
+      },
+      {
+        "date": "2026-10-27",
+        "values": [
+          142.57,
+          143.15,
+          138.69,
+          175.27,
+          168.46,
+          179.79,
+          178.16,
+          177.82,
+          886.11,
+          805.98,
+          802.34,
+          109.45
+        ]
+      },
+      {
+        "date": "2026-10-26",
+        "values": [
+          140.37,
+          140.95,
+          141.93,
+          172.95,
+          168.83,
+          177.63,
+          178.42,
+          178.57,
+          882.48,
+          804.93,
+          801.01,
+          108.41
+        ]
+      },
+      {
+        "date": "2026-10-23",
+        "values": [
+          137.14,
+          137.72,
+          138.7,
+          176.07,
+          166.83,
+          180.75,
+          176.42,
+          177.2,
+          873.98,
+          793.56,
+          789.03,
+          107.12
+        ]
+      },
+      {
+        "date": "2026-10-22",
+        "values": [
+          133.89,
+          134.47,
+          135.45,
+          172.07,
+          null,
+          176.75,
+          null,
+          null,
+          null,
+          770.45,
+          null,
+          null
+        ]
+      },
+      {
+        "date": "2026-10-21",
+        "values": [
+          133.22,
+          133.8,
+          134.78,
+          174.77,
+          161.27,
+          179.79,
+          171.74,
+          172.91,
+          853.04,
+          808.19,
+          800.28,
+          105.48
+        ]
+      }
+    ],
+    "pageUpdatedAt": "2026-11-04T14:27:59+07:00",
+    "pageUpdatedKind": "table",
+    "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
+    "capturedAt": "2026-11-04T08:16:30.342Z",
+    "isSample": false
+  },
+  "wti": {
+    "price": 95.73,
+    "marketTime": "2026-11-04T08:06:38.000Z",
+    "symbol": "CL=F",
+    "exchange": "NYMEX",
+    "currency": "USD",
+    "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F",
+    "capturedAt": "2026-11-04T08:16:30.342Z",
+    "previous": {
+      "price": 95.91,
+      "capturedAt": "2026-11-04T08:16:04.279Z",
+      "marketTime": "2026-11-04T08:06:08.000Z"
+    },
+    "isSample": false
+  },
+  "forecast": {
+    "period": "2026-11-05",
+    "capturedAt": "2026-11-04T08:16:30.342Z",
+    "pageUpdatedAt": "2026-08-09T21:39:05+07:00",
+    "basisDate": "2026-11-02",
+    "base": [
+      23203,
+      23231,
+      28876,
+      23974
+    ],
+    "sources": [
+      {
+        "name": "Chợ Giá",
+        "deltas": [
+          -2940,
+          -2790,
+          -1380,
+          0
+        ],
+        "providedAt": null,
+        "isSample": false,
+        "capturedAt": "2026-11-04T08:16:30.342Z",
+        "basisDate": "2026-11-02",
+        "baselineConfirmed": false,
+        "period": "2026-11-05",
+        "pageUpdatedAt": "2026-08-09T21:39:05+07:00",
+        "pageUpdatedKind": "article-metadata",
+        "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/"
+      },
+      {
+        "name": "User cung cấp",
+        "deltas": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "providedAt": null,
+        "isSample": false,
+        "capturedAt": null,
+        "basisDate": null,
+        "baselineConfirmed": false
+      },
+      {
+        "name": "Petro Connect",
+        "deltas": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "providedAt": null,
+        "isSample": false,
+        "capturedAt": null,
+        "basisDate": null,
+        "baselineConfirmed": false
+      },
+      {
+        "name": "T-Roo",
+        "deltas": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "providedAt": null,
+        "isSample": false,
+        "capturedAt": null,
+        "basisDate": null,
+        "baselineConfirmed": false
+      },
+      {
+        "name": "Doanh nghiệp qua báo chí",
+        "deltas": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "providedAt": null,
+        "isSample": false,
+        "capturedAt": null,
+        "basisDate": null,
+        "baselineConfirmed": false
+      }
+    ],
+    "actual": null,
+    "baseEffectiveAt": "2026-11-03T22:00:00+07:00",
+    "marketCycleStart": "2026-11-03",
+    "marketWindowVerified": false,
+    "pageUpdatedKind": "article-metadata"
+  },
+  "history": [
+    {
+      "period": "2026-11-03",
+      "effectiveAt": "2026-11-03T22:00:00+07:00",
+      "actual": [
+        23203,
+        23231,
+        28876
+      ],
+      "predictions": {},
+      "source": "https://moit.gov.vn/tin-tuc/thong-tin-ve-dieu-hanh-gia-xang-dau-ngay-3-11-2026.html",
+      "isSample": false
+    },
+    {
+      "period": "2026-10-29",
+      "actual": [
+        26027,
+        25734,
+        30246
+      ],
+      "predictions": {},
+      "isSample": true
+    },
+    {
+      "period": "2026-10-22",
+      "actual": null,
+      "predictions": {}
+    },
+    {
+      "period": "2026-10-15",
+      "actual": null,
+      "predictions": {}
+    },
+    {
+      "period": "2026-10-08",
+      "actual": null,
+      "predictions": {}
+    },
+    {
+      "period": "2026-10-01",
+      "actual": null,
+      "predictions": {}
+    },
+    {
+      "period": "2026-09-24",
+      "actual": null,
+      "predictions": {}
+    },
+    {
+      "period": "2026-09-17",
+      "actual": null,
+      "predictions": {}
+    },
+    {
+      "period": "2026-09-10",
+      "actual": null,
+      "predictions": {}
+    },
+    {
+      "period": "2026-09-03",
+      "actual": null,
+      "predictions": {}
+    }
+  ],
+  "schemaVersion": 2,
+  "sources": {
+    "platts": {
+      "status": "ok",
+      "lastAttemptAt": "2026-11-04T08:16:30.342Z",
+      "lastSuccessAt": "2026-11-04T08:16:30.342Z",
+      "error": null
+    },
+    "forecast": {
+      "status": "ok",
+      "lastAttemptAt": "2026-11-04T08:16:30.342Z",
+      "lastSuccessAt": "2026-11-04T08:16:30.342Z",
+      "error": null
+    },
+    "wti": {
+      "status": "ok",
+      "lastAttemptAt": "2026-11-04T08:16:30.342Z",
+      "lastSuccessAt": "2026-11-04T08:16:30.342Z",
+      "error": null
+    }
+  },
+  "operations": {
+    "schedulerActive": false,
+    "hosting": "Sites · bản test",
+    "note": "Workflow GitHub đã chuẩn bị, chưa kích hoạt do chưa có repo GitHub."
+  },
+  "lastCheckedAt": "2026-11-04T08:16:30.342Z"
+}
