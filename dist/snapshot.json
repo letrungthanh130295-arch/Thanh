@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-04T09:44:39.970Z",
+  "capturedAt": "2026-11-04T09:45:20.820Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -314,11 +314,12 @@
         ]
       }
     ],
-    "pageUpdatedAt": "2026-11-04T14:27:59+07:00",
+    "pageUpdatedAt": "2026-11-04T16:18:33+07:00",
     "pageUpdatedKind": "table",
     "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
-    "capturedAt": "2026-11-04T08:16:30.342Z",
-    "isSample": false
+    "capturedAt": "2026-11-04T09:45:02.505Z",
+    "isSample": false,
+    "captureMethod": "browser-snapshot"
   },
   "wti": {
     "price": 95.91,
@@ -337,8 +338,8 @@
   },
   "forecast": {
     "period": "2026-11-05",
-    "capturedAt": "2026-11-04T08:16:30.342Z",
-    "pageUpdatedAt": "2026-08-09T21:39:05+07:00",
+    "capturedAt": "2026-11-04T09:45:20.820Z",
+    "pageUpdatedAt": null,
     "basisDate": "2026-11-02",
     "base": [
       23203,
@@ -357,13 +358,14 @@
         ],
         "providedAt": null,
         "isSample": false,
-        "capturedAt": "2026-11-04T08:16:30.342Z",
+        "capturedAt": "2026-11-04T09:45:20.820Z",
         "basisDate": "2026-11-02",
         "baselineConfirmed": false,
         "period": "2026-11-05",
-        "pageUpdatedAt": "2026-08-09T21:39:05+07:00",
-        "pageUpdatedKind": "article-metadata",
-        "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/"
+        "pageUpdatedAt": null,
+        "pageUpdatedKind": "not-provided",
+        "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
+        "captureMethod": "browser-snapshot"
       },
       {
         "name": "User cung cấp",
@@ -426,7 +428,7 @@
     "baseEffectiveAt": "2026-11-03T22:00:00+07:00",
     "marketCycleStart": "2026-11-03",
     "marketWindowVerified": false,
-    "pageUpdatedKind": "article-metadata"
+    "pageUpdatedKind": "not-provided"
   },
   "history": [
     {
@@ -495,16 +497,18 @@
   "schemaVersion": 2,
   "sources": {
     "platts": {
-      "status": "error",
-      "lastAttemptAt": "2026-11-04T09:32:07.091Z",
-      "lastSuccessAt": "2026-11-04T08:16:30.342Z",
-      "error": "HTTP 403 chogia.vn"
+      "status": "ok",
+      "lastAttemptAt": "2026-11-04T09:45:02.505Z",
+      "lastSuccessAt": "2026-11-04T09:45:02.505Z",
+      "error": null,
+      "captureMethod": "browser-snapshot"
     },
     "forecast": {
-      "status": "error",
-      "lastAttemptAt": "2026-11-04T09:32:07.091Z",
-      "lastSuccessAt": "2026-11-04T08:16:30.342Z",
-      "error": "HTTP 403 chogia.vn"
+      "status": "ok",
+      "lastAttemptAt": "2026-11-04T09:45:20.820Z",
+      "lastSuccessAt": "2026-11-04T09:45:20.820Z",
+      "error": null,
+      "captureMethod": "browser-snapshot"
     },
     "wti": {
       "status": "ok",
@@ -516,7 +520,9 @@
   "operations": {
     "schedulerActive": true,
     "hosting": "GitHub Pages",
-    "note": "GitHub Actions: 06:16, 09:00, 12:00, 15:00 Việt Nam"
+    "note": "GitHub Actions: 06:16, 09:00, 12:00, 15:00 Việt Nam",
+    "chogiaSchedule": "07:00, 12:00, 15:00, 17:00, 21:00 Asia/Ho_Chi_Minh",
+    "chogiaMode": "browser-snapshot"
   },
-  "lastCheckedAt": "2026-11-04T09:44:39.970Z"
+  "lastCheckedAt": "2026-11-04T09:45:20.820Z"
 }
