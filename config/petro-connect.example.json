@@ -1,0 +1,10 @@
+{
+  "type": "forecast",
+  "source": "Petro Connect",
+  "period": "2026-11-05",
+  "providedAt": "THAY_BANG_GIO_NHAN_ANH_CO_MUI_GIO",
+  "basisDate": null,
+  "evidence": "THAY_BANG_TEN_ANH_BAN_TIN_CHU_TRAM_CUNG_CAP",
+  "baselineConfirmed": false,
+  "deltas": [null, null, null, null]
+}
