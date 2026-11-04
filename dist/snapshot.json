@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-04T13:03:22.734Z",
+  "capturedAt": "2026-11-04T13:17:54.505Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -66,83 +66,100 @@
     "isSample": false
   },
   "platts": {
-    "date": "2026-11-03",
-    "previousDate": "2026-11-02",
+    "date": "2026-11-04",
+    "previousDate": "2026-11-03",
     "items": [
       {
         "name": "A92",
         "unit": "USD/thùng",
-        "value": 114.28,
-        "previous": 119.5
+        "value": 110.95,
+        "previous": 114.28
       },
       {
         "name": "A95",
         "unit": "USD/thùng",
-        "value": 115.53,
-        "previous": 120
+        "value": 112.2,
+        "previous": 115.53
       },
       {
         "name": "97",
         "unit": "USD/thùng",
-        "value": 116.64,
-        "previous": 132.83
+        "value": 113.31,
+        "previous": 116.64
       },
       {
         "name": "DO 0,05%S",
         "unit": "USD/thùng",
-        "value": 164.08,
-        "previous": 164.1
+        "value": 163.11,
+        "previous": 164.08
       },
       {
         "name": "DO 0,25%S",
         "unit": "USD/thùng",
-        "value": 160.2,
-        "previous": 159.89
+        "value": 161.03,
+        "previous": 160.2
       },
       {
         "name": "DO 10ppm",
         "unit": "USD/thùng",
-        "value": 166.8,
-        "previous": 167.04
+        "value": 165.83,
+        "previous": 166.8
       },
       {
         "name": "DO 50ppm",
         "unit": "USD/thùng",
-        "value": 167.78,
-        "previous": 168.31
+        "value": 166.47,
+        "previous": 167.78
       },
       {
         "name": "Dầu hỏa",
         "unit": "USD/thùng",
-        "value": 166.4,
-        "previous": 166.83
+        "value": 164.52,
+        "previous": 166.4
       },
       {
         "name": "Marine",
         "unit": "USD/tấn",
-        "value": 926.46,
-        "previous": 923.53
+        "value": 831.36,
+        "previous": 926.46
       },
       {
         "name": "FO180",
         "unit": "USD/tấn",
-        "value": 826,
-        "previous": 812.36
+        "value": 759.12,
+        "previous": 826
       },
       {
         "name": "FO380",
         "unit": "USD/tấn",
-        "value": 833.94,
-        "previous": 830.01
+        "value": 744.03,
+        "previous": 833.94
       },
       {
         "name": "Naphtha",
         "unit": "USD/thùng",
-        "value": 114.56,
-        "previous": 114.62
+        "value": 109.34,
+        "previous": 114.56
       }
     ],
     "sessions": [
+      {
+        "date": "2026-11-04",
+        "values": [
+          110.95,
+          112.2,
+          113.31,
+          163.11,
+          161.03,
+          165.83,
+          166.47,
+          164.52,
+          831.36,
+          759.12,
+          744.03,
+          109.34
+        ]
+      },
       {
         "date": "2026-11-03",
         "values": [
@@ -314,10 +331,10 @@
         ]
       }
     ],
-    "pageUpdatedAt": "2026-11-04T16:18:33+07:00",
+    "pageUpdatedAt": "2026-11-04T20:13:56+07:00",
     "pageUpdatedKind": "table",
     "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
-    "capturedAt": "2026-11-04T09:56:20.628Z",
+    "capturedAt": "2026-11-04T13:17:54.505Z",
     "isSample": false,
     "captureMethod": "browser-snapshot"
   },
@@ -498,8 +515,8 @@
   "sources": {
     "platts": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-04T09:56:20.628Z",
-      "lastSuccessAt": "2026-11-04T09:56:20.628Z",
+      "lastAttemptAt": "2026-11-04T13:17:54.505Z",
+      "lastSuccessAt": "2026-11-04T13:17:54.505Z",
       "error": null,
       "captureMethod": "browser-snapshot"
     },
@@ -522,5 +539,5 @@
     "hosting": "GitHub Pages",
     "note": "GitHub Actions: 06:16, 09:00, 12:00, 15:00 Việt Nam"
   },
-  "lastCheckedAt": "2026-11-04T13:03:22.734Z"
+  "lastCheckedAt": "2026-11-04T13:17:54.505Z"
 }
