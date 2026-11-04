@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-04T08:16:30.342Z",
+  "capturedAt": "2026-11-04T09:08:54.555Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -321,17 +321,17 @@
     "isSample": false
   },
   "wti": {
-    "price": 95.73,
-    "marketTime": "2026-11-04T08:06:38.000Z",
+    "price": 96.11,
+    "marketTime": "2026-11-04T08:58:50.000Z",
     "symbol": "CL=F",
     "exchange": "NYMEX",
     "currency": "USD",
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F",
-    "capturedAt": "2026-11-04T08:16:30.342Z",
+    "capturedAt": "2026-11-04T09:08:54.555Z",
     "previous": {
-      "price": 95.91,
-      "capturedAt": "2026-11-04T08:16:04.279Z",
-      "marketTime": "2026-11-04T08:06:08.000Z"
+      "price": 95.73,
+      "capturedAt": "2026-11-04T08:16:30.342Z",
+      "marketTime": "2026-11-04T08:06:38.000Z"
     },
     "isSample": false
   },
@@ -495,21 +495,21 @@
   "schemaVersion": 2,
   "sources": {
     "platts": {
-      "status": "ok",
-      "lastAttemptAt": "2026-11-04T08:16:30.342Z",
+      "status": "error",
+      "lastAttemptAt": "2026-11-04T09:08:54.555Z",
       "lastSuccessAt": "2026-11-04T08:16:30.342Z",
-      "error": null
+      "error": "HTTP 403 chogia.vn"
     },
     "forecast": {
-      "status": "ok",
-      "lastAttemptAt": "2026-11-04T08:16:30.342Z",
+      "status": "error",
+      "lastAttemptAt": "2026-11-04T09:08:54.555Z",
       "lastSuccessAt": "2026-11-04T08:16:30.342Z",
-      "error": null
+      "error": "HTTP 403 chogia.vn"
     },
     "wti": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-04T08:16:30.342Z",
-      "lastSuccessAt": "2026-11-04T08:16:30.342Z",
+      "lastAttemptAt": "2026-11-04T09:08:54.555Z",
+      "lastSuccessAt": "2026-11-04T09:08:54.555Z",
       "error": null
     }
   },
@@ -518,5 +518,5 @@
     "hosting": "Sites · bản test",
     "note": "Workflow GitHub đã chuẩn bị, chưa kích hoạt do chưa có repo GitHub."
   },
-  "lastCheckedAt": "2026-11-04T08:16:30.342Z"
+  "lastCheckedAt": "2026-11-04T09:08:54.555Z"
 }
