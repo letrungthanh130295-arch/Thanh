@@ -10,12 +10,16 @@ on:
     paths: ["dist/**", "scripts/**", ".github/workflows/snapshot.yml", "package*.json"]
 permissions:
   contents: write
+  pages: write
+  id-token: write
 concurrency:
   group: fuel-snapshot
   cancel-in-progress: false
 jobs:
   snapshot:
     runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.fetch.outputs.deploy == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,6 +31,9 @@ jobs:
       - name: Lấy nguồn phía server
         id: fetch
         run: node scripts/fetch-snapshot.mjs
+      - name: Ghi trạng thái lịch và hosting
+        run: |
+          node --input-type=module -e 'import fs from "node:fs"; const p="dist/snapshot.json"; const s=JSON.parse(fs.readFileSync(p,"utf8")); s.operations={schedulerActive:true,hosting:"GitHub Pages",note:"GitHub Actions: 06:16, 09:00, 12:00, 15:00 Việt Nam"}; fs.writeFileSync(p,JSON.stringify(s,null,2)+"\n");'
       - name: Lưu snapshot kể cả WTI thay đổi nhỏ
         run: |
           git config user.name "github-actions[bot]"
@@ -40,6 +47,20 @@ jobs:
         with:
           name: source-status
           path: .run/result.json
-      # Chưa deploy: Pages yêu cầu nâng cấp gói cho repo Private.
-      # Điều kiện deploy đã được tính và lưu trong .run/result.json.
-      # Thêm hosting sau khi chủ trạm chọn Pages hoặc Netlify.
+      - uses: actions/configure-pages@v5
+        if: steps.fetch.outputs.deploy == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.fetch.outputs.deploy == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        with:
+          path: dist
+  deploy:
+    needs: snapshot
+    if: needs.snapshot.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Xuất bản GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
