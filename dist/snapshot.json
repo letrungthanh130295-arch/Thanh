@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-04T09:47:43.796Z",
+  "capturedAt": "2026-11-04T09:56:32.249Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -317,7 +317,7 @@
     "pageUpdatedAt": "2026-11-04T16:18:33+07:00",
     "pageUpdatedKind": "table",
     "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
-    "capturedAt": "2026-11-04T09:45:02.505Z",
+    "capturedAt": "2026-11-04T09:56:20.628Z",
     "isSample": false,
     "captureMethod": "browser-snapshot"
   },
@@ -338,7 +338,7 @@
   },
   "forecast": {
     "period": "2026-11-05",
-    "capturedAt": "2026-11-04T09:45:20.820Z",
+    "capturedAt": "2026-11-04T09:56:32.249Z",
     "pageUpdatedAt": null,
     "basisDate": "2026-11-02",
     "base": [
@@ -358,7 +358,7 @@
         ],
         "providedAt": null,
         "isSample": false,
-        "capturedAt": "2026-11-04T09:45:20.820Z",
+        "capturedAt": "2026-11-04T09:56:32.249Z",
         "basisDate": "2026-11-02",
         "baselineConfirmed": false,
         "period": "2026-11-05",
@@ -498,15 +498,15 @@
   "sources": {
     "platts": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-04T09:45:02.505Z",
-      "lastSuccessAt": "2026-11-04T09:45:02.505Z",
+      "lastAttemptAt": "2026-11-04T09:56:20.628Z",
+      "lastSuccessAt": "2026-11-04T09:56:20.628Z",
       "error": null,
       "captureMethod": "browser-snapshot"
     },
     "forecast": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-04T09:45:20.820Z",
-      "lastSuccessAt": "2026-11-04T09:45:20.820Z",
+      "lastAttemptAt": "2026-11-04T09:56:32.249Z",
+      "lastSuccessAt": "2026-11-04T09:56:32.249Z",
       "error": null,
       "captureMethod": "browser-snapshot"
     },
@@ -522,5 +522,5 @@
     "hosting": "GitHub Pages",
     "note": "GitHub Actions: 06:16, 09:00, 12:00, 15:00 Việt Nam"
   },
-  "lastCheckedAt": "2026-11-04T09:47:43.796Z"
+  "lastCheckedAt": "2026-11-04T09:56:32.249Z"
 }
