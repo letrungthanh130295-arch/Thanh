@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-04T09:08:54.555Z",
+  "capturedAt": "2026-11-04T09:11:12.431Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -321,17 +321,17 @@
     "isSample": false
   },
   "wti": {
-    "price": 96.11,
-    "marketTime": "2026-11-04T08:58:50.000Z",
+    "price": 96.22,
+    "marketTime": "2026-11-04T09:01:07.000Z",
     "symbol": "CL=F",
     "exchange": "NYMEX",
     "currency": "USD",
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F",
-    "capturedAt": "2026-11-04T09:08:54.555Z",
+    "capturedAt": "2026-11-04T09:11:12.431Z",
     "previous": {
-      "price": 95.73,
-      "capturedAt": "2026-11-04T08:16:30.342Z",
-      "marketTime": "2026-11-04T08:06:38.000Z"
+      "price": 96.11,
+      "capturedAt": "2026-11-04T09:08:54.555Z",
+      "marketTime": "2026-11-04T08:58:50.000Z"
     },
     "isSample": false
   },
@@ -496,20 +496,20 @@
   "sources": {
     "platts": {
       "status": "error",
-      "lastAttemptAt": "2026-11-04T09:08:54.555Z",
+      "lastAttemptAt": "2026-11-04T09:11:12.431Z",
       "lastSuccessAt": "2026-11-04T08:16:30.342Z",
       "error": "HTTP 403 chogia.vn"
     },
     "forecast": {
       "status": "error",
-      "lastAttemptAt": "2026-11-04T09:08:54.555Z",
+      "lastAttemptAt": "2026-11-04T09:11:12.431Z",
       "lastSuccessAt": "2026-11-04T08:16:30.342Z",
       "error": "HTTP 403 chogia.vn"
     },
     "wti": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-04T09:08:54.555Z",
-      "lastSuccessAt": "2026-11-04T09:08:54.555Z",
+      "lastAttemptAt": "2026-11-04T09:11:12.431Z",
+      "lastSuccessAt": "2026-11-04T09:11:12.431Z",
       "error": null
     }
   },
@@ -518,5 +518,5 @@
     "hosting": "Sites · bản test",
     "note": "Workflow GitHub đã chuẩn bị, chưa kích hoạt do chưa có repo GitHub."
   },
-  "lastCheckedAt": "2026-11-04T09:08:54.555Z"
+  "lastCheckedAt": "2026-11-04T09:11:12.431Z"
 }
