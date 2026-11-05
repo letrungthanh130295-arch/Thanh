@@ -34,15 +34,36 @@ jobs:
       - name: Ghi trạng thái lịch và hosting
         run: |
           node --input-type=module -e 'import fs from "node:fs"; const p="dist/snapshot.json"; const s=JSON.parse(fs.readFileSync(p,"utf8")); s.operations={schedulerActive:true,hosting:"GitHub Pages",note:"Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"}; fs.writeFileSync(p,JSON.stringify(s,null,2)+"\n");'
-      - name: Lưu snapshot kể cả WTI thay đổi nhỏ
+      - name: Lưu snapshot (thử lại nếu main vừa được cập nhật)
+        shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dist/snapshot.json
-          if ! git diff --cached --quiet; then
+          set -euo pipefail
+          write_operations() {
+            node --input-type=module -e 'import fs from "node:fs"; const p="dist/snapshot.json"; const s=JSON.parse(fs.readFileSync(p,"utf8")); s.operations={schedulerActive:true,hosting:"GitHub Pages",note:"Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"}; fs.writeFileSync(p,JSON.stringify(s,null,2)+"\n");'
+          }
+          save_push() {
+            git add dist/snapshot.json
+            if git diff --cached --quiet; then
+              return 0
+            fi
             git commit -m "data: cập nhật snapshot [skip ci]"
-            git push
+            git push origin HEAD:main
+          }
+          if save_push; then
+            exit 0
           fi
+          for attempt in 1 2; do
+            echo "Push bị xung đột; lấy main mới nhất và đọc lại nguồn (lần thử $attempt/2)"
+            git fetch origin main
+            git reset --hard origin/main
+            node scripts/fetch-snapshot.mjs
+            write_operations
+            if save_push; then
+              exit 0
+            fi
+          done
+          echo "Không thể ghi snapshot sau 3 lần thử." >&2
+          exit 1
       - uses: actions/upload-artifact@v4
         with:
           name: source-status
