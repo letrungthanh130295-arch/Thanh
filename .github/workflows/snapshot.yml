@@ -15,10 +15,11 @@ concurrency:
   group: fuel-snapshot
   cancel-in-progress: false
 jobs:
+  # Publish every hourly run so the public WTI snapshot stays current even below $1.
   snapshot:
     runs-on: ubuntu-latest
     outputs:
-      publish: ${{ steps.fetch.outputs.deploy == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+      publish: ${{ steps.fetch.outputs.deploy == 'true' || github.event_name == 'schedule' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -47,9 +48,9 @@ jobs:
           name: source-status
           path: .run/result.json
       - uses: actions/configure-pages@v5
-        if: steps.fetch.outputs.deploy == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: steps.fetch.outputs.deploy == 'true' || github.event_name == 'schedule' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
       - uses: actions/upload-pages-artifact@v3
-        if: steps.fetch.outputs.deploy == 'true' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: steps.fetch.outputs.deploy == 'true' || github.event_name == 'schedule' || github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         with:
           path: dist
   deploy:
