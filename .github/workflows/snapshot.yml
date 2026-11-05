@@ -1,9 +1,8 @@
 name: Snapshot xăng dầu
 on:
   schedule:
-    # UTC -> Viet Nam UTC+7: 06:16, 09:00, 12:00, 15:00
-    - cron: "16 23 * * *"
-    - cron: "0 2,5,8 * * *"
+    # Hourly at minute 05 UTC = minute 05 Viet Nam (UTC+7), 24 runs/day
+    - cron: "5 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
@@ -33,7 +32,7 @@ jobs:
         run: node scripts/fetch-snapshot.mjs
       - name: Ghi trạng thái lịch và hosting
         run: |
-          node --input-type=module -e 'import fs from "node:fs"; const p="dist/snapshot.json"; const s=JSON.parse(fs.readFileSync(p,"utf8")); s.operations={schedulerActive:true,hosting:"GitHub Pages",note:"GitHub Actions: 06:16, 09:00, 12:00, 15:00 Việt Nam"}; fs.writeFileSync(p,JSON.stringify(s,null,2)+"\n");'
+          node --input-type=module -e 'import fs from "node:fs"; const p="dist/snapshot.json"; const s=JSON.parse(fs.readFileSync(p,"utf8")); s.operations={schedulerActive:true,hosting:"GitHub Pages",note:"Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"}; fs.writeFileSync(p,JSON.stringify(s,null,2)+"\n");'
       - name: Lưu snapshot kể cả WTI thay đổi nhỏ
         run: |
           git config user.name "github-actions[bot]"
