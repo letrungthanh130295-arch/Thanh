@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-05T07:27:39.464Z",
+  "capturedAt": "2026-11-05T07:41:11.283Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -27,43 +27,81 @@
     }
   },
   "pump": {
-    "effectiveAt": "2026-11-03T22:00:00+07:00",
+    "effectiveAt": "2026-11-05T15:00:00+07:00",
     "items": [
       [
         "E5 RON 92-II",
-        23200
+        20890
       ],
       [
         "E10 RON 95-III",
-        23230
+        21150
       ],
       [
         "E10 RON 95-V",
-        24230
+        22650
       ],
       [
         "DO 0,05S-II",
-        28870
+        28690
       ],
       [
         "DO 0,001S-V",
-        30270
+        30090
       ],
       [
         "Dầu hỏa 2-K",
-        29010
+        28600
       ],
       [
         "FO 3,5S",
-        23970
+        22000
       ],
       [
         "FO 180S-0,5S",
-        29590
+        27000
       ]
     ],
-    "source": "Ảnh thông báo Chi nhánh Petrolimex Vũng Tàu do chủ trạm cung cấp",
-    "isSample": false
+    "source": "Ảnh thông báo Chi nhánh Petrolimex Vũng Tàu ngày 05/11/2026 do chủ trạm cung cấp",
+    "isSample": false,
+    "previous": {
+      "effectiveAt": "2026-11-03T22:00:00+07:00",
+      "items": [
+        [
+          "E5 RON 92-II",
+          23200
+        ],
+        [
+          "E10 RON 95-III",
+          23230
+        ],
+        [
+          "E10 RON 95-V",
+          24230
+        ],
+        [
+          "DO 0,05S-II",
+          28870
+        ],
+        [
+          "DO 0,001S-V",
+          30270
+        ],
+        [
+          "Dầu hỏa 2-K",
+          29010
+        ],
+        [
+          "FO 3,5S",
+          23970
+        ],
+        [
+          "FO 180S-0,5S",
+          29590
+        ]
+      ]
+    },
+    "capturedAt": "2026-11-05T07:41:11.283Z"
   },
   "platts": {
     "date": "2026-11-04",
