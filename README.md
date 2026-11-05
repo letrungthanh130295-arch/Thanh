@@ -39,7 +39,7 @@ Parser kiểm tra đủ tên/cột, chọn ngày mới nhất, đổi 0 thành n
 4. Actions → “Snapshot xăng dầu” → Run workflow với `force_deploy=true` cho lần đầu. Kiểm tra log và URL deployment thành công trước khi phát cho nhân viên.
 5. Sau khi xác nhận lịch thật đã chạy và trang Pages hoạt động, sửa `operations.schedulerActive=true`, `operations.hosting` và ghi chú trong snapshot. Không gắn nhãn đã kích hoạt khi chỉ có file YAML.
 
-Cron UTC: `16 23 * * *` = 06:16 Việt Nam ngày kế tiếp; `0 2,5,8 * * *` = 09:00/12:00/15:00 Việt Nam. Schedule chạy trên nhánh mặc định; GitHub có thể trì hoãn, không bảo đảm chính xác từng phút.
+Lịch hằng giờ (24 lần/ngày): tác vụ Snapshot Chợ Giá đọc web vào phút 00 theo Asia/Ho_Chi_Minh; GitHub Actions lấy Yahoo WTI vào phút 05, cron UTC `5 * * * *` (cũng là phút 05 ở Việt Nam). Chợ Giá không gọi trực tiếp từ runner do HTTP 403. Schedule chạy trên nhánh mặc định; lịch có thể chạy trễ, không bảo đảm chính xác từng phút.
 
 Mỗi lần chạy lưu snapshot vào repo, kể cả WTI đổi <1 USD. **Chỉ deploy khi** ngày/giá Platts đổi, mức/kỳ dự báo đổi, hoặc WTI đổi >=1 USD so lần kiểm tra **thành công trước** (không so lần deploy). Lần đầu thay số mẫu bằng số thật cũng deploy. Việc sửa code hoặc bấm force deploy là thao tác xuất bản chủ động. Không có kênh thông báo riêng.
 
