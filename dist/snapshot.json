@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-04T14:05:45.306Z",
+  "capturedAt": "2026-11-05T00:00:47.690Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -331,10 +331,10 @@
         ]
       }
     ],
-    "pageUpdatedAt": "2026-11-04T20:13:56+07:00",
+    "pageUpdatedAt": "2026-11-05T06:31:48+07:00",
     "pageUpdatedKind": "table",
     "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
-    "capturedAt": "2026-11-04T14:04:06.145Z",
+    "capturedAt": "2026-11-05T00:00:36.631Z",
     "isSample": false,
     "captureMethod": "browser-snapshot"
   },
@@ -355,7 +355,7 @@
   },
   "forecast": {
     "period": "2026-11-05",
-    "capturedAt": "2026-11-04T14:04:26.893Z",
+    "capturedAt": "2026-11-05T00:00:47.690Z",
     "pageUpdatedAt": null,
     "basisDate": "2026-11-04",
     "base": [
@@ -368,14 +368,14 @@
       {
         "name": "Chợ Giá",
         "deltas": [
-          -1300,
-          -1400,
-          -120,
+          -1630,
+          -1410,
+          -190,
           0
         ],
         "providedAt": null,
         "isSample": false,
-        "capturedAt": "2026-11-04T14:04:26.893Z",
+        "capturedAt": "2026-11-05T00:00:47.690Z",
         "basisDate": "2026-11-04",
         "baselineConfirmed": false,
         "period": "2026-11-05",
@@ -515,15 +515,15 @@
   "sources": {
     "platts": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-04T14:04:06.145Z",
-      "lastSuccessAt": "2026-11-04T14:04:06.145Z",
+      "lastAttemptAt": "2026-11-05T00:00:36.631Z",
+      "lastSuccessAt": "2026-11-05T00:00:36.631Z",
       "error": null,
       "captureMethod": "browser-snapshot"
     },
     "forecast": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-04T14:04:26.893Z",
-      "lastSuccessAt": "2026-11-04T14:04:26.893Z",
+      "lastAttemptAt": "2026-11-05T00:00:47.690Z",
+      "lastSuccessAt": "2026-11-05T00:00:47.690Z",
       "error": null,
       "captureMethod": "browser-snapshot"
     },
@@ -539,5 +539,5 @@
     "hosting": "GitHub Pages",
     "note": "GitHub Actions: 06:16, 09:00, 12:00, 15:00 Việt Nam"
   },
-  "lastCheckedAt": "2026-11-04T14:05:45.306Z"
+  "lastCheckedAt": "2026-11-05T00:00:47.690Z"
 }
