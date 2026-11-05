@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-05T07:43:24.731Z",
+  "capturedAt": "2026-11-05T07:48:43.719Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -420,7 +420,12 @@
         "pageUpdatedAt": null,
         "pageUpdatedKind": "not-provided",
         "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
-        "captureMethod": "browser-snapshot"
+        "captureMethod": "browser-snapshot",
+        "prices": [
+          21570,
+          21820,
+          28680
+        ]
       },
       {
         "name": "User cung cấp",
@@ -453,16 +458,23 @@
       {
         "name": "T-Roo",
         "deltas": [
-          null,
-          null,
-          null,
+          -2302,
+          -2071,
+          -118,
           null
         ],
         "providedAt": null,
         "isSample": false,
         "capturedAt": null,
-        "basisDate": null,
-        "baselineConfirmed": false
+        "basisDate": "2026-11-04",
+        "baselineConfirmed": false,
+        "prices": [
+          20898,
+          21159,
+          28752
+        ],
+        "period": "2026-11-05",
+        "predictionOrigin": "Dự báo đã hiển thị trên dashboard trước khi chủ trạm gửi giá chính thức"
       },
       {
         "name": "Doanh nghiệp qua báo chí",
@@ -479,13 +491,56 @@
         "baselineConfirmed": false
       }
     ],
-    "actual": null,
+    "actual": [
+      20890,
+      21150,
+      28690,
+      22000
+    ],
     "baseEffectiveAt": "2026-11-03T22:00:00+07:00",
     "marketCycleStart": "2026-11-03",
     "marketWindowVerified": false,
-    "pageUpdatedKind": "not-provided"
+    "pageUpdatedKind": "not-provided",
+    "actualSource": "Ảnh thông báo Chi nhánh Petrolimex Vũng Tàu ngày 05/11/2026 do chủ trạm cung cấp",
+    "actualEffectiveAt": "2026-11-05T15:00:00+07:00"
   },
   "history": [
+    {
+      "period": "2026-11-05",
+      "effectiveAt": "2026-11-05T15:00:00+07:00",
+      "actual": [
+        20890,
+        21150,
+        28690
+      ],
+      "predictions": {
+        "Chợ Giá": [
+          21570,
+          21820,
+          28680
+        ],
+        "T-Roo": [
+          20898,
+          21159,
+          28752
+        ]
+      },
+      "errors": {
+        "Chợ Giá": [
+          -680,
+          -670,
+          10
+        ],
+        "T-Roo": [
+          -8,
+          -9,
+          -62
+        ]
+      },
+      "source": "Ảnh thông báo Chi nhánh Petrolimex Vũng Tàu ngày 05/11/2026 do chủ trạm cung cấp",
+      "isSample": false,
+      "predictionBasis": "Giá trụ bơm kỳ 03/11; dự báo đã quan sát trên dashboard trước khi nhận ảnh giá kỳ 05/11"
+    },
     {
       "period": "2026-11-03",
       "effectiveAt": "2026-11-03T22:00:00+07:00",
@@ -542,11 +597,6 @@
       "period": "2026-09-10",
       "actual": null,
       "predictions": {}
-    },
-    {
-      "period": "2026-09-03",
-      "actual": null,
-      "predictions": {}
     }
   ],
   "schemaVersion": 2,
@@ -575,7 +625,12 @@
   "operations": {
     "schedulerActive": true,
     "hosting": "GitHub Pages",
-    "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
+    "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)",
+    "officialUploadChecklist": [
+      "Cập nhật giá trụ bơm theo ảnh và ngày hiệu lực",
+      "Ghi Giá thật vào lịch sử đúng 10 kỳ; chấm các dự báo đã lưu trước công bố",
+      "Ghi Giá thật vào bảng Dự kiến cùng kỳ để so sánh; không bịa dự báo thiếu"
+    ]
   },
   "lastCheckedAt": "2026-11-05T07:43:24.731Z"
 }
