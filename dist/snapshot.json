@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-05T15:01:02.053+07:00",
+  "capturedAt": "2026-11-05T16:06:14.196+07:00",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -372,7 +372,7 @@
     "pageUpdatedAt": "2026-11-05T13:05:25+07:00",
     "pageUpdatedKind": "table",
     "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
-    "capturedAt": "2026-11-05T15:00:52.074+07:00",
+    "capturedAt": "2026-11-05T16:06:01.074+07:00",
     "isSample": false,
     "captureMethod": "browser-snapshot"
   },
@@ -393,7 +393,7 @@
   },
   "forecast": {
     "period": "2026-11-05",
-    "capturedAt": "2026-11-05T15:01:02.053+07:00",
+    "capturedAt": "2026-11-05T16:06:14.196+07:00",
     "pageUpdatedAt": null,
     "basisDate": "2026-11-04",
     "base": [
@@ -413,7 +413,7 @@
         ],
         "providedAt": null,
         "isSample": false,
-        "capturedAt": "2026-11-05T15:01:02.053+07:00",
+        "capturedAt": "2026-11-05T16:06:14.196+07:00",
         "basisDate": "2026-11-04",
         "baselineConfirmed": false,
         "period": "2026-11-05",
@@ -603,15 +603,15 @@
   "sources": {
     "platts": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-05T15:00:52.074+07:00",
-      "lastSuccessAt": "2026-11-05T15:00:52.074+07:00",
+      "lastAttemptAt": "2026-11-05T16:06:01.074+07:00",
+      "lastSuccessAt": "2026-11-05T16:06:01.074+07:00",
       "error": null,
       "captureMethod": "browser-snapshot"
     },
     "forecast": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-05T15:01:02.053+07:00",
-      "lastSuccessAt": "2026-11-05T15:01:02.053+07:00",
+      "lastAttemptAt": "2026-11-05T16:06:14.196+07:00",
+      "lastSuccessAt": "2026-11-05T16:06:14.196+07:00",
       "error": null,
       "captureMethod": "browser-snapshot"
     },
@@ -627,5 +627,5 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-05T15:01:02.053+07:00"
+  "lastCheckedAt": "2026-11-05T16:06:14.196+07:00"
 }
