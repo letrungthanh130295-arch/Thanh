@@ -29,8 +29,9 @@ function render(s){
  const outdated=s.forecast.basisDate<s.forecast.baseEffectiveAt?.slice(0,10);
  $('forecast-basis').textContent=outdated?'Chợ Giá đang dùng dữ liệu trước kỳ điều chỉnh gần nhất.':'';$('forecast-basis').hidden=!outdated;
  const auto=defaultTroo(s);
- for(const stored of s.forecast.sources){const x=stored.name==='T-Roo'?(stored.deltas.slice(0,3).every(Number.isFinite)?stored:auto):stored;if(!x||!x.deltas.slice(0,3).some(Number.isFinite))continue;const tr=row('forecast-rows',[x.name,...x.deltas.slice(0,3).map((v,i)=>Number.isFinite(v)?sign(v)+' → '+num(x.prices?.[i]??(pump[i]+v)):'—')]);x.deltas.slice(0,3).forEach((v,i)=>tr.children[i+1].className=tone(v));}
- row('forecast-rows',['Giá thật',...(s.forecast.actual||[null,null,null]).slice(0,3).map(v=>num(v))]);
+ const forecasts=s.forecast.sources.map(stored=>stored.name==='T-Roo'?(stored.deltas.slice(0,3).every(Number.isFinite)?stored:auto):stored).filter(x=>x&&x.deltas.slice(0,3).some(Number.isFinite));
+ const head=$('forecast-table').tHead;head.replaceChildren();const header=document.createElement('tr');['Mặt hàng',...forecasts.map(x=>x.name),'Giá thật'].forEach(name=>header.append(el('th',name)));head.append(header);
+ ['E5','E10 RON 95-III','DO 0,05S'].forEach((name,i)=>{const tr=row('forecast-rows',[name,...forecasts.map(x=>{const v=x.deltas[i];return Number.isFinite(v)?sign(v)+' → '+num(x.prices?.[i]??(pump[i]+v)):'—';}),num(s.forecast.actual?.[i])]);forecasts.forEach((x,j)=>tr.children[j+1].className=tone(x.deltas[i]));});
  $('troo-window').textContent='T-Roo · '+range(c)+' · '+c.count+'/'+c.expected+' phiên · FX 26.040 · thuế hiện hành';
  $('pending-forecast').textContent=s.pendingForecast?'Đã có bản tin kỳ '+day(s.pendingForecast.period)+', chờ xác nhận chuyển kỳ.':'';
  for(const x of historyRows(s.history)){const pred=x.predictions['T-Roo'];row('history-rows',[day(x.period)+(x.isSample?' · mẫu':''),x.actual?x.actual.map(v=>num(v)).join(' / '):'—',pred?pred.map(v=>num(v)).join(' / '):'—',num(score(x.actual,pred),1),bestSources(x).join(', ')||'—']);}
