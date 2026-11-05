@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-06T03:02:36.764+07:00",
+  "capturedAt": "2026-11-06T04:00:22.734+07:00",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -355,7 +355,7 @@
     "pageUpdatedAt": "2026-11-06T00:14:08+07:00",
     "pageUpdatedKind": "table",
     "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
-    "capturedAt": "2026-11-06T03:02:27.733+07:00",
+    "capturedAt": "2026-11-06T04:00:12.853+07:00",
     "isSample": false,
     "captureMethod": "browser-snapshot"
   },
@@ -586,16 +586,16 @@
   "sources": {
     "platts": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-06T03:02:27.733+07:00",
-      "lastSuccessAt": "2026-11-06T03:02:27.733+07:00",
+      "lastAttemptAt": "2026-11-06T04:00:12.853+07:00",
+      "lastSuccessAt": "2026-11-06T04:00:12.853+07:00",
       "error": null,
       "captureMethod": "browser-snapshot",
       "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/"
     },
     "forecast": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-06T03:02:36.764+07:00",
-      "lastSuccessAt": "2026-11-06T03:02:36.764+07:00",
+      "lastAttemptAt": "2026-11-06T04:00:22.734+07:00",
+      "lastSuccessAt": "2026-11-06T04:00:22.734+07:00",
       "error": null,
       "captureMethod": "browser-snapshot",
       "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/"
@@ -612,7 +612,7 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-06T03:02:36.764+07:00",
+  "lastCheckedAt": "2026-11-06T04:00:22.734+07:00",
   "pendingForecast": {
     "period": "2026-11-12",
     "basisDate": "2026-11-05",
@@ -626,6 +626,6 @@
     "pageUpdatedKind": "not-provided",
     "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
     "captureMethod": "browser-snapshot",
-    "capturedAt": "2026-11-06T03:02:36.764+07:00"
+    "capturedAt": "2026-11-06T04:00:22.734+07:00"
   }
 }
