@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-06T09:12:22.294Z",
+  "capturedAt": "2026-11-06T09:20:44.902Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -416,7 +416,7 @@
         "capturedAt": "2026-11-06T15:00:19.803+07:00"
       }
     },
-    "capturedAt": "2026-11-06T15:00:19.803+07:00",
+    "capturedAt": "2026-11-06T09:20:44.902Z",
     "basisDate": "2026-11-05",
     "pageUpdatedAt": null,
     "pageUpdatedKind": "not-provided",
@@ -430,7 +430,7 @@
           -2500
         ],
         "isSample": false,
-        "capturedAt": "2026-11-06T15:00:19.803+07:00",
+        "capturedAt": "2026-11-06T09:20:44.902Z",
         "providedAt": null,
         "baselineConfirmed": true,
         "period": "2026-11-12",
@@ -592,18 +592,26 @@
   "schemaVersion": 2,
   "sources": {
     "platts": {
-      "status": "ok",
-      "lastAttemptAt": "2026-11-06T08:19:35.860Z",
+      "status": "error",
+      "lastAttemptAt": "2026-11-06T09:20:28.833Z",
       "lastSuccessAt": "2026-11-06T08:19:35.860Z",
-      "error": null,
+      "error": "Chợ Giá mới nhất 05/11/2026 cũ hơn snapshot 06/11/2026; giữ nguyên giá và capturedAt phiên 06/11.",
       "captureMethod": "user-provided",
       "sourceUrl": null,
-      "source": "User cung cấp · nhóm Zalo"
+      "source": "User cung cấp · nhóm Zalo",
+      "lastObservation": {
+        "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
+        "observedAt": "2026-11-06T09:20:28.833Z",
+        "date": "2026-11-05",
+        "previousDate": "2026-11-04",
+        "pageUpdatedAt": "2026-11-06T13:46:50+07:00",
+        "captureMethod": "browser-snapshot"
+      }
     },
     "forecast": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-06T15:00:19.803+07:00",
-      "lastSuccessAt": "2026-11-06T15:00:19.803+07:00",
+      "lastAttemptAt": "2026-11-06T09:20:44.902Z",
+      "lastSuccessAt": "2026-11-06T09:20:44.902Z",
       "error": null,
       "captureMethod": "browser-snapshot",
       "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/"
@@ -620,5 +628,5 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-06T09:12:22.294Z"
+  "lastCheckedAt": "2026-11-06T09:20:44.902Z"
 }
