@@ -30,4 +30,4 @@ root.addEventListener('input',renderTroo);
 root.querySelector('[data-preset=current]').addEventListener('click',()=>{for(const key of ['taxa','taxb','env0','env1','nk0','nk1','vat'])inputs[key].value='0';renderTroo();});
 document.addEventListener('snapshot-loaded',event=>{snapshot=event.detail;const cycle=cycleContext(snapshot),base=pumpValues(snapshot);['a','b','c'].forEach((key,i)=>{inputs['base'+key].value=Number.isFinite(base[i])?String(base[i]):'';for(const [prefix,window] of [['p0',cycle.previous],['p1',cycle.current]]){const value=prefix==='p0'&&!window.complete?null:window.values[i];inputs[prefix+key].value=Number.isFinite(value)?String(Math.round(value*1e6)/1e6):'';}});document.getElementById('troo-origin').textContent='BQ trước '+day(cycle.previous.from)+' → trước '+day(cycle.previous.until)+' · BQ kỳ này '+day(cycle.current.from)+' → trước '+day(cycle.current.until);renderTroo();});
 renderTroo();
-</script><script type="module" src="app.js"></script></body></html>
+</script><script type="module" src="app.js?v=cycle-20261106-2"></script></body></html>
