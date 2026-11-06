@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-06T01:46:01.786Z",
+  "capturedAt": "2026-11-06T01:46:56.552Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -360,55 +360,64 @@
     "captureMethod": "browser-snapshot"
   },
   "wti": {
-    "price": 91.16,
-    "marketTime": "2026-11-06T01:36:00.000Z",
+    "price": 91.15,
+    "marketTime": "2026-11-06T01:36:52.000Z",
     "symbol": "CL=F",
     "exchange": "NYMEX",
     "currency": "USD",
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F",
-    "capturedAt": "2026-11-06T01:46:01.786Z",
+    "capturedAt": "2026-11-06T01:46:56.552Z",
     "previous": {
-      "price": 91.2,
-      "capturedAt": "2026-11-05T22:37:03.546Z",
-      "marketTime": "2026-11-05T21:59:59.000Z"
+      "price": 91.16,
+      "capturedAt": "2026-11-06T01:46:01.786Z",
+      "marketTime": "2026-11-06T01:36:00.000Z"
     },
     "isSample": false
   },
   "forecast": {
-    "period": "2026-11-05",
-    "capturedAt": "2026-11-05T19:57:15.457+07:00",
-    "pageUpdatedAt": null,
-    "basisDate": "2026-11-04",
+    "period": "2026-11-12",
     "base": [
-      23203,
-      23231,
-      28876,
-      23974
+      20890,
+      21150,
+      28690,
+      30090
     ],
+    "baseEffectiveAt": "2026-11-05T15:00:00+07:00",
+    "marketCycleStart": "2026-11-05",
+    "actual": null,
+    "lockedPredictions": {
+      "Chợ Giá": {
+        "prices": [
+          19330,
+          19750,
+          26790
+        ],
+        "capturedAt": "2026-11-06T07:01:47.662+07:00"
+      }
+    },
+    "capturedAt": "2026-11-06T07:01:47.662+07:00",
+    "basisDate": "2026-11-05",
+    "pageUpdatedAt": null,
+    "pageUpdatedKind": "not-provided",
     "sources": [
       {
         "name": "Chợ Giá",
         "deltas": [
-          -1630,
-          -1410,
-          -190,
-          0
+          -1560,
+          -1400,
+          -1900,
+          -2500
         ],
-        "providedAt": null,
         "isSample": false,
-        "capturedAt": "2026-11-05T19:57:15.457+07:00",
-        "basisDate": "2026-11-04",
-        "baselineConfirmed": false,
-        "period": "2026-11-05",
+        "capturedAt": "2026-11-06T07:01:47.662+07:00",
+        "providedAt": null,
+        "baselineConfirmed": true,
+        "period": "2026-11-12",
+        "basisDate": "2026-11-05",
         "pageUpdatedAt": null,
         "pageUpdatedKind": "not-provided",
         "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
-        "captureMethod": "browser-snapshot",
-        "prices": [
-          21570,
-          21820,
-          28680
-        ]
+        "captureMethod": "browser-snapshot"
       },
       {
         "name": "User cung cấp",
@@ -418,10 +427,9 @@
           null,
           null
         ],
-        "providedAt": null,
         "isSample": false,
         "capturedAt": null,
-        "basisDate": null,
+        "providedAt": null,
         "baselineConfirmed": false
       },
       {
@@ -432,32 +440,23 @@
           null,
           null
         ],
-        "providedAt": null,
         "isSample": false,
         "capturedAt": null,
-        "basisDate": null,
+        "providedAt": null,
         "baselineConfirmed": false
       },
       {
         "name": "T-Roo",
         "deltas": [
-          -2302,
-          -2071,
-          -118,
+          null,
+          null,
+          null,
           null
         ],
-        "providedAt": null,
         "isSample": false,
         "capturedAt": null,
-        "basisDate": "2026-11-04",
-        "baselineConfirmed": false,
-        "prices": [
-          20898,
-          21159,
-          28752
-        ],
-        "period": "2026-11-05",
-        "predictionOrigin": "Dự báo đã hiển thị trên dashboard trước khi chủ trạm gửi giá chính thức"
+        "providedAt": null,
+        "baselineConfirmed": false
       },
       {
         "name": "Doanh nghiệp qua báo chí",
@@ -467,25 +466,12 @@
           null,
           null
         ],
-        "providedAt": null,
         "isSample": false,
         "capturedAt": null,
-        "basisDate": null,
+        "providedAt": null,
         "baselineConfirmed": false
       }
-    ],
-    "actual": [
-      20890,
-      21150,
-      28690,
-      22000
-    ],
-    "baseEffectiveAt": "2026-11-03T22:00:00+07:00",
-    "marketCycleStart": "2026-11-03",
-    "marketWindowVerified": false,
-    "pageUpdatedKind": "not-provided",
-    "actualSource": "Ảnh thông báo Chi nhánh Petrolimex Vũng Tàu ngày 05/11/2026 do chủ trạm cung cấp",
-    "actualEffectiveAt": "2026-11-05T15:00:00+07:00"
+    ]
   },
   "history": [
     {
@@ -602,8 +588,8 @@
     },
     "wti": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-06T01:46:01.786Z",
-      "lastSuccessAt": "2026-11-06T01:46:01.786Z",
+      "lastAttemptAt": "2026-11-06T01:46:56.552Z",
+      "lastSuccessAt": "2026-11-06T01:46:56.552Z",
       "error": null
     }
   },
@@ -612,20 +598,5 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-06T01:46:01.786Z",
-  "pendingForecast": {
-    "period": "2026-11-12",
-    "basisDate": "2026-11-05",
-    "deltas": [
-      -1560,
-      -1400,
-      -1900,
-      -2500
-    ],
-    "pageUpdatedAt": null,
-    "pageUpdatedKind": "not-provided",
-    "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
-    "captureMethod": "browser-snapshot",
-    "capturedAt": "2026-11-06T07:01:47.662+07:00"
-  }
+  "lastCheckedAt": "2026-11-06T01:46:56.552Z"
 }
