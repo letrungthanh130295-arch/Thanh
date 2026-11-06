@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {advanceCycle,cycleContext,defaultTroo} from '../dist/model.js';
+import {advanceCycle,cycleContext,defaultTroo,plattsChanges} from '../dist/model.js';
 import {updateSnapshot} from '../scripts/update.mjs';
 const original={
   "mode": "mixed",
@@ -636,42 +636,52 @@ const original={
 }
 ;
 const now=Date.parse('2026-11-06T07:30:00+07:00');
-test('confirmed 05/11 pump event advances both forecast and Platts to 12/11',()=>{
+test('confirmed repricing advances forecast, preserves history, and opens next-day Platts window',()=>{
  const s=advanceCycle(original,now);assert.equal(s.forecast.period,'2026-11-12');
- assert.equal(s.forecast.baseEffectiveAt,original.pump.effectiveAt);assert.deepEqual(s.forecast.base.slice(0,3),[20890,21150,28690]);
- assert.deepEqual(s.forecast.sources[0].deltas,[-1560,-1400,-1900,-2500]);
- assert.equal(s.forecast.actual,null);assert.deepEqual(s.history,original.history);assert.deepEqual(s.official,original.official);
- const c=cycleContext(s);assert.equal(c.from,'2026-11-05');assert.equal(c.until,'2026-11-12');assert.deepEqual(c.previous.dates,['2026-11-03','2026-11-04','2026-11-05']);assert.deepEqual(c.current.dates,['2026-11-05']);assert.ok(defaultTroo(s));assert.deepEqual(advanceCycle(s,now),s);
+ assert.deepEqual(s.history,original.history);assert.deepEqual(s.official,original.official);
+ const c=cycleContext(s,now);assert.deepEqual([c.previous.from,c.previous.to,c.current.from,c.current.to],['2026-11-03','2026-11-05','2026-11-06','2026-11-11']);
+ assert.deepEqual(c.previous.dates,['2026-11-03','2026-11-04','2026-11-05']);assert.deepEqual(c.current.dates,[]);
+ assert.equal(c.current.expected,4);assert.equal(defaultTroo(s,now),null);assert.deepEqual(advanceCycle(s,now),s);
 });
-test('extraordinary repricing resets window without advancing beyond next Thursday',()=>{
- const s=advanceCycle(original,now);s.pump.effectiveAt='2026-11-10T22:00:00+07:00';s.history.push({period:'2026-11-10',effectiveAt:s.pump.effectiveAt,actual:[20000,21000,28000]});
- const n=advanceCycle(s,Date.parse('2026-11-11T07:00:00+07:00'));assert.equal(n.forecast.period,'2026-11-12');assert.equal(cycleContext(n,Date.parse('2026-11-11T07:00:00+07:00')).from,'2026-11-10');assert.ok(n.forecast.sources.every(x=>x.deltas.every(v=>v===null)));assert.equal(defaultTroo(n,Date.parse('2026-11-11T07:00:00+07:00')),null);
+test('extraordinary cutoff closes 29 Oct–02 Nov and then 03–05 Nov without overlap',()=>{
+ const s=advanceCycle(original,now);
+ const c=cycleContext(s,Date.parse('2026-11-05T23:59:59+07:00'));
+ assert.deepEqual([c.previous.from,c.previous.to,c.current.from,c.current.to],['2026-10-29','2026-11-02','2026-11-03','2026-11-05']);
+ const n=cycleContext(s,Date.parse('2026-11-06T00:00:00+07:00'));
+ assert.deepEqual([n.previous.from,n.previous.to,n.current.from,n.current.to],['2026-11-03','2026-11-05','2026-11-06','2026-11-11']);
+ assert.ok(!n.current.dates.some(d=>n.previous.dates.includes(d)));
 });
-test('scheduler rolls forward even if sources fail, rejects stale forecast and retains sessions',()=>{
+test('a normal Thursday cycle uses 29 Oct–05 Nov then 06–11 Nov',()=>{
+ const s=advanceCycle(original,now);s.official=null;s.pump.previous=null;s.history=s.history.filter(x=>x.period!=='2026-11-03');
+ const c=cycleContext(s,now);assert.deepEqual([c.previous.from,c.previous.to,c.current.from,c.current.to],['2026-10-29','2026-11-05','2026-11-06','2026-11-11']);
+});
+test('new sessions alone feed current averages, changes and T-Roo; zero or missing stays unavailable',()=>{
+ const s=advanceCycle(original,now),before=structuredClone(s);
+ assert.equal(defaultTroo(s,now),null);assert.ok(plattsChanges(s,now).every(x=>x.current===null&&x.percent===null));
+ s.platts.sessions.push({date:'2026-11-06',values:s.platts.items.map(()=>120)});
+ let c=cycleContext(s,now);assert.equal(c.previous.values[0],(114.28+110.95+102.89)/3);assert.equal(c.current.values[0],120);
+ assert.ok(defaultTroo(s,now));assert.equal(plattsChanges(s,now)[0].percent,(120/c.previous.values[0]-1)*100);
+ assert.deepEqual(before.history,s.history);
+ s.platts.sessions.find(x=>x.date==='2026-11-06').values[0]=0;assert.equal(defaultTroo(s,now),null);
+ s.platts.sessions=s.platts.sessions.filter(x=>x.date!=='2026-11-04');assert.equal(cycleContext(s,now).previous.complete,false);assert.equal(defaultTroo(s,now),null);
+});
+test('future repricing does not move windows early; outside-cycle and next Thursday changes move once',()=>{
+ const s=advanceCycle(original,now);s.pump.previous=structuredClone(s.pump);delete s.pump.previous.previous;
+ s.pump.effectiveAt='2026-11-10T22:00:00+07:00';
+ let c=cycleContext(s,Date.parse('2026-11-10T21:59:00+07:00'));assert.equal(c.from,'2026-11-06');
+ c=cycleContext(s,Date.parse('2026-11-11T07:00:00+07:00'));assert.deepEqual([c.previous.from,c.previous.to,c.current.from,c.current.to],['2026-11-06','2026-11-10','2026-11-11','2026-11-11']);
+ s.history.push({period:'2026-11-10',effectiveAt:s.pump.effectiveAt,actual:[20000,21000,28000]});s.pump.effectiveAt='2026-11-12T15:00:00+07:00';
+ c=cycleContext(s,Date.parse('2026-11-13T00:00:00+07:00'));assert.deepEqual([c.previous.from,c.previous.to,c.current.from,c.current.to],['2026-11-11','2026-11-12','2026-11-13','2026-11-18']);
+});
+test('scheduler rejects stale forecasts and preserves sessions and protected prices',()=>{
  const r=updateSnapshot(original,{platts:{value:{...original.platts,sessions:original.platts.sessions.slice(0,1)}},forecast:{value:{period:'2026-11-05',basisDate:'2026-11-04',deltas:[1,2,3,0]}},wti:{skip:true}},new Date(now).toISOString());
  assert.equal(r.snapshot.forecast.period,'2026-11-12');assert.ok(r.shouldDeploy);assert.equal(r.snapshot.platts.sessions.length,original.platts.sessions.length);assert.deepEqual(r.snapshot.history,original.history);
 });
 
-test('average bounds include repricing date in both windows and use available sessions only',()=>{
- const s=advanceCycle(original,now),before=structuredClone(s),c=cycleContext(s,now);
- assert.deepEqual([c.previous.from,c.previous.to,c.current.from,c.current.to],['2026-11-03','2026-11-05','2026-11-05','2026-11-11']);
- assert.equal(c.previous.values[0],(114.28+110.95+102.89)/3);
- assert.equal(c.current.values[0],102.89);assert.equal(c.current.expected,5);assert.equal(c.current.count,1);
- assert.deepEqual(s,before);
- const missing=structuredClone(s);missing.platts.sessions=missing.platts.sessions.filter(x=>x.date!=='2026-11-04');
- assert.equal(cycleContext(missing,now).previous.complete,false);assert.equal(defaultTroo(missing),null);
- const zero=structuredClone(s);zero.platts.sessions.find(x=>x.date==='2026-11-04').values[0]=0;
- assert.equal(cycleContext(zero,now).previous.values[0],null);assert.equal(defaultTroo(zero),null);
-});
-test('average windows follow confirmed repricing even with a stale forecast baseline',()=>{
- const c=cycleContext(original,now);
- assert.deepEqual([c.previous.from,c.previous.to,c.current.from,c.current.to],['2026-11-03','2026-11-05','2026-11-05','2026-11-11']);
- const s=advanceCycle(original,now);s.pump.previous=structuredClone(s.pump);delete s.pump.previous.previous;
- s.pump.effectiveAt='2026-11-10T22:00:00+07:00';
- let n=cycleContext(s,Date.parse('2026-11-10T21:59:00+07:00'));assert.equal(n.from,'2026-11-05');
- n=cycleContext(s,Date.parse('2026-11-10T22:00:00+07:00'));
- assert.deepEqual([n.previous.from,n.previous.to,n.current.from,n.current.to],['2026-11-05','2026-11-10','2026-11-10','2026-11-11']);
- s.pump.previous=structuredClone(s.pump);delete s.pump.previous.previous;s.pump.effectiveAt='2026-11-12T15:00:00+07:00';
- n=cycleContext(s,Date.parse('2026-11-12T15:00:00+07:00'));
- assert.deepEqual([n.previous.from,n.previous.to,n.current.from,n.current.to],['2026-11-10','2026-11-12','2026-11-12','2026-11-18']);
+test('forecast data preceding the new observation window cannot qualify or create a new accuracy lock',()=>{
+ const s=advanceCycle(original,now);s.forecast.lockedPredictions={};
+ const f={period:'2026-11-12',basisDate:'2026-11-05',deltas:[-1560,-1400,-1900,-2500]};
+ const r=updateSnapshot(s,{platts:{skip:true},forecast:{value:f},wti:{skip:true}},new Date(now).toISOString()).snapshot;
+ assert.equal(r.forecast.sources[0].baselineConfirmed,false);assert.deepEqual(r.forecast.lockedPredictions,{});
+ assert.deepEqual(r.history,s.history);assert.deepEqual(r.forecast.base,s.forecast.base);
 });
