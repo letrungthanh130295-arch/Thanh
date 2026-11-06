@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-06T15:00:19.803+07:00",
+  "capturedAt": "2026-11-06T08:19:35.860Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -104,83 +104,102 @@
     "capturedAt": "2026-11-05T07:41:11.283Z"
   },
   "platts": {
-    "date": "2026-11-05",
-    "previousDate": "2026-11-04",
+    "date": "2026-11-06",
+    "previousDate": "2026-11-05",
     "items": [
       {
         "name": "A92",
         "unit": "USD/thùng",
-        "value": 102.89,
-        "previous": 110.95
+        "value": 109.88,
+        "previous": 102.89
       },
       {
         "name": "A95",
         "unit": "USD/thùng",
-        "value": 104.68,
-        "previous": 112.2
+        "value": 111.49,
+        "previous": 104.68
       },
       {
         "name": "97",
         "unit": "USD/thùng",
         "value": null,
-        "previous": 113.31
+        "previous": null
       },
       {
         "name": "DO 0,05%S",
         "unit": "USD/thùng",
-        "value": 152.52,
-        "previous": 163.11
+        "value": 159.84,
+        "previous": 152.52
       },
       {
         "name": "DO 0,25%S",
         "unit": "USD/thùng",
         "value": null,
-        "previous": 161.03
+        "previous": null
       },
       {
         "name": "DO 10ppm",
         "unit": "USD/thùng",
-        "value": 155.24,
-        "previous": 165.83
+        "value": 161.83,
+        "previous": 155.24
       },
       {
         "name": "DO 50ppm",
         "unit": "USD/thùng",
         "value": null,
-        "previous": 166.47
+        "previous": null
       },
       {
         "name": "Dầu hỏa",
         "unit": "USD/thùng",
         "value": null,
-        "previous": 164.52
+        "previous": null
       },
       {
         "name": "Marine",
         "unit": "USD/tấn",
-        "value": 730.3,
-        "previous": 831.36
+        "value": null,
+        "previous": 730.3
       },
       {
         "name": "FO180",
         "unit": "USD/tấn",
-        "value": 639.49,
-        "previous": 759.12
+        "value": 660.59,
+        "previous": 639.49
       },
       {
         "name": "FO380",
         "unit": "USD/tấn",
         "value": null,
-        "previous": 744.03
+        "previous": null
       },
       {
         "name": "Naphtha",
         "unit": "USD/thùng",
         "value": null,
-        "previous": 109.34
+        "previous": null
       }
     ],
     "sessions": [
+      {
+        "date": "2026-11-06",
+        "values": [
+          109.88,
+          111.49,
+          null,
+          159.84,
+          null,
+          161.83,
+          null,
+          null,
+          null,
+          660.59,
+          null,
+          null
+        ],
+        "source": "User cung cấp · nhóm Zalo",
+        "capturedAt": "2026-11-06T08:19:35.860Z"
+      },
       {
         "date": "2026-11-05",
         "values": [
@@ -352,12 +371,14 @@
         ]
       }
     ],
-    "pageUpdatedAt": "2026-11-06T13:46:50+07:00",
-    "pageUpdatedKind": "table",
-    "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
-    "capturedAt": "2026-11-06T15:00:06.171+07:00",
+    "pageUpdatedAt": null,
+    "pageUpdatedKind": "not-provided",
+    "sourceUrl": null,
+    "capturedAt": "2026-11-06T08:19:35.860Z",
     "isSample": false,
-    "captureMethod": "browser-snapshot"
+    "captureMethod": "user-provided",
+    "source": "User cung cấp · nhóm Zalo",
+    "previousSourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/"
   },
   "wti": {
     "price": 91.38,
@@ -572,11 +593,12 @@
   "sources": {
     "platts": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-06T15:00:06.171+07:00",
-      "lastSuccessAt": "2026-11-06T15:00:06.171+07:00",
+      "lastAttemptAt": "2026-11-06T08:19:35.860Z",
+      "lastSuccessAt": "2026-11-06T08:19:35.860Z",
       "error": null,
-      "captureMethod": "browser-snapshot",
-      "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/"
+      "captureMethod": "user-provided",
+      "sourceUrl": null,
+      "source": "User cung cấp · nhóm Zalo"
     },
     "forecast": {
       "status": "ok",
