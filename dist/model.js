@@ -11,9 +11,9 @@ export const pumpNames=['E5 RON 92-II','E10 RON 95-III','DO 0,05S-II','DO 0,001S
 export function pumpValues(s){return pumpNames.map(name=>s.pump.items.find(x=>x[0]===name)?.[1]??null);}
 function vnDay(value){return value?new Date(value).toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}):null;}
 function businessDays(from,to){const out=[];if(!from||!to||from>=to)return out;for(let d=new Date(from+'T00:00:00Z');d.toISOString().slice(0,10)<to;d.setUTCDate(d.getUTCDate()+1)){if(d.getUTCDay()!==0&&d.getUTCDay()!==6)out.push(d.toISOString().slice(0,10));if(out.length>370)break;}return out;}
-export function cycleContext(s){
+export function cycleContext(s,now=Date.now()){
  const until=s.forecast.period;
- const from=vnDay(s.official.effectiveAt);
+ const from=vnDay(s.forecast.baseEffectiveAt)||latestPriceEvent(s,now).day;
  const prior=[...new Set(s.history.map(x=>x.period))].filter(x=>x<from).sort().at(-1)??null;
  function window(start,end){
   const expected=businessDays(start,end);
@@ -38,3 +38,27 @@ export function threshold(percent){return Number.isFinite(percent)?percent>=14?'
 
 export function plattsChanges(s){const c=cycleContext(s);return visiblePlatts.map((name,i)=>({name,previous:c.previous.complete?c.previous.values[i]:null,current:c.current.values[i],percent:c.previous.complete&&Number.isFinite(c.previous.values[i])&&c.previous.values[i]>0&&Number.isFinite(c.current.values[i])?(c.current.values[i]/c.previous.values[i]-1)*100:null}));}
 export function defaultTroo(s){const c=cycleContext(s),base=pumpValues(s);if(!c.previous.complete||!c.current.count)return null;const results=[.95,.90,1].map((ratio,i)=>calculateTroo(c.previous.values[i],c.current.values[i],26040,ratio,0,0,0,0,0,0,base[i]));if(results.some(x=>!x))return null;return {name:'T-Roo',period:s.forecast.period,deltas:results.map(x=>x.delta),prices:results.map(x=>x.price),currentDates:c.current.dates,previousDates:c.previous.dates};}
+
+// Confirmed price events, never wall-clock guesses, advance the market window.
+export function latestPriceEvent(s, now=Date.now()) {
+ const events=[{at:s.official?.effectiveAt,prices:s.official?.prices},
+  {at:s.pump?.effectiveAt,prices:pumpValues(s)},
+  ...(s.history||[]).filter(x=>!x.isSample&&x.actual).map(x=>({at:x.effectiveAt||x.period+'T15:00:00+07:00',prices:x.actual}))]
+  .filter(x=>x.at&&Date.parse(x.at)<=Number(now)&&x.prices?.slice(0,3).every(Number.isFinite));
+ events.sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
+ const event=events[0];return {...event,day:vnDay(event.at)};
+}
+export function nextThursday(day){const d=new Date(day+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+((4-d.getUTCDay()+7)%7||7));return d.toISOString().slice(0,10);}
+export function advanceCycle(input,now=Date.now()){
+ const s=structuredClone(input),event=latestPriceEvent(s,now),f=s.forecast;
+ if(!event.day||Date.parse(event.at)<=Date.parse(f.baseEffectiveAt))return s;
+ // Historical actuals and predictions remain in history; do not relabel them.
+ const period=nextThursday(event.day),pending=s.pendingForecast;
+ const fresh=pending?.period===period&&pending.basisDate>=event.day?pending:null;
+ s.forecast={period,base:[...event.prices],baseEffectiveAt:event.at,marketCycleStart:event.day,
+ actual:null,lockedPredictions:{},capturedAt:fresh?.capturedAt??null,basisDate:fresh?.basisDate??null,
+ pageUpdatedAt:fresh?.pageUpdatedAt??null,pageUpdatedKind:fresh?.pageUpdatedKind??null,
+ sources:f.sources.map(x=>({name:x.name,deltas:[null,null,null,null],isSample:false,capturedAt:null,providedAt:null,baselineConfirmed:false}))};
+ if(fresh){const row=s.forecast.sources.find(x=>x.name==='Chợ Giá');Object.assign(row,fresh,{name:'Chợ Giá',isSample:false,baselineConfirmed:true});delete s.pendingForecast;}
+ return s;
+}

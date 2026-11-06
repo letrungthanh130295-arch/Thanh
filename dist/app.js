@@ -1,4 +1,4 @@
-import {historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold} from './model.js';
+import {advanceCycle,historyRows,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold} from './model.js';
 const $=id=>document.getElementById(id);
 const num=(v,d=0)=>Number.isFinite(v)?new Intl.NumberFormat('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v):'—';
 const sign=(v,d=0)=>Number.isFinite(v)?(v<0?'−':v>0?'+':'')+num(Math.abs(v),d):'—';
@@ -40,5 +40,5 @@ function render(s){
  for(const [key,title] of [['platts','Platts'],['forecast','Chợ Giá'],['wti','WTI']]){const source=s.sources?.[key];if(source?.status==='error')$('source-errors').append(el('p',title+': '+source.error+' · giữ số cũ','warning'));}
  $('sample-banner').hidden=!(s.platts.isSample||s.wti.isSample||s.forecast.sources.some(x=>x.isSample));$('sample-banner').textContent='Có dữ liệu mẫu';
 }
-async function load(){const b=$('reload');b.disabled=true;try{const r=await fetch('./snapshot.json',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const s=validate(await r.json());render(s);document.dispatchEvent(new CustomEvent('snapshot-loaded',{detail:s}));$('status').textContent='';}catch(e){$('status').textContent='Chưa tải được snapshot · '+e.message;}finally{b.disabled=false;}}
+async function load(){const b=$('reload');b.disabled=true;try{const r=await fetch('./snapshot.json',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const s=advanceCycle(validate(await r.json()));render(s);document.dispatchEvent(new CustomEvent('snapshot-loaded',{detail:s}));$('status').textContent='';}catch(e){$('status').textContent='Chưa tải được snapshot · '+e.message;}finally{b.disabled=false;}}
 $('reload').addEventListener('click',load);load();
