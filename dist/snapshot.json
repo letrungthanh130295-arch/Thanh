@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-06T09:20:44.902Z",
+  "capturedAt": "2026-11-06T10:05:07.749Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -158,7 +158,7 @@
       {
         "name": "Marine",
         "unit": "USD/tấn",
-        "value": null,
+        "value": 730.3,
         "previous": 730.3
       },
       {
@@ -192,13 +192,14 @@
           161.83,
           null,
           null,
-          null,
+          730.3,
           660.59,
           null,
           null
         ],
-        "source": "User cung cấp · nhóm Zalo",
-        "capturedAt": "2026-11-06T08:19:35.860Z"
+        "source": "Chợ Giá",
+        "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
+        "capturedAt": "2026-11-06T10:04:57.422Z"
       },
       {
         "date": "2026-11-05",
@@ -371,14 +372,13 @@
         ]
       }
     ],
-    "pageUpdatedAt": null,
-    "pageUpdatedKind": "not-provided",
-    "sourceUrl": null,
-    "capturedAt": "2026-11-06T08:19:35.860Z",
+    "pageUpdatedAt": "2026-11-06T16:47:21+07:00",
+    "pageUpdatedKind": "table",
+    "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
+    "capturedAt": "2026-11-06T10:04:57.422Z",
     "isSample": false,
-    "captureMethod": "user-provided",
-    "source": "User cung cấp · nhóm Zalo",
-    "previousSourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/"
+    "captureMethod": "browser-snapshot",
+    "source": "Chợ Giá"
   },
   "wti": {
     "price": 90.03,
@@ -416,7 +416,7 @@
         "capturedAt": "2026-11-06T15:00:19.803+07:00"
       }
     },
-    "capturedAt": "2026-11-06T09:20:44.902Z",
+    "capturedAt": "2026-11-06T10:05:07.749Z",
     "basisDate": "2026-11-05",
     "pageUpdatedAt": null,
     "pageUpdatedKind": "not-provided",
@@ -430,7 +430,7 @@
           -2500
         ],
         "isSample": false,
-        "capturedAt": "2026-11-06T09:20:44.902Z",
+        "capturedAt": "2026-11-06T10:05:07.749Z",
         "providedAt": null,
         "baselineConfirmed": true,
         "period": "2026-11-12",
@@ -592,26 +592,17 @@
   "schemaVersion": 2,
   "sources": {
     "platts": {
-      "status": "error",
-      "lastAttemptAt": "2026-11-06T09:20:28.833Z",
-      "lastSuccessAt": "2026-11-06T08:19:35.860Z",
-      "error": "Chợ Giá mới nhất 05/11/2026 cũ hơn snapshot 06/11/2026; giữ nguyên giá và capturedAt phiên 06/11.",
-      "captureMethod": "user-provided",
-      "sourceUrl": null,
-      "source": "User cung cấp · nhóm Zalo",
-      "lastObservation": {
-        "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
-        "observedAt": "2026-11-06T09:20:28.833Z",
-        "date": "2026-11-05",
-        "previousDate": "2026-11-04",
-        "pageUpdatedAt": "2026-11-06T13:46:50+07:00",
-        "captureMethod": "browser-snapshot"
-      }
+      "status": "ok",
+      "lastAttemptAt": "2026-11-06T10:04:57.422Z",
+      "lastSuccessAt": "2026-11-06T10:04:57.422Z",
+      "error": null,
+      "captureMethod": "browser-snapshot",
+      "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/"
     },
     "forecast": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-06T09:20:44.902Z",
-      "lastSuccessAt": "2026-11-06T09:20:44.902Z",
+      "lastAttemptAt": "2026-11-06T10:05:07.749Z",
+      "lastSuccessAt": "2026-11-06T10:05:07.749Z",
       "error": null,
       "captureMethod": "browser-snapshot",
       "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/"
@@ -628,5 +619,5 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-06T09:20:44.902Z"
+  "lastCheckedAt": "2026-11-06T10:05:07.749Z"
 }
