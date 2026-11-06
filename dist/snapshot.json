@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-06T08:21:35.120Z",
+  "capturedAt": "2026-11-06T09:10:45.287Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -381,17 +381,17 @@
     "previousSourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/"
   },
   "wti": {
-    "price": 90.65,
-    "marketTime": "2026-11-06T08:11:29.000Z",
+    "price": 89.85,
+    "marketTime": "2026-11-06T09:00:44.000Z",
     "symbol": "CL=F",
     "exchange": "NYMEX",
     "currency": "USD",
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F",
-    "capturedAt": "2026-11-06T08:21:35.120Z",
+    "capturedAt": "2026-11-06T09:10:45.287Z",
     "previous": {
-      "price": 91.38,
-      "capturedAt": "2026-11-06T07:14:17.851Z",
-      "marketTime": "2026-11-06T07:04:16.000Z"
+      "price": 90.65,
+      "capturedAt": "2026-11-06T08:21:35.120Z",
+      "marketTime": "2026-11-06T08:11:29.000Z"
     },
     "isSample": false
   },
@@ -413,7 +413,7 @@
           19750,
           26790
         ],
-        "capturedAt": "2026-11-06T13:01:15.083+07:00"
+        "capturedAt": "2026-11-06T15:00:19.803+07:00"
       }
     },
     "capturedAt": "2026-11-06T15:00:19.803+07:00",
@@ -610,8 +610,8 @@
     },
     "wti": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-06T08:21:35.120Z",
-      "lastSuccessAt": "2026-11-06T08:21:35.120Z",
+      "lastAttemptAt": "2026-11-06T09:10:45.287Z",
+      "lastSuccessAt": "2026-11-06T09:10:45.287Z",
       "error": null
     }
   },
@@ -620,5 +620,5 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-06T08:21:35.120Z"
+  "lastCheckedAt": "2026-11-06T09:10:45.287Z"
 }
