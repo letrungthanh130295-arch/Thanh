@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-06T10:01:19.051+07:00",
+  "capturedAt": "2026-11-06T03:18:45.940Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -360,17 +360,17 @@
     "captureMethod": "browser-snapshot"
   },
   "wti": {
-    "price": 91.06,
-    "marketTime": "2026-11-06T01:42:46.000Z",
+    "price": 91.26,
+    "marketTime": "2026-11-06T03:08:30.000Z",
     "symbol": "CL=F",
     "exchange": "NYMEX",
     "currency": "USD",
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F",
-    "capturedAt": "2026-11-06T01:52:54.418Z",
+    "capturedAt": "2026-11-06T03:18:45.940Z",
     "previous": {
-      "price": 91.11,
-      "capturedAt": "2026-11-06T01:49:50.147Z",
-      "marketTime": "2026-11-06T01:39:40.000Z"
+      "price": 91.06,
+      "capturedAt": "2026-11-06T01:52:54.418Z",
+      "marketTime": "2026-11-06T01:42:46.000Z"
     },
     "isSample": false
   },
@@ -392,7 +392,7 @@
           19750,
           26790
         ],
-        "capturedAt": "2026-11-06T07:01:47.662+07:00"
+        "capturedAt": "2026-11-06T10:01:19.051+07:00"
       }
     },
     "capturedAt": "2026-11-06T10:01:19.051+07:00",
@@ -588,8 +588,8 @@
     },
     "wti": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-06T01:52:54.418Z",
-      "lastSuccessAt": "2026-11-06T01:52:54.418Z",
+      "lastAttemptAt": "2026-11-06T03:18:45.940Z",
+      "lastSuccessAt": "2026-11-06T03:18:45.940Z",
       "error": null
     }
   },
@@ -598,5 +598,5 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-06T10:01:19.051+07:00"
+  "lastCheckedAt": "2026-11-06T03:18:45.940Z"
 }
