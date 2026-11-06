@@ -641,13 +641,37 @@ test('confirmed 05/11 pump event advances both forecast and Platts to 12/11',()=
  assert.equal(s.forecast.baseEffectiveAt,original.pump.effectiveAt);assert.deepEqual(s.forecast.base.slice(0,3),[20890,21150,28690]);
  assert.deepEqual(s.forecast.sources[0].deltas,[-1560,-1400,-1900,-2500]);
  assert.equal(s.forecast.actual,null);assert.deepEqual(s.history,original.history);assert.deepEqual(s.official,original.official);
- const c=cycleContext(s);assert.equal(c.from,'2026-11-05');assert.equal(c.until,'2026-11-12');assert.deepEqual(c.previous.dates,['2026-11-03','2026-11-04']);assert.deepEqual(c.current.dates,['2026-11-05']);assert.ok(defaultTroo(s));assert.deepEqual(advanceCycle(s,now),s);
+ const c=cycleContext(s);assert.equal(c.from,'2026-11-05');assert.equal(c.until,'2026-11-12');assert.deepEqual(c.previous.dates,['2026-11-03','2026-11-04','2026-11-05']);assert.deepEqual(c.current.dates,['2026-11-05']);assert.ok(defaultTroo(s));assert.deepEqual(advanceCycle(s,now),s);
 });
 test('extraordinary repricing resets window without advancing beyond next Thursday',()=>{
  const s=advanceCycle(original,now);s.pump.effectiveAt='2026-11-10T22:00:00+07:00';s.history.push({period:'2026-11-10',effectiveAt:s.pump.effectiveAt,actual:[20000,21000,28000]});
- const n=advanceCycle(s,Date.parse('2026-11-11T07:00:00+07:00'));assert.equal(n.forecast.period,'2026-11-12');assert.equal(cycleContext(n,Date.parse('2026-11-11T07:00:00+07:00')).from,'2026-11-10');assert.ok(n.forecast.sources.every(x=>x.deltas.every(v=>v===null)));assert.equal(defaultTroo(n),null);
+ const n=advanceCycle(s,Date.parse('2026-11-11T07:00:00+07:00'));assert.equal(n.forecast.period,'2026-11-12');assert.equal(cycleContext(n,Date.parse('2026-11-11T07:00:00+07:00')).from,'2026-11-10');assert.ok(n.forecast.sources.every(x=>x.deltas.every(v=>v===null)));assert.equal(defaultTroo(n,Date.parse('2026-11-11T07:00:00+07:00')),null);
 });
 test('scheduler rolls forward even if sources fail, rejects stale forecast and retains sessions',()=>{
  const r=updateSnapshot(original,{platts:{value:{...original.platts,sessions:original.platts.sessions.slice(0,1)}},forecast:{value:{period:'2026-11-05',basisDate:'2026-11-04',deltas:[1,2,3,0]}},wti:{skip:true}},new Date(now).toISOString());
  assert.equal(r.snapshot.forecast.period,'2026-11-12');assert.ok(r.shouldDeploy);assert.equal(r.snapshot.platts.sessions.length,original.platts.sessions.length);assert.deepEqual(r.snapshot.history,original.history);
+});
+
+test('average bounds include repricing date in both windows and use available sessions only',()=>{
+ const s=advanceCycle(original,now),before=structuredClone(s),c=cycleContext(s,now);
+ assert.deepEqual([c.previous.from,c.previous.to,c.current.from,c.current.to],['2026-11-03','2026-11-05','2026-11-05','2026-11-11']);
+ assert.equal(c.previous.values[0],(114.28+110.95+102.89)/3);
+ assert.equal(c.current.values[0],102.89);assert.equal(c.current.expected,5);assert.equal(c.current.count,1);
+ assert.deepEqual(s,before);
+ const missing=structuredClone(s);missing.platts.sessions=missing.platts.sessions.filter(x=>x.date!=='2026-11-04');
+ assert.equal(cycleContext(missing,now).previous.complete,false);assert.equal(defaultTroo(missing),null);
+ const zero=structuredClone(s);zero.platts.sessions.find(x=>x.date==='2026-11-04').values[0]=0;
+ assert.equal(cycleContext(zero,now).previous.values[0],null);assert.equal(defaultTroo(zero),null);
+});
+test('average windows follow confirmed repricing even with a stale forecast baseline',()=>{
+ const c=cycleContext(original,now);
+ assert.deepEqual([c.previous.from,c.previous.to,c.current.from,c.current.to],['2026-11-03','2026-11-05','2026-11-05','2026-11-11']);
+ const s=advanceCycle(original,now);s.pump.previous=structuredClone(s.pump);delete s.pump.previous.previous;
+ s.pump.effectiveAt='2026-11-10T22:00:00+07:00';
+ let n=cycleContext(s,Date.parse('2026-11-10T21:59:00+07:00'));assert.equal(n.from,'2026-11-05');
+ n=cycleContext(s,Date.parse('2026-11-10T22:00:00+07:00'));
+ assert.deepEqual([n.previous.from,n.previous.to,n.current.from,n.current.to],['2026-11-05','2026-11-10','2026-11-10','2026-11-11']);
+ s.pump.previous=structuredClone(s.pump);delete s.pump.previous.previous;s.pump.effectiveAt='2026-11-12T15:00:00+07:00';
+ n=cycleContext(s,Date.parse('2026-11-12T15:00:00+07:00'));
+ assert.deepEqual([n.previous.from,n.previous.to,n.current.from,n.current.to],['2026-11-10','2026-11-12','2026-11-12','2026-11-18']);
 });
