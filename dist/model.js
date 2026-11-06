@@ -1,3 +1,4 @@
+import {marketCalendar} from './market-calendar.js';
 export function historyRows(records){return [...records].sort((a,b)=>b.period.localeCompare(a.period)).slice(0,10);}
 export function differences(actual,pred){return actual?.length===3&&pred?.length===3&&actual.every(Number.isFinite)&&pred.every(Number.isFinite)?actual.map((v,i)=>v-pred[i]):null;}
 export function score(actual,pred){const d=differences(actual,pred);return d?d.reduce((a,v)=>a+Math.abs(v),0)/3:null;}
@@ -12,23 +13,35 @@ export function pumpValues(s){return pumpNames.map(name=>s.pump.items.find(x=>x[
 function vnDay(value){return value?new Date(value).toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}):null;}
 function businessDays(from,to){const out=[];if(!from||!to||from>=to)return out;for(let d=new Date(from+'T00:00:00Z');d.toISOString().slice(0,10)<to;d.setUTCDate(d.getUTCDate()+1)){if(d.getUTCDay()!==0&&d.getUTCDay()!==6)out.push(d.toISOString().slice(0,10));if(out.length>370)break;}return out;}
 function shiftDay(day,days){const d=new Date(day+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);}
+function priceEvents(s,now){
+ return [
+  {at:s.official?.effectiveAt,prices:s.official?.prices,cutoff:s.official?.marketCutoffDate},
+  {at:s.pump?.effectiveAt,prices:pumpValues(s),cutoff:s.pump?.marketCutoffDate},
+  ...(s.pump?.previous?[{at:s.pump.previous.effectiveAt,prices:pumpValues({...s,pump:s.pump.previous}),cutoff:s.pump.previous.marketCutoffDate}]:[]),
+  ...(s.history||[]).filter(x=>!x.isSample&&x.actual).map(x=>({at:x.effectiveAt||x.period+'T15:00:00+07:00',prices:x.actual,cutoff:x.marketCutoffDate}))
+ ].filter(x=>x.at&&Date.parse(x.at)<=Number(now)&&x.prices?.slice(0,3).every(Number.isFinite));
+}
+function previousThursday(day){return shiftDay(nextThursday(day),-7)===day?shiftDay(day,-7):shiftDay(nextThursday(day),-7);}
 export function cycleContext(s,now=Date.now()){
- // A confirmed price change starts a new observation window immediately.
- const event=latestPriceEvent(s,now),from=event.day||vnDay(s.forecast.baseEffectiveAt);
- const until=s.forecast.period>from?s.forecast.period:nextThursday(from);
- const prior=[...new Set([
-  ...(s.history||[]).filter(x=>!x.isSample&&x.actual&&Date.parse(x.effectiveAt||x.period+'T15:00:00+07:00')<=Number(now)).map(x=>x.period),
-  vnDay(s.official?.effectiveAt),vnDay(s.pump.previous?.effectiveAt),vnDay(s.forecast.baseEffectiveAt)
- ])].filter(x=>x&&x<from).sort().at(-1)??null;
+ const today=vnDay(now);
+ const cutoffs=[...new Set(priceEvents(s,now).map(x=>x.cutoff||marketCalendar.cutoffOverrides[x.at]||vnDay(x.at)))].sort();
+ // A session is used once: the closing day stays in the old window;
+ // the new window opens on the following VN calendar day, not at publication time.
+ const closed=cutoffs.filter(day=>day<today),last=closed.at(-1),before=closed.at(-2);
+ const anchor=previousThursday(last||cutoffs[0]||today);
+ const from=last?shiftDay(last,1):anchor;
+ const scheduled=s.forecast.period>from?s.forecast.period:nextThursday(last||from);
+ const announced=cutoffs.find(day=>day>=today&&day>=from);
+ const until=announced&&announced<=scheduled?shiftDay(announced,1):scheduled;
+ const prior=before?shiftDay(before,1):last?anchor:shiftDay(anchor,-7);
  function window(start,end){
   const expected=businessDays(start,shiftDay(end,1));
-  const sessions=[...new Map((s.platts.sessions||[]).filter(x=>start&&x.date>=start&&x.date<=end&&x.date<=vnDay(now)).map(x=>[x.date,x])).values()].sort((a,b)=>a.date.localeCompare(b.date));
+  const sessions=[...new Map((s.platts.sessions||[]).filter(x=>start&&x.date>=start&&x.date<=end&&x.date<=today).map(x=>[x.date,x])).values()].sort((a,b)=>a.date.localeCompare(b.date));
   const missingDates=expected.filter(date=>!sessions.some(x=>x.date===date));
   const values=visiblePlatts.map(name=>{const i=s.platts.items.findIndex(x=>x.name===name);const valid=sessions.map(x=>x.values[i]).filter(x=>Number.isFinite(x)&&x>0);return sessions.length&&valid.length===sessions.length?valid.reduce((a,b)=>a+b,0)/valid.length:null;});
   return {from:start,to:end,until:shiftDay(end,1),dates:sessions.map(x=>x.date),count:sessions.length,expected:expected.length,missingDates,complete:!!expected.length&&!missingDates.length,values};
  }
- // User convention: the repricing date belongs to both adjacent windows.
- return {from,until,prior,current:window(from,shiftDay(until,-1)),previous:window(prior,from)};
+ return {from,until,prior,current:window(from,shiftDay(until,-1)),previous:window(prior,shiftDay(from,-1))};
 }
 export function calculateTroo(p0,p1,fx,ratio,tax,nk0,nk1,env0,env1,vat,base){
  if(![p0,p1,fx,ratio,tax,nk0,nk1,env0,env1,vat,base].every(Number.isFinite)||base<=0)return null;
@@ -42,17 +55,14 @@ export function calculateTroo(p0,p1,fx,ratio,tax,nk0,nk1,env0,env1,vat,base){
 export function threshold(percent){return Number.isFinite(percent)?percent>=14?'increase':percent<=-9?'decrease':'within':null;}
 
 
-export function plattsChanges(s){const c=cycleContext(s);return visiblePlatts.map((name,i)=>({name,previous:c.previous.complete?c.previous.values[i]:null,current:c.current.values[i],percent:c.previous.complete&&Number.isFinite(c.previous.values[i])&&c.previous.values[i]>0&&Number.isFinite(c.current.values[i])?(c.current.values[i]/c.previous.values[i]-1)*100:null}));}
+export function plattsChanges(s,now=Date.now()){const c=cycleContext(s,now);return visiblePlatts.map((name,i)=>({name,previous:c.previous.complete?c.previous.values[i]:null,current:c.current.values[i],percent:c.previous.complete&&Number.isFinite(c.previous.values[i])&&c.previous.values[i]>0&&Number.isFinite(c.current.values[i])?(c.current.values[i]/c.previous.values[i]-1)*100:null}));}
 export function defaultTroo(s,now=Date.now()){const c=cycleContext(s,now),base=pumpValues(s);if(!c.previous.complete||!c.current.count)return null;const results=[.95,.90,1].map((ratio,i)=>calculateTroo(c.previous.values[i],c.current.values[i],26040,ratio,0,0,0,0,0,0,base[i]));if(results.some(x=>!x))return null;return {name:'T-Roo',period:s.forecast.period,deltas:results.map(x=>x.delta),prices:results.map(x=>x.price),currentDates:c.current.dates,previousDates:c.previous.dates};}
 
 // Confirmed price events, never wall-clock guesses, advance the market window.
 export function latestPriceEvent(s, now=Date.now()) {
- const events=[{at:s.official?.effectiveAt,prices:s.official?.prices},
-  {at:s.pump?.effectiveAt,prices:pumpValues(s)},
-  ...(s.history||[]).filter(x=>!x.isSample&&x.actual).map(x=>({at:x.effectiveAt||x.period+'T15:00:00+07:00',prices:x.actual}))]
-  .filter(x=>x.at&&Date.parse(x.at)<=Number(now)&&x.prices?.slice(0,3).every(Number.isFinite));
+ const events=priceEvents(s,now);
  events.sort((a,b)=>Date.parse(b.at)-Date.parse(a.at));
- const event=events[0];return {...event,day:vnDay(event.at)};
+ const event=events[0];return {...event,day:vnDay(event?.at)};
 }
 export function nextThursday(day){const d=new Date(day+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+((4-d.getUTCDay()+7)%7||7));return d.toISOString().slice(0,10);}
 export function advanceCycle(input,now=Date.now()){
@@ -65,6 +75,6 @@ export function advanceCycle(input,now=Date.now()){
  actual:null,lockedPredictions:{},capturedAt:fresh?.capturedAt??null,basisDate:fresh?.basisDate??null,
  pageUpdatedAt:fresh?.pageUpdatedAt??null,pageUpdatedKind:fresh?.pageUpdatedKind??null,
  sources:f.sources.map(x=>({name:x.name,deltas:[null,null,null,null],isSample:false,capturedAt:null,providedAt:null,baselineConfirmed:false}))};
- if(fresh){const row=s.forecast.sources.find(x=>x.name==='Chợ Giá');Object.assign(row,fresh,{name:'Chợ Giá',isSample:false,baselineConfirmed:true});delete s.pendingForecast;}
+ if(fresh){const row=s.forecast.sources.find(x=>x.name==='Chợ Giá');Object.assign(row,fresh,{name:'Chợ Giá',isSample:false,baselineConfirmed:fresh.basisDate>=cycleContext(s,now).from});delete s.pendingForecast;}
  return s;
 }

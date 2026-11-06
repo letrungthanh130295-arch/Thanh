@@ -9,7 +9,7 @@
 <section id="history"><div class="section-title"><h2>Độ chính xác dự báo</h2><span>10 kỳ gần nhất</span></div><article class="panel"><div class="table-wrap"><table><thead><tr><th>Kỳ</th><th>Giá thật E5 / E10 / DO</th><th>Dự kiến T-Roo</th><th>Sai lệch · MAE</th><th>Nguồn tốt nhất</th></tr></thead><tbody id="history-rows"></tbody></table></div></article></section>
 <div class="bottom">TRUNG THÀNH <span>Snapshot · giờ Việt Nam (UTC+7)</span></div></main>
 <script type="module">
-import {pumpValues,cycleContext,calculateTroo} from './model.js?v=average-20261106';
+import {pumpValues,cycleContext,calculateTroo} from './model.js?v=cutoff-20261106-2';
 const root=document.getElementById('troo');
 const fields=[['p0a','A92 bình quân kỳ trước · USD/thùng',null],['p0b','A95 bình quân kỳ trước · USD/thùng',null],['p0c','DO 0,05%S bình quân kỳ trước · USD/thùng',null],['p1a','A92 bình quân kỳ mới · USD/thùng',null],['p1b','A95 bình quân kỳ mới · USD/thùng',null],['p1c','DO 0,05%S bình quân kỳ mới · USD/thùng',null],['fx','FX bình quân · đ/USD',26040],['taxa','TTĐB E5 kỳ này · %',0],['taxb','TTĐB E10 kỳ này · %',0],['env0','BVMT kỳ trước · đ/lít',0],['env1','BVMT kỳ này · đ/lít',0],['nk0','Thuế NK kỳ trước · %',0],['nk1','Thuế NK kỳ này · %',0],['vat','VAT kỳ này · %',0],['basea','Giá mốc E5 tự động · đ/lít',null],['baseb','Giá mốc E10 tự động · đ/lít',null],['basec','Giá mốc DO tự động · đ/lít',null]];
 const inputs={};let snapshot=null;
@@ -28,6 +28,6 @@ function renderTroo(){
 }
 root.addEventListener('input',renderTroo);
 root.querySelector('[data-preset=current]').addEventListener('click',()=>{for(const key of ['taxa','taxb','env0','env1','nk0','nk1','vat'])inputs[key].value='0';renderTroo();});
-document.addEventListener('snapshot-loaded',event=>{snapshot=event.detail;const cycle=cycleContext(snapshot),base=pumpValues(snapshot);['a','b','c'].forEach((key,i)=>{inputs['base'+key].value=Number.isFinite(base[i])?String(base[i]):'';for(const [prefix,window] of [['p0',cycle.previous],['p1',cycle.current]]){const value=prefix==='p0'&&!window.complete?null:window.values[i];inputs[prefix+key].value=Number.isFinite(value)?String(Math.round(value*1e6)/1e6):'';}});document.getElementById('troo-origin').textContent='BQ kỳ trước '+day(cycle.previous.from)+'–'+day(cycle.previous.to)+' · BQ kỳ mới '+day(cycle.current.from)+'–'+day(cycle.current.to)+' · Ngày đổi giá được tính ở cả hai kỳ';renderTroo();});
+document.addEventListener('snapshot-loaded',event=>{snapshot=event.detail;const cycle=cycleContext(snapshot),base=pumpValues(snapshot);['a','b','c'].forEach((key,i)=>{inputs['base'+key].value=Number.isFinite(base[i])?String(base[i]):'';for(const [prefix,window] of [['p0',cycle.previous],['p1',cycle.current]]){const value=prefix==='p0'&&!window.complete?null:window.values[i];inputs[prefix+key].value=Number.isFinite(value)?String(Math.round(value*1e6)/1e6):'';}});document.getElementById('troo-origin').textContent='BQ kỳ trước '+day(cycle.previous.from)+'–'+day(cycle.previous.to)+' · BQ kỳ mới '+day(cycle.current.from)+'–'+day(cycle.current.to)+' · Ngày chốt thuộc kỳ cũ; kỳ mới bắt đầu ngày kế tiếp';renderTroo();});
 renderTroo();
-</script><script type="module" src="app.js?v=average-20261106"></script></body></html>
+</script><script type="module" src="app.js?v=cutoff-20261106-2"></script></body></html>
