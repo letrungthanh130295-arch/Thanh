@@ -24,16 +24,14 @@ function priceEvents(s,now){
 function previousThursday(day){return shiftDay(nextThursday(day),-7)===day?shiftDay(day,-7):shiftDay(nextThursday(day),-7);}
 export function cycleContext(s,now=Date.now()){
  const today=vnDay(now);
- const cutoffs=[...new Set(priceEvents(s,now).map(x=>x.cutoff||marketCalendar.cutoffOverrides[x.at]||vnDay(x.at)))].sort();
- // A session is used once: the closing day stays in the old window;
- // the new window opens on the following VN calendar day, not at publication time.
- const closed=cutoffs.filter(day=>day<today),last=closed.at(-1),before=closed.at(-2);
- const anchor=previousThursday(last||cutoffs[0]||today);
- const from=last?shiftDay(last,1):anchor;
- const scheduled=s.forecast.period>from?s.forecast.period:nextThursday(last||from);
- const announced=cutoffs.find(day=>day>=today&&day>=from);
- const until=announced&&announced<=scheduled?shiftDay(announced,1):scheduled;
- const prior=before?shiftDay(before,1):last?anchor:shiftDay(anchor,-7);
+ const starts=[...new Set(priceEvents(s,now).map(x=>marketCalendar.startDateOverrides[x.at]||vnDay(x.at)))].sort();
+ // A confirmed repricing opens the new window immediately. The Platts session
+ // on that date closes after publication and cannot explain the price just set.
+ // Windows are [start, next price-event date), never inclusive at both ends.
+ const from=starts.at(-1)||previousThursday(today);
+ const scheduled=nextThursday(from);
+ const until=s.forecast.period>from&&s.forecast.period<scheduled?s.forecast.period:scheduled;
+ const prior=starts.at(-2)||previousThursday(from);
  function window(start,end){
   const expected=businessDays(start,shiftDay(end,1));
   const sessions=[...new Map((s.platts.sessions||[]).filter(x=>start&&x.date>=start&&x.date<=end&&x.date<=today).map(x=>[x.date,x])).values()].sort((a,b)=>a.date.localeCompare(b.date));
