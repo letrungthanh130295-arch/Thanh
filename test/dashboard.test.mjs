@@ -34,28 +34,67 @@ test('Refresh fills only missing Platts and preserves populated prices',()=>{
  assert.equal(merged.items[1].value,incoming.items[1].value);
  assert.equal(new Set(merged.sessions.map(row=>row.date)).size,merged.sessions.length);
 });
-test('Refresh only calls Chợ Giá and leaves identical data byte-for-byte',async()=>{
+test('Refresh archives Chợ Giá and both crude series, with identical reruns byte-for-byte',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'thanh-test-'));
  try {
   const path=join(dir,'snapshot.json');
-  const initial=structuredClone(seed);initial.platts.isSample=true;await writeFile(path,JSON.stringify(initial));
+  const initial=structuredClone(seed);initial.platts.isSample=true;initial.wti.isSample=true;delete initial.wti.marketTime;await writeFile(path,JSON.stringify(initial));
   const urls=[];
-  const fetcher=async url=>{urls.push(url);return new Response(url.includes('singapore')?html:forecastHtml);};
+  const fetcher=async url=>{
+    urls.push(url);
+    if (url.includes('chogia.vn')) return new Response(url.includes('singapore')?html:forecastHtml);
+    const symbol=url.includes('CL=F')?'CL=F':'BZ=F';
+    return Response.json({chart:{result:[{meta:{...meta,symbol,regularMarketPrice:symbol==='CL=F'?96.33:101},
+      timestamp:[Date.parse('2026-11-02T13:00:00Z')/1000,Date.parse('2026-11-03T13:00:00Z')/1000],
+      indicators:{quote:[{close:[95,null]}]}}]}});
+  };
   assert.equal((await run({path,fetcher,now:new Date(now)})).changed,true);
   const before=await readFile(path,'utf8');
   assert.equal((await run({path,fetcher,now:new Date(Date.parse(now)+60000)})).changed,false);
   assert.equal(await readFile(path,'utf8'),before);
-  assert.equal(urls.length,4);
-  assert.ok(urls.every(url=>new URL(url).hostname==='chogia.vn'));
-  assert.deepEqual(JSON.parse(before).history,seed.history);
-  assert.deepEqual(JSON.parse(before).wti,seed.wti);
+  assert.equal(urls.length,8);
+  const saved=JSON.parse(before);
+  assert.deepEqual(saved.history,seed.history);
+  assert.deepEqual(saved.pump,seed.pump);
+  assert.equal(saved.forecastSnapshots.length,1);
+  assert.deepEqual(saved.forecastSnapshots[0].deltas,[-2940,-2790,-1380]);
+  assert.equal(saved.wti.price,96.33);
+  assert.equal(saved.brent.price,101);
+  assert.deepEqual(saved.wti.sessions.map(({date,price})=>[date,price]),[['2026-11-02',95]]);
+  const denied=await run({path,fetcher:async url=>url.includes('CL=F')?new Response(null,{status:403}):fetcher(url),now:new Date(now)});
+  assert.equal(denied.changed,false);
+  assert.equal(denied.snapshot.sources.wti.status,'error');
+  assert.deepEqual(denied.snapshot.wti,saved.wti);
  } finally { await rm(dir,{recursive:true,force:true}); }
 });
-test('Pages workflow refreshes only on dispatch and app displays three source columns',async()=>{
+test('Pages workflow has one six-slot cron and retains manual dispatch and three source columns',async()=>{
  const workflow=await readFile(new URL('../.github/workflows/snapshot.yml',import.meta.url),'utf8');
- assert.doesNotMatch(workflow,/cron:|schedule:/);
- assert.match(workflow,/if: github.event_name == 'workflow_dispatch'/);
+ const schedules=[...workflow.matchAll(/cron: '0 ([\d,]+) \* \* \*'/g)];
+ assert.equal(schedules.length,1);
+ assert.deepEqual(schedules[0][1].split(',').map(hour=>(+hour+7)%24).sort((a,b)=>a-b),[6,9,12,15,18,21]);
+ assert.match(workflow,/if: github.event_name == 'workflow_dispatch' \|\| github.event_name == 'schedule'/);
  const page=await readFile(new URL('../dist/index.html',import.meta.url),'utf8');
  assert.match(page,/<th>Sản phẩm<\/th><th>Chợ Giá .*<\/th><th>T-Roo .*<\/th><th>Người dùng /);
- assert.doesNotMatch(page,/WTI|wti-price/);
+ assert.match(page,/id="price-charts"/);
+});
+
+
+import {manualForecastDeltas,saveEntry} from '../dist/manual-prices.js';
+import {tradingDays} from '../dist/market-charts.js';
+
+test('Signed forecasts retain legacy absolute revisions and never infer a missing base',()=>{
+ const legacy={values:[20550,21320,28000],updatedAt:now,source:'Người dùng'};
+ const key='forecast:2026-11-05';
+ const entries={[key]:{...legacy,revisions:[legacy]}};
+ assert.deepEqual(manualForecastDeltas(legacy,[21000,21000,28000]),[-450,320,0]);
+ assert.deepEqual(manualForecastDeltas(legacy,null),[null,null,null]);
+ const next=saveEntry(entries,'forecast','2026-11-05',['-450','+320','0'],now);
+ assert.deepEqual(manualForecastDeltas(next[key],null),[-450,320,0]);
+ assert.deepEqual(next[key].revisions[0],legacy);
+ assert.equal(saveEntry(next,'forecast','2026-11-05',['−450','320','0'],now),next);
+});
+
+test('Chart dates retain missing weekdays and skip weekends without a quote',()=>{
+ const actual=new Map([['2026-11-06',100],['2026-11-10',101]]);
+ assert.deepEqual(tradingDays([actual],30),['2026-11-06','2026-11-09','2026-11-10']);
 });
