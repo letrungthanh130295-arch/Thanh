@@ -1,10 +1,61 @@
-import {readFile,writeFile,mkdir,rename,appendFile} from 'node:fs/promises';
+import {readFile, writeFile, rename} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {parsePlatts,parseForecast,parseWTI,PLATTS_URL,FORECAST_URL} from './parsers.mjs';
+import {parsePlatts, parseForecast, PLATTS_URL, FORECAST_URL} from './parsers.mjs';
 import {updateSnapshot} from './update.mjs';
-export async function request(url,type,fetcher=fetch){const r=await fetcher(url,{headers:{'User-Agent':'FuelDashboardSnapshot/0.2','Accept':type==='json'?'application/json':'text/html'},signal:AbortSignal.timeout(25000)});if(!r.ok)throw Error(`HTTP ${r.status} ${new URL(url).hostname}`);const body=await r.text();if(body.length>6_000_000)throw Error('Phản hồi quá lớn');return type==='json'?JSON.parse(body):body;}
-export async function yahoo(fetcher=fetch,now=new Date()){const failures=[];for(const host of ['query2','query1']){const url=`https://${host}.finance.yahoo.com/v8/finance/chart/CL=F`;try{return {...parseWTI(await request(url,'json',fetcher),now),sourceUrl:url};}catch(e){failures.push(`${host}: ${e.message}`);}}throw Error(failures.join('; '));}
-export async function run({path='dist/snapshot.json',fetcher=fetch,now=new Date()}={}){const old=JSON.parse(await readFile(path,'utf8'));const capture=async(fn)=>{try{return {value:await fn()};}catch(e){return {error:e.message};}};const [platts,forecast,wti]=await Promise.all([Promise.resolve({skip:true}),Promise.resolve({skip:true}),capture(()=>yahoo(fetcher,now))]);const result=updateSnapshot(old,{platts,forecast,wti},now.toISOString());await writeFile(path+'.tmp',JSON.stringify(result.snapshot,null,2)+'\n');await rename(path+'.tmp',path);await mkdir('.run',{recursive:true});await writeFile('.run/result.json',JSON.stringify({shouldDeploy:result.shouldDeploy,reasons:result.reasons,errors:result.errors,checkedAt:now.toISOString()},null,2));for(const err of result.errors)console.error('[SOURCE_ERROR] '+err);console.log(JSON.stringify({shouldDeploy:result.shouldDeploy,reasons:result.reasons,errors:result.errors}));if(process.env.GITHUB_OUTPUT)await appendFile(process.env.GITHUB_OUTPUT,`deploy=${result.shouldDeploy}\nerrors=${result.errors.length}\n`);if(process.env.GITHUB_STEP_SUMMARY)await appendFile(process.env.GITHUB_STEP_SUMMARY,`## Snapshot ${now.toISOString()}\nDeploy: ${result.shouldDeploy}\nLý do: ${result.reasons.join(', ')||'WTI nhỏ / dữ liệu không đổi'}\n${result.errors.map(e=>'- '+e).join('\n')}\n`);return result;}
-if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href)await run();
 
+async function readSource(url, parse, fetcher) {
+  try {
+    const response = await fetcher(url, {headers:{Accept:'text/html'}, signal:AbortSignal.timeout(25000)});
+    if (!response.ok) throw Error('HTTP ' + response.status);
+    const body = await response.text();
+    if (body.length > 6_000_000) throw Error('Phản hồi quá lớn');
+    return {value: parse(body)};
+  } catch (error) {
+    return {error: error.message};
+  }
+}
+
+export function fillMissingPlatts(old, incoming) {
+  const sessions = new Map((old.sessions ?? []).map(row => [row.date, row]));
+  for (const [date, key] of [[old.date, 'value'], [old.previousDate, 'previous']]) {
+    if (date && !sessions.has(date)) sessions.set(date, {date, values:old.items.map(item => item[key])});
+  }
+  for (const row of incoming.sessions) {
+    const stored = sessions.get(row.date);
+    const values = row.values.map((price, i) => stored?.values[i] || price);
+    sessions.set(row.date, {...row, ...stored, values});
+  }
+  const ordered = [...sessions.values()].sort((a,b) => b.date.localeCompare(a.date));
+  const [current, previous] = ordered;
+  return {...old, date:current.date, previousDate:previous?.date ?? null, sessions:ordered,
+    pageUpdatedAt:incoming.pageUpdatedAt, pageUpdatedKind:incoming.pageUpdatedKind,
+    sourceUrl:incoming.sourceUrl,
+    items:old.items.map((item,i) => ({...item,value:current.values[i],previous:previous?.values[i] ?? null}))};
+}
+
+export async function run({path='dist/snapshot.json', fetcher=fetch, now=new Date()}={}) {
+  const old = JSON.parse(await readFile(path,'utf8'));
+  const [platts, forecast] = await Promise.all([
+    readSource(PLATTS_URL, parsePlatts, fetcher),
+    readSource(FORECAST_URL, parseForecast, fetcher)
+  ]);
+  if (platts.value) platts.value = fillMissingPlatts(old.platts, platts.value);
+  const result = updateSnapshot(old, {platts, forecast, wti:{skip:true}}, now.toISOString());
+  for (const error of result.errors) console.error(error);
+  if (result.errors.length === 2) throw Error('Không đọc được hai nguồn Chợ Giá.');
+  const numbers = value => JSON.stringify((value.sessions ?? []).map(({date,values})=>[date,values]));
+  const publishedForecast = value => {
+    const source = value.forecast.sources.find(row => row.name === 'Chợ Giá');
+    return JSON.stringify([source?.period, source?.basisDate, source?.deltas, value.pendingForecast?.basisDate]);
+  };
+  const changed = result.shouldDeploy || publishedForecast(old) !== publishedForecast(result.snapshot) || (!result.errors.some(error=>error.startsWith('platts:')) &&
+    numbers(old.platts) !== numbers(result.snapshot.platts));
+  if (changed) {
+    await writeFile(path+'.tmp', JSON.stringify(result.snapshot,null,2)+'\n');
+    await rename(path+'.tmp',path);
+  }
+  return {...result, changed};
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) await run();
