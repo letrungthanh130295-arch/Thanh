@@ -1,12 +1,12 @@
 import {readFile, writeFile, rename} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {parsePlatts, parseForecast, PLATTS_URL, FORECAST_URL} from './parsers.mjs';
+import {parsePlatts, parseForecast, parseCrude, PLATTS_URL, FORECAST_URL} from './parsers.mjs';
 import {updateSnapshot} from './update.mjs';
 
-async function readSource(url, parse, fetcher) {
+async function readSource(url, parse, fetcher, accept='text/html') {
   try {
-    const response = await fetcher(url, {headers:{Accept:'text/html'}, signal:AbortSignal.timeout(25000)});
+    const response = await fetcher(url, {headers:{Accept:accept}, signal:AbortSignal.timeout(25000)});
     if (!response.ok) throw Error('HTTP ' + response.status);
     const body = await response.text();
     if (body.length > 6_000_000) throw Error('Phản hồi quá lớn');
@@ -14,6 +14,17 @@ async function readSource(url, parse, fetcher) {
   } catch (error) {
     return {error: error.message};
   }
+}
+
+async function yahoo(symbol, fetcher, now) {
+  const errors = [];
+  for (const host of ['query2','query1']) {
+    const url = 'https://'+host+'.finance.yahoo.com/v8/finance/chart/'+symbol+'?interval=1d&range=3mo';
+    const result = await readSource(url, body => ({...parseCrude(JSON.parse(body),symbol,now),sourceUrl:url}), fetcher,'application/json');
+    if (result.value) return result;
+    errors.push(host+': '+result.error);
+  }
+  return {error:errors.join('; ')};
 }
 
 export function fillMissingPlatts(old, incoming) {
@@ -36,20 +47,24 @@ export function fillMissingPlatts(old, incoming) {
 
 export async function run({path='dist/snapshot.json', fetcher=fetch, now=new Date()}={}) {
   const old = JSON.parse(await readFile(path,'utf8'));
-  const [platts, forecast] = await Promise.all([
+  const [platts, forecast, wti, brent] = await Promise.all([
     readSource(PLATTS_URL, parsePlatts, fetcher),
-    readSource(FORECAST_URL, parseForecast, fetcher)
+    readSource(FORECAST_URL, parseForecast, fetcher),
+    yahoo('CL=F', fetcher, now),
+    yahoo('BZ=F', fetcher, now)
   ]);
   if (platts.value) platts.value = fillMissingPlatts(old.platts, platts.value);
-  const result = updateSnapshot(old, {platts, forecast, wti:{skip:true}}, now.toISOString());
+  const result = updateSnapshot(old, {platts, forecast, wti, brent}, now.toISOString());
   for (const error of result.errors) console.error(error);
-  if (result.errors.length === 2) throw Error('Không đọc được hai nguồn Chợ Giá.');
+  if (result.errors.length === 4) throw Error('Không đọc được dữ liệu từ cả bốn nguồn.');
   const numbers = value => JSON.stringify((value.sessions ?? []).map(({date,values})=>[date,values]));
   const publishedForecast = value => {
     const source = value.forecast.sources.find(row => row.name === 'Chợ Giá');
-    return JSON.stringify([source?.period, source?.basisDate, source?.deltas, value.pendingForecast?.basisDate]);
+    return JSON.stringify([source?.period, source?.basisDate, source?.deltas, value.pendingForecast?.period, value.pendingForecast?.basisDate, value.pendingForecast?.deltas]);
   };
-  const changed = result.shouldDeploy || publishedForecast(old) !== publishedForecast(result.snapshot) || (!result.errors.some(error=>error.startsWith('platts:')) &&
+  const crudeData = quote => JSON.stringify([quote?.marketTime,quote?.price,quote?.sessions?.map(({date,price})=>[date,price])]);
+  const crudeChanged = ['wti','brent'].some(key=>crudeData(old[key]) !== crudeData(result.snapshot[key]));
+  const changed = crudeChanged || result.shouldDeploy || publishedForecast(old) !== publishedForecast(result.snapshot) || (!result.errors.some(error=>error.startsWith('platts:')) &&
     numbers(old.platts) !== numbers(result.snapshot.platts));
   if (changed) {
     await writeFile(path+'.tmp', JSON.stringify(result.snapshot,null,2)+'\n');

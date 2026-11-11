@@ -1,5 +1,7 @@
 name: Dashboard giá xăng dầu
 on:
+  schedule:
+    - cron: '0 2,5,8,11,14,23 * * *' # 06:00, 09:00, 12:00, 15:00, 18:00, 21:00 ICT
   workflow_dispatch:
   push:
     branches: [main]
@@ -26,8 +28,8 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm test
-      - name: Lấy Chợ Giá theo yêu cầu
-        if: github.event_name == 'workflow_dispatch'
+      - name: Lấy Chợ Giá và dầu thô
+        if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
         id: refresh
         run: |
           set -euo pipefail
@@ -41,7 +43,7 @@ jobs:
               exit 0
             fi
             git add dist/snapshot.json
-            git commit -m "data: làm mới Chợ Giá"
+            git commit -m "data: cập nhật snapshot thị trường"
             if git push origin HEAD:main; then
               echo "changed=true" >> "$GITHUB_OUTPUT"
               exit 0

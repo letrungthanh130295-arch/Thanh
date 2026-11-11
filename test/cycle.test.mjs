@@ -721,5 +721,5 @@ test('Manual edits are dated, auditable and override only entered products',()=>
  assert.deepEqual(defaultTroo(result,now),defaultTroo(withManualPlatts(snapshot,edited),now));
  assert.deepEqual(result.history,snapshot.history);
  assert.throws(()=>saveEntry({},'platts','2026-11-31',['0','','',''],at));
- assert.throws(()=>saveEntry({},'forecast','2026-11-12',['0','',''],at));
+ assert.equal(saveEntry({},'forecast','2026-11-12',['0','',''],at)['forecast:2026-11-12'].values[0],0);
 });

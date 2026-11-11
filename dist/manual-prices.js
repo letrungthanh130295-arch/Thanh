@@ -13,16 +13,18 @@ export function saveEntry(entries, kind, day, fields, at) {
   const values = fields.map(field => {
     const value = String(field ?? '').trim().replace(',', '.');
     if (!value) return null;
-    const pattern = kind === 'platts' ? /^\d+(\.\d{1,3})?$/ : /^\d+$/;
-    if (!pattern.test(value) || Number(value) <= 0 || Number(value) > 100000)
-      throw Error('Nhập giá lớn hơn 0 hoặc để trống.');
-    return Number(value);
+    const pattern = kind === 'platts' ? /^\d+(\.\d{1,3})?$/ : /^[+−-]?\d+$/;
+    const amount = Number(value.replace('−', '-'));
+    if (!pattern.test(value) || Math.abs(amount) > 100000 || (kind === 'platts' && amount <= 0))
+      throw Error(kind === 'platts' ? 'Nhập giá lớn hơn 0 hoặc để trống.' : 'Nhập mức tăng/giảm bằng số nguyên, hoặc để trống.');
+    return amount;
   });
   const key = kind + ':' + day;
   const previous = entries[key];
-  if (JSON.stringify(previous?.values) === JSON.stringify(values)) return entries;
+  const format = kind === 'forecast' ? 'delta-vnd-per-litre' : undefined;
+  if (previous?.format === format && JSON.stringify(previous?.values) === JSON.stringify(values)) return entries;
   if (!previous && values.every(value => value === null)) throw Error('Nhập ít nhất một giá.');
-  const revision = {values, updatedAt: at, source: 'Người dùng'};
+  const revision = {values, updatedAt: at, source: 'Người dùng', ...(format && {format})};
   return {...entries, [key]: {...revision, revisions: [...(previous?.revisions ?? []), revision]}};
 }
 
@@ -46,4 +48,13 @@ export function withManualPlatts(snapshot, entries) {
   return {...snapshot, platts: {...platts, sessions, date: current.date,
     previousDate: previous?.date ?? null, manualUpdatedAt: current.manualUpdatedAt,
     items: platts.items.map((item, i) => ({...item, value: current.values[i], previous: previous?.values[i] ?? null}))}};
+}
+
+// Untagged browser records from v1 are projected retail prices.
+export function manualForecastDeltas(entry, base) {
+  return entry?.values.map((price, i) => {
+    if (!Number.isFinite(price)) return null;
+    if (entry.format === 'delta-vnd-per-litre') return price;
+    return Number.isFinite(base?.[i]) ? price - base[i] : null;
+  });
 }

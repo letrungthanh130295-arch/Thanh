@@ -1,5 +1,6 @@
-import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts} from './manual-prices.js?v=1';
-import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold,illustrative} from './model.js?v=manual-20261111';
+import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts, manualForecastDeltas} from './manual-prices.js?v=2';
+import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold} from './model.js?v=manual-20261111';
+import {renderMarket} from './market-charts.js?v=2';
 const $=id=>document.getElementById(id);
 const num=(v,d=0)=>Number.isFinite(v)?new Intl.NumberFormat('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v):'—';
 const sign=(v,d=0)=>Number.isFinite(v)?(v<0?'−':v>0?'+':'')+num(Math.abs(v),d):'—';
@@ -33,14 +34,16 @@ function render(s){
  const cho=s.forecast.sources.find(x=>x.name==='Chợ Giá');
  const entered=entries['forecast:'+s.forecast.period];
  const legacy=s.forecast.sources.find(x=>x.name==='User cung cấp');
- const base=s.forecast.base;
- const projected=source=>base.slice(0,3).map((value,i)=>source?.prices?.[i]??illustrative(value,source?.deltas?.[i]));
+ const choDeltas=cho?.period&&cho.period!==s.forecast.period?[]:cho?.deltas;
+ const userDeltas=entered?manualForecastDeltas(entered,s.forecast.base):legacy?.deltas;
  $('cho-time').textContent=date(cho?.capturedAt);
  $('troo-time').textContent=auto?date(lastCalculation):'—';
  $('user-time').textContent=date(entered?.updatedAt??legacy?.capturedAt);
- const choPrices=cho?.period&&cho.period!==s.forecast.period?[]:projected(cho);
- const userPrices=entered?.values??projected(legacy);
- for(const i of [1,0,2])row('forecast-rows',[forecastProducts[i],num(choPrices[i]),num(auto?.prices[i]),num(userPrices[i])]);
+ for(const i of [1,0,2]){
+   const changes=[choDeltas?.[i],auto?.deltas[i],userDeltas?.[i]];
+   const tr=row('forecast-rows',[forecastProducts[i],...changes.map(v=>Number.isFinite(v)?sign(v)+' đ/lít':'—')]);
+   changes.forEach((value,index)=>{tr.cells[index+1].className=tone(value);});
+ }
  $('troo-window').textContent='T-Roo · '+range(c)+' · '+c.count+'/'+c.expected+' phiên'+(!auto?' · Chưa đủ dữ liệu kỳ mới':' · FX 26.040 · thuế hiện hành');
  $('pending-forecast').textContent=s.pendingForecast?'Đã có bản tin kỳ '+day(s.pendingForecast.period)+', chờ xác nhận chuyển kỳ.':'';
  for(const x of historyRows(s.history)){const pred=x.predictions['T-Roo'];row('history-rows',[day(x.period)+(x.isSample?' · mẫu':''),x.actual?x.actual.map(v=>num(v)).join(' / '):'—',pred?pred.map(v=>num(v)).join(' / '):'—',num(score(x.actual,pred),1),bestSources(x).join(', ')||'—']);}
@@ -59,6 +62,7 @@ function showSnapshot() {
   lastCalculation = new Date().toISOString();
   const data = withManualPlatts(advanceCycle(snapshot), entries);
   render(data);
+ renderMarket(data);
   document.dispatchEvent(new CustomEvent('snapshot-loaded',{detail:data}));
 }
 
@@ -66,18 +70,23 @@ function populateForm() {
   const isPlatts = kind.value === 'platts';
   const products = isPlatts ? manualProducts : forecastProducts;
   const entry = entries[kind.value + ':' + entryDay.value];
+  const forecast = advanceCycle(snapshot).forecast;
+  const values = isPlatts ? entry?.values : manualForecastDeltas(entry, entryDay.value === forecast.period ? forecast.base : null);
+  $('entry-hint').textContent = !isPlatts && entry && !entry.format && entryDay.value !== forecast.period
+    ? 'Kỳ cũ thiếu giá mốc. Giá tuyệt đối vẫn còn trong lịch sử chỉnh sửa.' : '';
   $('entry-date-label').textContent = isPlatts ? 'Ngày phiên' : 'Ngày điều hành dự kiến';
   $('entry-fields').replaceChildren(...products.map((name, i) => {
-    const label = el('label', name + (isPlatts ? ' · USD/thùng' : ' · đồng/lít'));
+    const label = el('label', name + (isPlatts ? ' · USD/thùng' : ' · Tăng/giảm (đ/lít)'));
     const input = document.createElement('input');
     input.name = 'price-' + i;
-    input.inputMode = isPlatts ? 'decimal' : 'numeric';
-    input.value = entry?.values[i] ?? '';
+    input.inputMode = isPlatts ? 'decimal' : 'text';
+    input.value = values?.[i] ?? '';
     label.append(input);
     return label;
   }));
   $('entry-history').replaceChildren(...(entry?.revisions ?? []).slice().reverse().map(revision =>
-    el('li', date(revision.updatedAt) + ' · ' + products.map((name,i)=>name+' '+(revision.values[i]??'—')).join(' · '))
+    el('li', date(revision.updatedAt) + (!isPlatts && !revision.format ? ' · Giá tuyệt đối · ' : ' · ') +
+      products.map((name,i)=>name+' '+(revision.format ? sign(revision.values[i]) : revision.values[i]??'—')).join(' · '))
   ));
   $('entry-error').textContent = '';
 }
@@ -134,7 +143,7 @@ try {
 }
 $('reload').addEventListener('click', () => {
   window.open(workflow, '_blank', 'noopener,noreferrer');
-  $('status').textContent = 'Chọn Run workflow trên GitHub để lấy Chợ Giá. Quay lại sau khi GitHub Pages xuất bản.';
+  $('status').textContent = 'Chọn Run workflow trên GitHub để lấy Chợ Giá, Brent và WTI. Quay lại sau khi GitHub Pages xuất bản.';
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
 load();
