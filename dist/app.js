@@ -1,4 +1,5 @@
-import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold} from './model.js?v=session-20261106-3';
+import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts} from './manual-prices.js?v=1';
+import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold,illustrative} from './model.js?v=manual-20261111';
 const $=id=>document.getElementById(id);
 const num=(v,d=0)=>Number.isFinite(v)?new Intl.NumberFormat('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v):'—';
 const sign=(v,d=0)=>Number.isFinite(v)?(v<0?'−':v>0?'+':'')+num(Math.abs(v),d):'—';
@@ -17,32 +18,123 @@ function render(s){
  const range=w=>w.from&&w.to?day(w.from)+'–'+day(w.to):'—';
  $('cycle-context').textContent='Kỳ mới '+range(c)+' · '+c.count+'/'+c.expected+' phiên';
  $('average-period').textContent='BQ kỳ trước '+range(prev)+' · BQ kỳ mới '+range(c)+(c.count?' · Đã có số liệu đến '+day(c.dates.at(-1)):' · Chưa có phiên kỳ mới');
- $('platts-time').textContent='Chốt '+day(s.platts.date)+' · lấy số '+date(s.platts.capturedAt)+' · nguồn cập nhật '+date(s.platts.pageUpdatedAt);
+ $('platts-time').textContent='Chốt '+day(s.platts.date)+' · lấy số '+date(s.platts.capturedAt)+' · nguồn cập nhật '+date(s.platts.pageUpdatedAt)+(s.platts.manualUpdatedAt?' · Người dùng '+date(s.platts.manualUpdatedAt):'');
  const changes=plattsChanges(s),alerts=[];
  visiblePlatts.forEach((name,i)=>{const x=s.platts.items.find(x=>x.name===name),change=changes[i];const label=name==='DO 10ppm'?'DO 0,001S · 10ppm':name;const tr=row('platts-rows',[label,num(x?.value===0?null:x?.value,2),num(change.previous,3),num(change.current,3),Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—']);tr.lastElementChild.className=tone(change.percent);const box=el('div','');box.append(el('span',label),el('strong',Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—',tone(change.percent)));$('threshold-estimates').append(box);if(['increase','decrease'].includes(threshold(change.percent)))alerts.push(label+' '+sign(change.percent,2)+'%');});
  $('threshold-status').dataset.trigger=String(!!alerts.length);
  $('threshold-status').textContent=!c.count?'Chưa có phiên Platts kỳ mới để tính biến động':alerts.length?'Cảnh báo Platts · '+alerts.join(' · '):'Platts chưa tới ngưỡng cảnh báo sớm';
  $('threshold-note').textContent=c.missingDates.length?'Chưa có phiên '+c.missingDates.map(day).join(', '):'Giảm từ 9% / tăng từ 14% · chỉ báo sớm';
- $('wti-price').textContent=num(s.wti.price,2);const wtiChange=Number.isFinite(s.wti.previous?.price)?s.wti.price-s.wti.previous.price:null;$('wti-change').textContent=sign(wtiChange,2)+' USD so lần trước';$('wti-change').className=tone(wtiChange);$('wti-time').textContent='Lấy số '+date(s.wti.capturedAt);$('wti-market-time').textContent='Giao dịch '+date(s.wti.marketTime);
  $('forecast-title').textContent='Dự kiến kỳ '+day(s.forecast.period);
- $('forecast-time').textContent='Chợ Giá · thành phẩm '+day(s.forecast.basisDate)+' · lấy số '+date(s.forecast.capturedAt);
+ $('forecast-time').textContent='Chợ Giá · thành phẩm '+day(s.forecast.basisDate);
  const outdated=!!s.forecast.basisDate&&s.forecast.basisDate<c.from;
  $('forecast-basis').textContent=outdated?'Chợ Giá đang dùng thành phẩm '+day(s.forecast.basisDate)+', trước kỳ theo dõi mới '+range(c)+'. Chưa dùng để xác nhận dự báo kỳ mới.':'';$('forecast-basis').hidden=!outdated;
  const forecastPump=s.pump.previous&&s.pump.effectiveAt.slice(0,10)>=s.forecast.period?s.pump.previous:s.pump;
- const forecastBase=pumpValues({...s,pump:forecastPump});
  const auto=defaultTroo({...s,pump:forecastPump});
- const forecasts=s.forecast.sources.map(stored=>stored.name==='T-Roo'?(stored.period===s.forecast.period&&stored.basisDate>=c.from&&stored.deltas.slice(0,3).every(Number.isFinite)?stored:(auto||{name:'T-Roo',deltas:[null,null,null]})):stored).filter(x=>x&&(x.name==='T-Roo'||x.deltas.slice(0,3).some(Number.isFinite)));
- const head=$('forecast-table').tHead;head.replaceChildren();const header=document.createElement('tr');['Mặt hàng',...forecasts.map(x=>x.name),'Giá thật'].forEach(name=>header.append(el('th',name)));head.append(header);
- ['E5','E10 RON 95-III','DO 0,05S'].forEach((name,i)=>{const tr=row('forecast-rows',[name,...forecasts.map(x=>{const v=x.deltas[i];return Number.isFinite(v)?sign(v)+' → '+num(x.prices?.[i]??(forecastBase[i]+v)):'—';}),num(s.forecast.actual?.[i])]);forecasts.forEach((x,j)=>tr.children[j+1].className=tone(x.deltas[i]));});
+ const cho=s.forecast.sources.find(x=>x.name==='Chợ Giá');
+ const entered=entries['forecast:'+s.forecast.period];
+ const legacy=s.forecast.sources.find(x=>x.name==='User cung cấp');
+ const base=s.forecast.base;
+ const projected=source=>base.slice(0,3).map((value,i)=>source?.prices?.[i]??illustrative(value,source?.deltas?.[i]));
+ $('cho-time').textContent=date(cho?.capturedAt);
+ $('troo-time').textContent=auto?date(lastCalculation):'—';
+ $('user-time').textContent=date(entered?.updatedAt??legacy?.capturedAt);
+ const choPrices=cho?.period&&cho.period!==s.forecast.period?[]:projected(cho);
+ const userPrices=entered?.values??projected(legacy);
+ for(const i of [1,0,2])row('forecast-rows',[forecastProducts[i],num(choPrices[i]),num(auto?.prices[i]),num(userPrices[i])]);
  $('troo-window').textContent='T-Roo · '+range(c)+' · '+c.count+'/'+c.expected+' phiên'+(!auto?' · Chưa đủ dữ liệu kỳ mới':' · FX 26.040 · thuế hiện hành');
  $('pending-forecast').textContent=s.pendingForecast?'Đã có bản tin kỳ '+day(s.pendingForecast.period)+', chờ xác nhận chuyển kỳ.':'';
  for(const x of historyRows(s.history)){const pred=x.predictions['T-Roo'];row('history-rows',[day(x.period)+(x.isSample?' · mẫu':''),x.actual?x.actual.map(v=>num(v)).join(' / '):'—',pred?pred.map(v=>num(v)).join(' / '):'—',num(score(x.actual,pred),1),bestSources(x).join(', ')||'—']);}
- for(const [key,title] of [['platts','Platts'],['forecast','Chợ Giá'],['wti','WTI']]){const source=s.sources?.[key];if(source?.status==='error')$('source-errors').append(el('p',title+': '+source.error+' · giữ số cũ','warning'));}
- $('sample-banner').hidden=!(s.platts.isSample||s.wti.isSample||s.forecast.sources.some(x=>x.isSample));$('sample-banner').textContent='Có dữ liệu mẫu';
+ for(const [key,title] of [['platts','Platts'],['forecast','Chợ Giá']]){const source=s.sources?.[key];if(source?.status==='error')$('source-errors').append(el('p',title+': '+source.error+' · giữ số cũ','warning'));}
+ $('sample-banner').hidden=!(s.platts.isSample||s.forecast.sources.some(x=>x.isSample));$('sample-banner').textContent='Có dữ liệu mẫu';
 }
-async function load(){const b=$('reload');b.disabled=true;try{const r=await fetch('./snapshot.json',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const s=advanceCycle(validate(await r.json()));render(s);document.dispatchEvent(new CustomEvent('snapshot-loaded',{detail:s}));$('status').textContent='';}catch(e){$('status').textContent='Chưa tải được snapshot · '+e.message;}finally{b.disabled=false;}}
-$('reload').addEventListener('click',load);load();
+let snapshot;
+let entries = {};
+let lastCalculation;
+const form = $('price-form');
+const dialog = $('price-dialog');
+const {kind, day: entryDay} = form.elements;
+const workflow = 'https://github.com/letrungthanh130295-arch/Thanh/actions/workflows/snapshot.yml';
 
-// Re-read published snapshots while the dashboard stays open.
-setInterval(()=>{if(!document.hidden&&!$('reload').disabled)load();},5*60*1000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('reload').disabled)load();});
+function showSnapshot() {
+  lastCalculation = new Date().toISOString();
+  const data = withManualPlatts(advanceCycle(snapshot), entries);
+  render(data);
+  document.dispatchEvent(new CustomEvent('snapshot-loaded',{detail:data}));
+}
+
+function populateForm() {
+  const isPlatts = kind.value === 'platts';
+  const products = isPlatts ? manualProducts : forecastProducts;
+  const entry = entries[kind.value + ':' + entryDay.value];
+  $('entry-date-label').textContent = isPlatts ? 'Ngày phiên' : 'Ngày điều hành dự kiến';
+  $('entry-fields').replaceChildren(...products.map((name, i) => {
+    const label = el('label', name + (isPlatts ? ' · USD/thùng' : ' · đồng/lít'));
+    const input = document.createElement('input');
+    input.name = 'price-' + i;
+    input.inputMode = isPlatts ? 'decimal' : 'numeric';
+    input.value = entry?.values[i] ?? '';
+    label.append(input);
+    return label;
+  }));
+  $('entry-history').replaceChildren(...(entry?.revisions ?? []).slice().reverse().map(revision =>
+    el('li', date(revision.updatedAt) + ' · ' + products.map((name,i)=>name+' '+(revision.values[i]??'—')).join(' · '))
+  ));
+  $('entry-error').textContent = '';
+}
+
+$('edit-prices').addEventListener('click', () => {
+  if (!snapshot) return;
+  kind.value = 'platts';
+  entryDay.value = snapshot.platts.date;
+  populateForm();
+  dialog.showModal();
+});
+kind.addEventListener('change', () => {
+  entryDay.value = kind.value === 'platts' ? snapshot.platts.date : advanceCycle(snapshot).forecast.period;
+  populateForm();
+});
+entryDay.addEventListener('change', populateForm);
+$('close-prices').addEventListener('click', () => dialog.close());
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  try {
+    const current = JSON.parse(localStorage.getItem(storageKey) ?? '{}');
+    const values = [...$('entry-fields').querySelectorAll('input')].map(input => input.value);
+    const next = saveEntry(current, kind.value, entryDay.value, values, new Date().toISOString());
+    if (next !== current) localStorage.setItem(storageKey, JSON.stringify(next));
+    entries = next;
+    populateForm();
+    showSnapshot();
+    dialog.close();
+  } catch (error) {
+    $('entry-error').textContent = error.message;
+  }
+});
+window.addEventListener('storage', event => {
+  if (event.key === storageKey && snapshot) {
+    entries = JSON.parse(event.newValue ?? '{}');
+    showSnapshot();
+  }
+});
+
+async function load() {
+  try {
+    const response = await fetch('./snapshot.json',{cache:'no-store'});
+    if (!response.ok) throw Error('HTTP ' + response.status);
+    snapshot = validate(await response.json());
+    showSnapshot();
+  } catch (error) {
+    $('status').textContent = 'Chưa tải được snapshot · ' + error.message;
+  }
+}
+try {
+  entries = JSON.parse(localStorage.getItem(storageKey) ?? '{}');
+} catch {
+  $('status').textContent = 'Không đọc được giá đã lưu trên trình duyệt.';
+}
+$('reload').addEventListener('click', () => {
+  window.open(workflow, '_blank', 'noopener,noreferrer');
+  $('status').textContent = 'Chọn Run workflow trên GitHub để lấy Chợ Giá. Quay lại sau khi GitHub Pages xuất bản.';
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+load();

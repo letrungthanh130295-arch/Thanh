@@ -7,7 +7,7 @@ export function illustrative(base,delta){return Number.isFinite(base)&&Number.is
 
 
 // UI projections only: keep the full snapshot and official records untouched.
-export const visiblePlatts=['A92','A95','DO 0,05%S','DO 10ppm'];
+export const visiblePlatts=['A92','A95','DO 0,05%S','DO 10ppm','DO 50ppm'];
 export const pumpNames=['E5 RON 92-II','E10 RON 95-III','DO 0,05S-II','DO 0,001S-V'];
 export function pumpValues(s){return pumpNames.map(name=>s.pump.items.find(x=>x[0]===name)?.[1]??null);}
 function vnDay(value){return value?new Date(value).toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}):null;}
@@ -36,8 +36,11 @@ export function cycleContext(s,now=Date.now()){
   const expected=businessDays(start,shiftDay(end,1));
   const sessions=[...new Map((s.platts.sessions||[]).filter(x=>start&&x.date>=start&&x.date<=end&&x.date<=today).map(x=>[x.date,x])).values()].sort((a,b)=>a.date.localeCompare(b.date));
   const missingDates=expected.filter(date=>!sessions.some(x=>x.date===date));
-  const values=visiblePlatts.map(name=>{const i=s.platts.items.findIndex(x=>x.name===name);const valid=sessions.map(x=>x.values[i]).filter(x=>Number.isFinite(x)&&x>0);return sessions.length&&valid.length===sessions.length?valid.reduce((a,b)=>a+b,0)/valid.length:null;});
-  return {from:start,to:end,until:shiftDay(end,1),dates:sessions.map(x=>x.date),count:sessions.length,expected:expected.length,missingDates,complete:!!expected.length&&!missingDates.length,values};
+  const average=prices=>prices.length&&prices.every(v=>Number.isFinite(v)&&v>0)?prices.reduce((a,b)=>a+b,0)/prices.length:null;
+  const prices=name=>{const i=s.platts.items.findIndex(x=>x.name===name);return sessions.map(x=>x.values[i]);};
+  const values=visiblePlatts.map(name=>average(prices(name)));
+  const trooValues=[...values.slice(0,2),average(prices('DO 0,05%S').map((value,i)=>sessions[i].manualDiesel??value))];
+  return {from:start,to:end,until:shiftDay(end,1),dates:sessions.map(x=>x.date),count:sessions.length,expected:expected.length,missingDates,complete:!!expected.length&&!missingDates.length,values,trooValues};
  }
  return {from,until,prior,current:window(from,shiftDay(until,-1)),previous:window(prior,shiftDay(from,-1))};
 }
@@ -54,7 +57,7 @@ export function threshold(percent){return Number.isFinite(percent)?percent>=14?'
 
 
 export function plattsChanges(s,now=Date.now()){const c=cycleContext(s,now);return visiblePlatts.map((name,i)=>({name,previous:c.previous.complete?c.previous.values[i]:null,current:c.current.values[i],percent:c.previous.complete&&Number.isFinite(c.previous.values[i])&&c.previous.values[i]>0&&Number.isFinite(c.current.values[i])?(c.current.values[i]/c.previous.values[i]-1)*100:null}));}
-export function defaultTroo(s,now=Date.now()){const c=cycleContext(s,now),base=pumpValues(s);if(!c.previous.complete||!c.current.count)return null;const results=[.95,.90,1].map((ratio,i)=>calculateTroo(c.previous.values[i],c.current.values[i],26040,ratio,0,0,0,0,0,0,base[i]));if(results.some(x=>!x))return null;return {name:'T-Roo',period:s.forecast.period,deltas:results.map(x=>x.delta),prices:results.map(x=>x.price),currentDates:c.current.dates,previousDates:c.previous.dates};}
+export function defaultTroo(s,now=Date.now()){const c=cycleContext(s,now),base=pumpValues(s);if(!c.previous.complete||!c.current.count)return null;const results=[.95,.90,1].map((ratio,i)=>calculateTroo(c.previous.trooValues[i],c.current.trooValues[i],26040,ratio,0,0,0,0,0,0,base[i]));if(results.every(x=>!x))return null;return {name:'T-Roo',period:s.forecast.period,deltas:results.map(x=>x?.delta??null),prices:results.map(x=>x?.price??null),currentDates:c.current.dates,previousDates:c.previous.dates};}
 
 // Confirmed price events, never wall-clock guesses, advance the market window.
 export function latestPriceEvent(s, now=Date.now()) {
