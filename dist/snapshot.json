@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-11T03:39:06.766Z",
+  "capturedAt": "2026-11-11T12:00:16.897+07:00",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -104,83 +104,103 @@
     "capturedAt": "2026-11-05T07:41:11.283Z"
   },
   "platts": {
-    "date": "2026-11-06",
-    "previousDate": "2026-11-05",
+    "date": "2026-11-10",
+    "previousDate": "2026-11-06",
     "items": [
       {
         "name": "A92",
         "unit": "USD/thùng",
-        "value": 109.88,
-        "previous": 102.89
+        "value": 101.07,
+        "previous": 109.88
       },
       {
         "name": "A95",
         "unit": "USD/thùng",
-        "value": 111.49,
-        "previous": 104.68
+        "value": 102.9,
+        "previous": 111.49
       },
       {
         "name": "97",
         "unit": "USD/thùng",
-        "value": null,
+        "value": 104.12,
         "previous": null
       },
       {
         "name": "DO 0,05%S",
         "unit": "USD/thùng",
-        "value": 159.84,
-        "previous": 152.52
+        "value": 147.28,
+        "previous": 159.84
       },
       {
         "name": "DO 0,25%S",
         "unit": "USD/thùng",
-        "value": null,
+        "value": 160.06,
         "previous": null
       },
       {
         "name": "DO 10ppm",
         "unit": "USD/thùng",
-        "value": 161.83,
-        "previous": 155.24
+        "value": 149.27,
+        "previous": 161.83
       },
       {
         "name": "DO 50ppm",
         "unit": "USD/thùng",
-        "value": null,
+        "value": 149,
         "previous": null
       },
       {
         "name": "Dầu hỏa",
         "unit": "USD/thùng",
-        "value": null,
+        "value": 145.98,
         "previous": null
       },
       {
         "name": "Marine",
         "unit": "USD/tấn",
-        "value": 730.3,
+        "value": 716.5,
         "previous": 730.3
       },
       {
         "name": "FO180",
         "unit": "USD/tấn",
-        "value": 660.59,
-        "previous": 639.49
+        "value": 583.15,
+        "previous": 660.59
       },
       {
         "name": "FO380",
         "unit": "USD/tấn",
-        "value": null,
+        "value": 572.25,
         "previous": null
       },
       {
         "name": "Naphtha",
         "unit": "USD/thùng",
-        "value": null,
+        "value": 91.98,
         "previous": null
       }
     ],
     "sessions": [
+      {
+        "date": "2026-11-10",
+        "values": [
+          101.07,
+          102.9,
+          104.12,
+          147.28,
+          160.06,
+          149.27,
+          149,
+          145.98,
+          716.5,
+          583.15,
+          572.25,
+          91.98
+        ],
+        "source": "Chợ Giá",
+        "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
+        "capturedAt": "2026-11-11T12:00:16.854+07:00"
+      },
       {
         "date": "2026-11-06",
         "values": [
@@ -372,10 +392,10 @@
         ]
       }
     ],
-    "pageUpdatedAt": "2026-11-08T00:04:44+07:00",
+    "pageUpdatedAt": "2026-11-11T09:16:23+07:00",
     "pageUpdatedKind": "table",
     "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
-    "capturedAt": "2026-11-08T03:02:21.906+07:00",
+    "capturedAt": "2026-11-11T12:00:16.854+07:00",
     "isSample": false,
     "captureMethod": "browser-snapshot",
     "source": "Chợ Giá"
@@ -810,25 +830,25 @@
         "capturedAt": "2026-11-08T03:02:22.089+07:00"
       }
     },
-    "capturedAt": "2026-11-08T03:02:22.089+07:00",
-    "basisDate": "2026-11-05",
+    "capturedAt": "2026-11-11T12:00:16.897+07:00",
+    "basisDate": "2026-11-10",
     "pageUpdatedAt": null,
     "pageUpdatedKind": "not-provided",
     "sources": [
       {
         "name": "Chợ Giá",
         "deltas": [
-          -1560,
-          -1400,
-          -1900,
-          -2500
+          -770,
+          -670,
+          -2040,
+          -3090
         ],
         "isSample": false,
-        "capturedAt": "2026-11-08T03:02:22.089+07:00",
+        "capturedAt": "2026-11-11T12:00:16.897+07:00",
         "providedAt": null,
-        "baselineConfirmed": true,
+        "baselineConfirmed": false,
         "period": "2026-11-12",
-        "basisDate": "2026-11-05",
+        "basisDate": "2026-11-10",
         "pageUpdatedAt": null,
         "pageUpdatedKind": "not-provided",
         "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
@@ -986,18 +1006,18 @@
   "schemaVersion": 2,
   "sources": {
     "platts": {
-      "status": "error",
-      "lastAttemptAt": "2026-11-11T03:39:06.766Z",
-      "lastSuccessAt": "2026-11-08T03:02:21.906+07:00",
-      "error": "HTTP 403",
+      "status": "ok",
+      "lastAttemptAt": "2026-11-11T12:00:16.854+07:00",
+      "lastSuccessAt": "2026-11-11T12:00:16.854+07:00",
+      "error": null,
       "captureMethod": "browser-snapshot",
       "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/"
     },
     "forecast": {
-      "status": "error",
-      "lastAttemptAt": "2026-11-11T03:39:06.766Z",
-      "lastSuccessAt": "2026-11-08T03:02:22.089+07:00",
-      "error": "HTTP 403",
+      "status": "ok",
+      "lastAttemptAt": "2026-11-11T12:00:16.897+07:00",
+      "lastSuccessAt": "2026-11-11T12:00:16.897+07:00",
+      "error": null,
       "captureMethod": "browser-snapshot",
       "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/"
     },
@@ -1019,7 +1039,7 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-11T03:39:06.766Z",
+  "lastCheckedAt": "2026-11-11T12:00:16.897+07:00",
   "brent": {
     "price": 92.37,
     "marketTime": "2026-11-11T03:24:16.000Z",
@@ -1428,5 +1448,42 @@
       "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=3mo"
     },
     "isSample": false
-  }
+  },
+  "choGiaObservations": [
+    {
+      "scheduledAt": "2026-11-11T12:00:00+07:00",
+      "platts": {
+        "capturedAt": "2026-11-11T12:00:16.854+07:00",
+        "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
+        "date": "2026-11-10",
+        "previousDate": "2026-11-06",
+        "values": [
+          101.07,
+          102.9,
+          104.12,
+          147.28,
+          160.06,
+          149.27,
+          149,
+          145.98,
+          716.5,
+          583.15,
+          572.25,
+          91.98
+        ]
+      },
+      "forecast": {
+        "capturedAt": "2026-11-11T12:00:16.897+07:00",
+        "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
+        "period": "2026-11-12",
+        "basisDate": "2026-11-10",
+        "deltas": [
+          -770,
+          -670,
+          -2040,
+          -3090
+        ]
+      }
+    }
+  ]
 }
