@@ -45,18 +45,18 @@ export function fillMissingPlatts(old, incoming) {
     items:old.items.map((item,i) => ({...item,value:current.values[i],previous:previous?.values[i] ?? null}))};
 }
 
-export async function run({path='dist/snapshot.json', fetcher=fetch, now=new Date()}={}) {
+export async function run({path='dist/snapshot.json', fetcher=fetch, now=new Date(), crudeOnly=false}={}) {
   const old = JSON.parse(await readFile(path,'utf8'));
   const [platts, forecast, wti, brent] = await Promise.all([
-    readSource(PLATTS_URL, parsePlatts, fetcher),
-    readSource(FORECAST_URL, parseForecast, fetcher),
+    crudeOnly ? {skip:true} : readSource(PLATTS_URL, parsePlatts, fetcher),
+    crudeOnly ? {skip:true} : readSource(FORECAST_URL, parseForecast, fetcher),
     yahoo('CL=F', fetcher, now),
     yahoo('BZ=F', fetcher, now)
   ]);
   if (platts.value) platts.value = fillMissingPlatts(old.platts, platts.value);
   const result = updateSnapshot(old, {platts, forecast, wti, brent}, now.toISOString());
   for (const error of result.errors) console.error(error);
-  if (result.errors.length === 4) throw Error('Không đọc được dữ liệu từ cả bốn nguồn.');
+  if (result.errors.length === (crudeOnly ? 2 : 4)) throw Error('Không đọc được dữ liệu từ các nguồn đã yêu cầu.');
   const numbers = value => JSON.stringify((value.sessions ?? []).map(({date,values})=>[date,values]));
   const publishedForecast = value => {
     const source = value.forecast.sources.find(row => row.name === 'Chợ Giá');
@@ -73,4 +73,4 @@ export async function run({path='dist/snapshot.json', fetcher=fetch, now=new Dat
   return {...result, changed};
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) await run();
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) await run({crudeOnly:process.argv.includes('--crude-only')});
