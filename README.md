@@ -1,8 +1,8 @@
 # Dashboard giá xăng dầu · Trung Thành
 
-GitHub Pages phục vụ `dist/`. Push vào `main` chạy kiểm thử và xuất bản. Workflow lấy Chợ Giá, Brent và WTI lúc 06:00, 09:00, 12:00, 15:00, 18:00 và 21:00 giờ Việt Nam. Có thể chạy riêng qua **Refresh** → **Run workflow** bằng tài khoản GitHub có quyền trên repo. Khi giá, phiên hoặc dữ liệu dự báo thay đổi, workflow lưu snapshot rồi xuất bản. Chạy lại với cùng dữ liệu không tạo commit. Nếu nguồn trả lỗi, xem kết quả chạy trên GitHub.
+GitHub Pages phục vụ `dist/`. Push vào `main` chạy kiểm thử và xuất bản. Tác vụ trình duyệt lấy Chợ Giá, còn workflow lấy Brent và WTI, cùng lúc 06:00, 09:00, 12:00, 15:00, 18:00 và 21:00 giờ Việt Nam. Có thể chạy riêng qua **Refresh** → **Run workflow** bằng tài khoản GitHub có quyền trên repo. Khi giá, phiên hoặc dữ liệu dự báo thay đổi, workflow lưu snapshot rồi xuất bản. Chạy lại với cùng dữ liệu không tạo commit. Nếu nguồn trả lỗi, xem kết quả chạy trên GitHub.
 
-**Cập nhật giá** lưu dữ liệu nhập và các lần sửa theo ngày trên trình duyệt hiện tại. Nhập mức tăng/giảm dự kiến theo đồng/lít và Platts theo USD/thùng. Ô trống dùng giá Chợ Giá cùng phiên nếu có. Với T-Roo, DO 10ppm nhập tay được ưu tiên, kế đến DO 50ppm nhập tay, rồi DO 0,05%S từ snapshot. Bảng Platts vẫn hiển thị riêng từng phẩm cấp.
+**Cập nhật giá** lưu dữ liệu nhập và các lần sửa theo ngày trên trình duyệt hiện tại. Nhập mức tăng/giảm dự kiến theo đồng/lít và Platts theo USD/thùng. Ô trống kế thừa giá hợp lệ gần nhất trước ngày đã chọn của từng mặt hàng. Với T-Roo, DO 10ppm nhập tay được ưu tiên, kế đến DO 0,05%S nhập tay, rồi DO 0,05%S từ snapshot. DO 50ppm là tên cũ của DO 0,05%S.
 
 Phiên Platts chốt 15:30 của ngày điều hành thuộc kỳ mới. Công thức T-Roo so bình quân kỳ mới với bình quân kỳ hình thành giá bán lẻ đang áp dụng.
 

@@ -1,4 +1,4 @@
-<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Dashboard giá xăng dầu Trung Thành · dữ liệu snapshot"><title>Dashboard giá xăng dầu</title><link rel="stylesheet" href="style.css?v=2"></head><body>
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Dashboard giá xăng dầu Trung Thành · dữ liệu snapshot"><title>Dashboard giá xăng dầu</title><link rel="stylesheet" href="style.css?v=rules"></head><body>
 <aside><div class="brand">TT<span>TRUNG THÀNH<br><small>TRẠM NĂNG LƯỢNG</small></span></div><nav><a href="#overview">◫ Giá hiện hành</a><a href="#platts">↗ Platts</a><a href="#forecast">▤ Dự kiến điều hành</a><a href="#market-charts">Biểu đồ giá</a><a href="#history">◷ Độ chính xác</a></nav><div class="aside-note">SNAPSHOT<br><small>Giờ Việt Nam · UTC+7</small></div></aside>
 <main><header><div><span class="eyebrow">TRUNG THÀNH · VŨNG TÀU</span><h1>Dashboard giá xăng dầu<span class="dot">.</span></h1><p id="snapshot">Đang đọc snapshot…</p></div><div><button id="edit-prices" type="button">Cập nhật giá</button> <button id="reload" type="button">↻ Refresh</button></div></header><div id="sample-banner" class="sample" hidden></div><div id="status" role="status"></div><div id="source-errors"></div>
 <section id="overview"><div class="section-title"><h2>Giá hiện hành</h2><span>đồng/lít</span></div><article class="panel official"><div class="panel-heading"><h3>Petrolimex Vũng Tàu</h3><span class="tag">GIÁ TRỤ BƠM</span></div><p id="pump-time"></p><div id="pump-prices" class="price-grid"></div><footer>Nguồn: thông báo Petrolimex Vũng Tàu do chủ trạm cung cấp.</footer></article></section>
@@ -26,7 +26,7 @@
 </form>
 </dialog>
 <script type="module">
-import {pumpValues,cycleContext,calculateTroo} from './model.js?v=manual-20261111';
+import {pumpValues,cycleContext,calculateTroo} from './model.js?v=rules';
 const root=document.getElementById('troo');
 const fields=[['p0a','A92 bình quân kỳ trước · USD/thùng',null],['p0b','A95 bình quân kỳ trước · USD/thùng',null],['p0c','DO 0,05%S bình quân kỳ trước · USD/thùng',null],['p1a','A92 bình quân kỳ mới · USD/thùng',null],['p1b','A95 bình quân kỳ mới · USD/thùng',null],['p1c','DO 0,05%S bình quân kỳ mới · USD/thùng',null],['fx','FX bình quân · đ/USD',26040],['taxa','TTĐB E5 kỳ này · %',0],['taxb','TTĐB E10 kỳ này · %',0],['env0','BVMT kỳ trước · đ/lít',0],['env1','BVMT kỳ này · đ/lít',0],['nk0','Thuế NK kỳ trước · %',0],['nk1','Thuế NK kỳ này · %',0],['vat','VAT kỳ này · %',0],['basea','Giá mốc E5 tự động · đ/lít',null],['baseb','Giá mốc E10 tự động · đ/lít',null],['basec','Giá mốc DO tự động · đ/lít',null]];
 const inputs={};let snapshot=null;
@@ -47,4 +47,4 @@ root.addEventListener('input',renderTroo);
 root.querySelector('[data-preset=current]').addEventListener('click',()=>{for(const key of ['taxa','taxb','env0','env1','nk0','nk1','vat'])inputs[key].value='0';renderTroo();});
 document.addEventListener('snapshot-loaded',event=>{snapshot=event.detail;const cycle=cycleContext(snapshot),base=pumpValues(snapshot);['a','b','c'].forEach((key,i)=>{inputs['base'+key].value=Number.isFinite(base[i])?String(base[i]):'';for(const [prefix,window] of [['p0',cycle.previous],['p1',cycle.current]]){const value=prefix==='p0'&&!window.complete?null:window.trooValues[i];inputs[prefix+key].value=Number.isFinite(value)?String(Math.round(value*1e6)/1e6):'';}});document.getElementById('troo-origin').textContent='BQ kỳ trước '+day(cycle.previous.from)+'–'+day(cycle.previous.to)+' · BQ kỳ mới '+day(cycle.current.from)+'–'+day(cycle.current.to)+' · Phiên ngày điều hành chốt 15:30 thuộc kỳ mới, sau công bố 15:00';renderTroo();});
 renderTroo();
-</script><script type="module" src="app.js?v=2"></script></body></html>
+</script><script type="module" src="app.js?v=rules"></script></body></html>

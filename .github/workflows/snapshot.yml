@@ -28,7 +28,7 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm test
-      - name: Lấy Chợ Giá và dầu thô
+      - name: Lấy dữ liệu thị trường
         if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
         id: refresh
         run: |
@@ -38,7 +38,11 @@ jobs:
           for attempt in 1 2 3; do
             git fetch origin main
             git reset --hard origin/main
-            node scripts/fetch-snapshot.mjs
+            if [[ "$GITHUB_EVENT_NAME" == schedule ]]; then
+              node scripts/fetch-snapshot.mjs --crude-only
+            else
+              node scripts/fetch-snapshot.mjs
+            fi
             if git diff --quiet -- dist/snapshot.json; then
               exit 0
             fi

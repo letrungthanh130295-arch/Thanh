@@ -1,5 +1,5 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';
-import {parsePlatts,parseForecast,parseWTI,priceNumber} from '../scripts/parsers.mjs';import {updateSnapshot} from '../scripts/update.mjs';import {historyRows,score,differences,bestSources,illustrative} from '../dist/model.js';import {applyManual} from '../scripts/admin.mjs';
+import {parsePlatts,parseForecast,parseWTI,priceNumber} from '../scripts/parsers.mjs';import {updateSnapshot} from '../scripts/update.mjs';import {historyRows,score,differences,bestSources,illustrative,plattsValue,dieselName} from '../dist/model.js';import {applyManual} from '../scripts/admin.mjs';
 const html=await readFile(new URL('./fixtures/platts.html',import.meta.url),'utf8'),forecastHtml=await readFile(new URL('./fixtures/forecast.html',import.meta.url),'utf8'),seed=JSON.parse(await readFile(new URL('./fixtures/seed.json',import.meta.url),'utf8'));
 const now='2026-11-04T09:00:00+07:00';
 const meta={symbol:'CL=F',currency:'USD',exchangeName:'NYM',regularMarketPrice:96.33,regularMarketTime:Date.parse('2026-11-04T08:59:00+07:00')/1000};
@@ -79,7 +79,7 @@ test('Pages workflow has one six-slot cron and retains manual dispatch and three
 });
 
 
-import {manualForecastDeltas,saveEntry} from '../dist/manual-prices.js';
+import {manualForecastDeltas,saveEntry,effectiveUserForecast} from '../dist/manual-prices.js';
 import {tradingDays} from '../dist/market-charts.js';
 
 test('Signed forecasts retain legacy absolute revisions and never infer a missing base',()=>{
@@ -97,4 +97,37 @@ test('Signed forecasts retain legacy absolute revisions and never infer a missin
 test('Chart dates retain missing weekdays and skip weekends without a quote',()=>{
  const actual=new Map([['2026-11-06',100],['2026-11-10',101]]);
  assert.deepEqual(tradingDays([actual],30),['2026-11-06','2026-11-09','2026-11-10']);
+});
+
+test('Blank forecast fields inherit per product and keep an explicit zero',()=>{
+ const earlier=saveEntry({},'forecast','2026-11-05',['-450','320',''],now);
+ const entries=saveEntry(earlier,'forecast','2026-11-12',['','0',''],now);
+ const amounts=effectiveUserForecast(entries,'2026-11-12',()=>null);
+ assert.deepEqual(amounts.map(x=>x?.value??null),[-450,0,null]);
+ assert.equal(amounts[0].date,'2026-11-05');
+ assert.equal(amounts[1].date,'2026-11-12');
+ assert.deepEqual(entries['forecast:2026-11-05'],earlier['forecast:2026-11-05']);
+});
+
+test('DO aliases resolve one product with canonical precedence',()=>{
+ const items=[{name:'DO 50ppm'},{name:'DO 0,05%S'},{name:'DO 10ppm'}];
+ assert.equal(plattsValue(items,[155,null,170],dieselName),155);
+ assert.equal(plattsValue(items,[155,160,170],dieselName),160);
+ assert.equal(plattsValue(items,[155,160,170],'DO 10ppm'),170);
+});
+
+test('Scheduled workflow does not duplicate the browser reads for Chợ Giá',async()=>{
+ const dir=await mkdtemp(join(tmpdir(),'thanh-crude-'));
+ try {
+  const path=join(dir,'snapshot.json');
+  await writeFile(path,JSON.stringify(seed));
+  const urls=[];
+  await assert.rejects(run({path,crudeOnly:true,fetcher:async url=>{
+    urls.push(url);
+    return new Response(null,{status:503});
+  },now:new Date(now)}),/Không đọc được/);
+  assert.equal(urls.length,4);
+  assert.ok(urls.every(url=>new URL(url).hostname.endsWith('.finance.yahoo.com')));
+  assert.deepEqual(JSON.parse(await readFile(path,'utf8')),seed);
+ } finally { await rm(dir,{recursive:true,force:true}); }
 });
