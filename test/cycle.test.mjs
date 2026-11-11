@@ -660,7 +660,7 @@ test('05 November close belongs only to 12 November; two-session averages and T-
  close(c.current.values.slice(0,3),[106.385,108.085,156.18]);
  const t=defaultTroo(s,now);assert.equal(t.period,'2026-11-12');assert.deepEqual(t.deltas,[-969,-852,-1214]);
  assert.deepEqual(t.previousDates,c.previous.dates);assert.deepEqual(t.currentDates,c.current.dates);
- const changes=plattsChanges(s,now);assert.ok(changes.every(x=>x.percent<0));
+ const changes=plattsChanges(s,now);assert.ok(changes.slice(0,4).every(x=>x.percent<0));assert.equal(changes[4].percent,null);
  assert.equal(changes[0].percent,(c.current.values[0]/c.previous.values[0]-1)*100);
  assert.deepEqual(s,before);
 });
@@ -679,7 +679,7 @@ test('normal Thursday windows exclude the next announcement date',()=>{
 });
 test('missing or zero values cannot produce a T-Roo forecast',()=>{
  const s=withTwoSessions();s.platts.sessions.find(x=>x.date==='2026-11-06').values[0]=0;
- assert.equal(defaultTroo(s,now),null);assert.equal(plattsChanges(s,now)[0].current,null);
+ assert.deepEqual(defaultTroo(s,now).deltas,[null,-852,-1214]);assert.equal(plattsChanges(s,now)[0].current,null);
  s.platts.sessions=s.platts.sessions.filter(x=>x.date!=='2026-11-04');
  assert.equal(cycleContext(s,now).previous.complete,false);assert.equal(defaultTroo(s,now),null);
 });
@@ -704,4 +704,22 @@ test('forecast basis preceding the new window cannot qualify or create an accura
  const r=updateSnapshot(s,{platts:{skip:true},forecast:{value:f},wti:{skip:true}},new Date(now).toISOString()).snapshot;
  assert.equal(r.forecast.sources[0].baselineConfirmed,false);assert.deepEqual(r.forecast.lockedPredictions,{});
  assert.deepEqual(r.history,s.history);assert.deepEqual(r.forecast.base,s.forecast.base);
+});
+
+import {saveEntry, withManualPlatts} from '../dist/manual-prices.js';
+test('Manual edits are dated, auditable and override only entered products',()=>{
+ const snapshot=withTwoSessions(), at=new Date(now).toISOString();
+ const initial=saveEntry({},'platts','2026-11-06',['120,5','','160',''],at);
+ assert.equal(saveEntry(initial,'platts','2026-11-06',['120.5','','160',''],at),initial);
+ const edited=saveEntry(initial,'platts','2026-11-06',['121','','','159'],at);
+ assert.equal(Object.keys(edited).length,1);
+ assert.equal(edited['platts:2026-11-06'].revisions.length,2);
+ const withForecast=saveEntry(edited,'forecast','2026-11-12',['21000','','28000'],at);
+ const result=withManualPlatts(snapshot,withForecast);
+ assert.equal(result.platts.sessions.length,snapshot.platts.sessions.length);
+ close(cycleContext(result,now).current.trooValues,[111.945,108.085,155.76]);
+ assert.deepEqual(defaultTroo(result,now),defaultTroo(withManualPlatts(snapshot,edited),now));
+ assert.deepEqual(result.history,snapshot.history);
+ assert.throws(()=>saveEntry({},'platts','2026-11-31',['0','','',''],at));
+ assert.throws(()=>saveEntry({},'forecast','2026-11-12',['0','',''],at));
 });
