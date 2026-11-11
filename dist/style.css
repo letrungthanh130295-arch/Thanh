@@ -12,3 +12,19 @@ footer a{color:var(--blue);text-decoration:none}#early-warning{margin-top:18px}#
 #price-dialog { width: min(32rem, 90vw); max-height: 90vh; border: 1px solid #718096; border-radius: 12px; padding: 1.25rem; }
 #price-dialog::backdrop { background: #0f172a99; }
 #price-form > label { display: block; margin-bottom: .75rem; }
+#forecast-table td {font-weight:700}
+.crude-quotes,.price-charts{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.chart-controls{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0}
+.market-chart{min-width:0;background:#182336;color:#e6edf6;border:1px solid #31435a;border-radius:10px;padding:14px}
+.market-chart p,.chart-tooltip{color:#b8c8dc;margin:5px 0}
+.chart-scroll{overflow-x:auto}
+.chart-scroll svg{display:block;width:100%;max-height:315px}
+.chart-grid{stroke:#42546c;stroke-width:1}
+.market-chart svg text{font-size:9px}
+.market-chart svg text:not([fill]){fill:#b8c8dc}
+.market-chart circle{cursor:pointer}
+.market-chart circle:focus{outline:none;stroke:white;stroke-width:2}
+.chart-legend{display:flex;flex-wrap:wrap;gap:12px}
+.chart-legend span::before{display:inline-block;content:'';width:12px;height:3px;margin-right:5px;vertical-align:middle;background:var(--series-color)}
+.chart-tooltip{display:block;font-size:12px}
+@media(max-width:760px){.price-charts{grid-template-columns:minmax(0,1fr)}}
