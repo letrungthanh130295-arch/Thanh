@@ -8,4 +8,33 @@ export function priceNumber(value){const s=value.trim().replace(/\s/g,'');if(!s|
 function modified($){let found=null;$('script[type="application/ld+json"]').each((_,el)=>{try{const walk=v=>{if(v&&typeof v==='object'){if(typeof v.dateModified==='string'&&Number.isFinite(Date.parse(v.dateModified)))found=v.dateModified;Object.values(v).forEach(walk);}};walk(JSON.parse($(el).text()));}catch{}});return found;}
 export function parsePlatts(html){const $=load(html), tables=$('table.tbl_xd_sing');if(tables.length!==1)throw Error('PLATTS_SCHEMA: không tìm thấy đúng một bảng tbl_xd_sing');const t=tables.first(),head=t.find('thead tr').first().find('th').map((_,e)=>clean($(e).text())).get();if(head.length!==13||head[0]!=='ngay'||new Set(head).size!==13)throw Error('PLATTS_SCHEMA: tiêu đề thay đổi');const indexes=PRODUCTS.map(([,key])=>head.indexOf(key));if(indexes.some(i=>i<1))throw Error('PLATTS_SCHEMA: thiếu cột sản phẩm');const rows=[];t.find('tbody tr').each((_,e)=>{const cells=$(e).children('td');if(cells.length===1&&cells.attr('colspan'))return;if(cells.length!==13)throw Error('PLATTS_SCHEMA: dòng không đủ 13 cột');const date=dateISO(cells.eq(0).text());rows.push({date,values:indexes.map(i=>priceNumber(cells.eq(i).text()))});});if(!rows.length)throw Error('PLATTS_SCHEMA: bảng rỗng');rows.sort((a,b)=>b.date.localeCompare(a.date));if(new Set(rows.map(r=>r.date)).size!==rows.length)throw Error('PLATTS_SCHEMA: ngày trùng');if(!rows[0].values.some(v=>v!==null))throw Error('PLATTS_SCHEMA: dòng mới nhất chưa có giá');const credit=t.find('.cg_credit').text().match(/cập nhật lúc\s+(\d{2}:\d{2}:\d{2})\s+(\d{2}\/\d{2}\/\d{4})/i);return {date:rows[0].date,previousDate:rows[1]?.date??null,items:PRODUCTS.map(([name,,unit],i)=>({name,unit,value:rows[0].values[i],previous:rows[1]?.values[i]??null})),sessions:rows.map(r=>({date:r.date,values:r.values})),pageUpdatedAt:credit?`${dateISO(credit[2])}T${credit[1]}+07:00`:modified($),pageUpdatedKind:credit?'table':'article-metadata',sourceUrl:PLATTS_URL};}
 export function parseForecast(html){const $=load(html);const title=$('.cg-title').filter((_,e)=>/Dự báo kỳ điều chỉnh ngày/i.test($(e).text()));if(title.length!==1)throw Error('FORECAST_SCHEMA: không tìm thấy đúng một kỳ dự báo');const card=title.closest('.cg-card');if(card.length!==1)throw Error('FORECAST_SCHEMA: thiếu cg-card');const match=title.text().match(/ngày\s+(\d{1,2}\/\d{1,2}\/\d{4})/i),basis=card.find('.cg-sub').text().match(/Giá thành phẩm ngày\s+(\d{1,2}\/\d{1,2}\/\d{4})/i);if(!match||!basis)throw Error('FORECAST_SCHEMA: thiếu kỳ hoặc ngày thành phẩm');const deltas=[null,null,null,null],seen=new Set();card.find('.cg-row').each((_,e)=>{const r=$(e);if(r.hasClass('wti'))return;const name=clean(r.find('.cg-name').first().clone().children().remove().end().text());let i=/e5ron92/.test(name)?0:/e10ron95/.test(name)?1:/dienzen|diezen|diesel/.test(name)?2:/mazut/.test(name)?3:-1;if(i<0||seen.has(i))throw Error('FORECAST_SCHEMA: sản phẩm mới hoặc trùng');seen.add(i);const f=r.find('.cg-fc').text().trim();if(/Không đổi/i.test(f)){deltas[i]=0;return;}const m=f.match(/(Giảm|Tăng)\s+(\d{1,3}(?:[.,]\d{3})*|\d+)\s*đ/i);if(!m)throw Error('FORECAST_SCHEMA: không đọc được mức dự báo');const amount=Number(m[2].replace(/[.,]/g,''));if(!Number.isSafeInteger(amount)||amount>20000)throw Error('FORECAST_SCHEMA: mức dự báo ngoài phạm vi');deltas[i]=/giảm/i.test(m[1])?-amount:amount;});if(seen.size!==4)throw Error('FORECAST_SCHEMA: thiếu sản phẩm');return {period:dateISO(match[1]),basisDate:dateISO(basis[1]),deltas,pageUpdatedAt:modified($),pageUpdatedKind:'article-metadata',sourceUrl:FORECAST_URL};}
-export function parseWTI(json,now=new Date()){const m=json?.chart?.result?.[0]?.meta;if(json?.chart?.error||!m)throw Error('YAHOO_SCHEMA: thiếu chart.meta');if(m.symbol!=='CL=F'||m.currency!=='USD'||!['NYM','NYMEX'].includes(m.exchangeName))throw Error('YAHOO_SCHEMA: sai mã, tiền tệ hoặc sàn');if(!Number.isFinite(m.regularMarketPrice)||m.regularMarketPrice<=0||m.regularMarketPrice>1000||!Number.isInteger(m.regularMarketTime)||m.regularMarketTime<1)throw Error('YAHOO_SCHEMA: thiếu regularMarketPrice/regularMarketTime');const marketTime=new Date(m.regularMarketTime*1000).toISOString();if(Date.parse(marketTime)>+now+300000)throw Error('YAHOO_SCHEMA: giờ thị trường nằm trong tương lai');return {price:m.regularMarketPrice,marketTime,symbol:'CL=F',exchange:'NYMEX',currency:'USD'};}
+export function parseCrude(json, symbol, now=new Date()) {
+  const result = json?.chart?.result?.[0];
+  const m = result?.meta;
+  if (json?.chart?.error || !m) throw Error('YAHOO_SCHEMA: thiếu chart.meta');
+  const exchanges = symbol === 'CL=F' ? ['NYM','NYMEX'] : ['NYM','NYMEX','ICE','ICE Futures Europe'];
+  if (m.symbol !== symbol || m.currency !== 'USD' || !exchanges.includes(m.exchangeName))
+    throw Error('YAHOO_SCHEMA: sai mã, tiền tệ hoặc sàn');
+  if (!Number.isFinite(m.regularMarketPrice) || m.regularMarketPrice <= 0 || m.regularMarketPrice > 1000 ||
+      !Number.isInteger(m.regularMarketTime) || m.regularMarketTime < 1)
+    throw Error('YAHOO_SCHEMA: thiếu regularMarketPrice/regularMarketTime');
+  const marketTime = new Date(m.regularMarketTime * 1000).toISOString();
+  if (Date.parse(marketTime) > +now + 300000) throw Error('YAHOO_SCHEMA: giờ thị trường nằm trong tương lai');
+  const quote = {price:m.regularMarketPrice,marketTime,symbol,exchange:m.exchangeName === 'NYM' ? 'NYMEX' : m.exchangeName,currency:'USD'};
+  const calendar = new Intl.DateTimeFormat('en-CA', {timeZone:m.exchangeTimezoneName || 'America/New_York'});
+  const latest = calendar.format(new Date(marketTime));
+  const timestamps = result.timestamp ?? [];
+  const closes = result.indicators?.quote?.[0]?.close ?? [];
+  if (!timestamps.length) return quote;
+  const sessions = timestamps.flatMap((time, i) => {
+    const price = closes[i];
+    if (!Number.isInteger(time) || time <= 0 || !Number.isFinite(price) || price <= 0) return [];
+    const date = calendar.format(new Date(time * 1000));
+    return date < latest ? [{date,price}] : [];
+  });
+  return {...quote, date:latest, sessions};
+}
+
+export function parseWTI(json, now) {
+  return parseCrude(json, 'CL=F', now);
+}
