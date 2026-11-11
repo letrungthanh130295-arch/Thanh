@@ -7,7 +7,15 @@ export function illustrative(base,delta){return Number.isFinite(base)&&Number.is
 
 
 // UI projections only: keep the full snapshot and official records untouched.
-export const visiblePlatts=['A92','A95','DO 0,05%S','DO 10ppm','DO 50ppm'];
+export const dieselName='DO 0,05%S';
+export const visiblePlatts=['A92','A95',dieselName,'DO 10ppm'];
+export function plattsValue(items, values, name) {
+ const read=label=>values[items.findIndex(item=>item.name===label)];
+ const value=read(name);
+ if(Number.isFinite(value)&&value>0)return value;
+ const alias=name===dieselName?read('DO 50ppm'):null;
+ return Number.isFinite(alias)&&alias>0?alias:null;
+}
 export const pumpNames=['E5 RON 92-II','E10 RON 95-III','DO 0,05S-II','DO 0,001S-V'];
 export function pumpValues(s){return pumpNames.map(name=>s.pump.items.find(x=>x[0]===name)?.[1]??null);}
 function vnDay(value){return value?new Date(value).toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}):null;}
@@ -37,7 +45,7 @@ export function cycleContext(s,now=Date.now()){
   const sessions=[...new Map((s.platts.sessions||[]).filter(x=>start&&x.date>=start&&x.date<=end&&x.date<=today).map(x=>[x.date,x])).values()].sort((a,b)=>a.date.localeCompare(b.date));
   const missingDates=expected.filter(date=>!sessions.some(x=>x.date===date));
   const average=prices=>prices.length&&prices.every(v=>Number.isFinite(v)&&v>0)?prices.reduce((a,b)=>a+b,0)/prices.length:null;
-  const prices=name=>{const i=s.platts.items.findIndex(x=>x.name===name);return sessions.map(x=>x.values[i]);};
+  const prices=name=>sessions.map(x=>plattsValue(s.platts.items,x.values,name));
   const values=visiblePlatts.map(name=>average(prices(name)));
   const trooValues=[...values.slice(0,2),average(prices('DO 0,05%S').map((value,i)=>sessions[i].manualDiesel??value))];
   return {from:start,to:end,until:shiftDay(end,1),dates:sessions.map(x=>x.date),count:sessions.length,expected:expected.length,missingDates,complete:!!expected.length&&!missingDates.length,values,trooValues};

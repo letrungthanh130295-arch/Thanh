@@ -1,6 +1,6 @@
-import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts, manualForecastDeltas} from './manual-prices.js?v=2';
-import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold} from './model.js?v=manual-20261111';
-import {renderMarket} from './market-charts.js?v=2';
+import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts, manualForecastDeltas, effectiveUserForecast} from './manual-prices.js?v=rules';
+import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold, plattsValue} from './model.js?v=rules';
+import {renderMarket} from './market-charts.js?v=rules';
 const $=id=>document.getElementById(id);
 const num=(v,d=0)=>Number.isFinite(v)?new Intl.NumberFormat('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v):'—';
 const sign=(v,d=0)=>Number.isFinite(v)?(v<0?'−':v>0?'+':'')+num(Math.abs(v),d):'—';
@@ -21,7 +21,8 @@ function render(s){
  $('average-period').textContent='BQ kỳ trước '+range(prev)+' · BQ kỳ mới '+range(c)+(c.count?' · Đã có số liệu đến '+day(c.dates.at(-1)):' · Chưa có phiên kỳ mới');
  $('platts-time').textContent='Chốt '+day(s.platts.date)+' · lấy số '+date(s.platts.capturedAt)+' · nguồn cập nhật '+date(s.platts.pageUpdatedAt)+(s.platts.manualUpdatedAt?' · Người dùng '+date(s.platts.manualUpdatedAt):'');
  const changes=plattsChanges(s),alerts=[];
- visiblePlatts.forEach((name,i)=>{const x=s.platts.items.find(x=>x.name===name),change=changes[i];const label=name==='DO 10ppm'?'DO 0,001S · 10ppm':name;const tr=row('platts-rows',[label,num(x?.value===0?null:x?.value,2),num(change.previous,3),num(change.current,3),Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—']);tr.lastElementChild.className=tone(change.percent);const box=el('div','');box.append(el('span',label),el('strong',Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—',tone(change.percent)));$('threshold-estimates').append(box);if(['increase','decrease'].includes(threshold(change.percent)))alerts.push(label+' '+sign(change.percent,2)+'%');});
+ const latest=s.platts.sessions[0];
+ visiblePlatts.forEach((name,i)=>{const price=plattsValue(s.platts.items,s.platts.items.map(item=>item.value),name),change=changes[i];const label=name==='DO 10ppm'?'DO 0,001S · 10ppm':name;const tr=row('platts-rows',[label,num(price,2),num(change.previous,3),num(change.current,3),Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—']);tr.lastElementChild.className=tone(change.percent);const inherited=latest?.inherited?.[name];if(inherited)tr.cells[1].append(el('small','Kế thừa '+day(inherited),'inherit-note'));const box=el('div','');box.append(el('span',label),el('strong',Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—',tone(change.percent)));$('threshold-estimates').append(box);if(['increase','decrease'].includes(threshold(change.percent)))alerts.push(label+' '+sign(change.percent,2)+'%');});
  $('threshold-status').dataset.trigger=String(!!alerts.length);
  $('threshold-status').textContent=!c.count?'Chưa có phiên Platts kỳ mới để tính biến động':alerts.length?'Cảnh báo Platts · '+alerts.join(' · '):'Platts chưa tới ngưỡng cảnh báo sớm';
  $('threshold-note').textContent=c.missingDates.length?'Chưa có phiên '+c.missingDates.map(day).join(', '):'Giảm từ 9% / tăng từ 14% · chỉ báo sớm';
@@ -35,14 +36,16 @@ function render(s){
  const entered=entries['forecast:'+s.forecast.period];
  const legacy=s.forecast.sources.find(x=>x.name==='User cung cấp');
  const choDeltas=cho?.period&&cho.period!==s.forecast.period?[]:cho?.deltas;
- const userDeltas=entered?manualForecastDeltas(entered,s.forecast.base):legacy?.deltas;
+ const user=effectiveUserForecast(entries,s.forecast.period,day=>forecastBase(s,day));
+ const userDeltas=user.map((value,i)=>value?.value??(entered?null:legacy?.deltas[i]));
  $('cho-time').textContent=date(cho?.capturedAt);
  $('troo-time').textContent=auto?date(lastCalculation):'—';
- $('user-time').textContent=date(entered?.updatedAt??legacy?.capturedAt);
+ $('user-time').textContent=date(entered?.updatedAt??user.map(value=>value?.updatedAt).filter(Boolean).sort().at(-1)??legacy?.capturedAt);
  for(const i of [1,0,2]){
    const changes=[choDeltas?.[i],auto?.deltas[i],userDeltas?.[i]];
    const tr=row('forecast-rows',[forecastProducts[i],...changes.map(v=>Number.isFinite(v)?sign(v)+' đ/lít':'—')]);
    changes.forEach((value,index)=>{tr.cells[index+1].className=tone(value);});
+   if(user[i] && user[i].date!==s.forecast.period) tr.cells[3].append(el('small','Kế thừa '+day(user[i].date),'inherit-note'));
  }
  $('troo-window').textContent='T-Roo · '+range(c)+' · '+c.count+'/'+c.expected+' phiên'+(!auto?' · Chưa đủ dữ liệu kỳ mới':' · FX 26.040 · thuế hiện hành');
  $('pending-forecast').textContent=s.pendingForecast?'Đã có bản tin kỳ '+day(s.pendingForecast.period)+', chờ xác nhận chuyển kỳ.':'';
@@ -66,14 +69,24 @@ function showSnapshot() {
   document.dispatchEvent(new CustomEvent('snapshot-loaded',{detail:data}));
 }
 
+function forecastBase(data, day) {
+  return day===data.forecast.period ? data.forecast.base : data.history.find(row=>row.period===day)?.base;
+}
+
 function populateForm() {
   const isPlatts = kind.value === 'platts';
   const products = isPlatts ? manualProducts : forecastProducts;
   const entry = entries[kind.value + ':' + entryDay.value];
-  const forecast = advanceCycle(snapshot).forecast;
-  const values = isPlatts ? entry?.values : manualForecastDeltas(entry, entryDay.value === forecast.period ? forecast.base : null);
-  $('entry-hint').textContent = !isPlatts && entry && !entry.format && entryDay.value !== forecast.period
-    ? 'Kỳ cũ thiếu giá mốc. Giá tuyệt đối vẫn còn trong lịch sử chỉnh sửa.' : '';
+  const data = advanceCycle(snapshot);
+  const selected = entryDay.value;
+  const values = isPlatts ? entry?.values : manualForecastDeltas(entry,forecastBase(data,selected));
+  const past = Object.fromEntries(Object.entries(entries).filter(([key])=>key.slice(key.indexOf(':')+1)<selected));
+  const inherited = isPlatts
+    ? withManualPlatts(data,past).platts.sessions.filter(row=>row.date<selected)
+    : effectiveUserForecast(past,selected,day=>forecastBase(data,day));
+  $('entry-hint').textContent = !isPlatts && entry && !entry.format && !forecastBase(data,selected)
+    ? 'Kỳ cũ thiếu giá mốc. Giá tuyệt đối vẫn còn trong lịch sử chỉnh sửa.'
+    : 'Ô trống lấy số gần nhất trước ngày đã chọn.';
   $('entry-date-label').textContent = isPlatts ? 'Ngày phiên' : 'Ngày điều hành dự kiến';
   $('entry-fields').replaceChildren(...products.map((name, i) => {
     const label = el('label', name + (isPlatts ? ' · USD/thùng' : ' · Tăng/giảm (đ/lít)'));
@@ -81,7 +94,12 @@ function populateForm() {
     input.name = 'price-' + i;
     input.inputMode = isPlatts ? 'decimal' : 'text';
     input.value = values?.[i] ?? '';
+    const priorRow = isPlatts ? inherited.find(row=>plattsValue(data.platts.items,row.values,name)!==null) : null;
+    const prior = isPlatts ? priorRow && {date:priorRow.inherited?.[name]??priorRow.date,
+      value:plattsValue(data.platts.items,priorRow.values,name)} : inherited[i];
+    input.placeholder = prior ? (isPlatts ? num(prior.value,2) : sign(prior.value)) : 'Chưa có số';
     label.append(input);
+    if(prior) label.append(el('small','Kế thừa nếu để trống · '+day(prior.date),'inherit-note'));
     return label;
   }));
   $('entry-history').replaceChildren(...(entry?.revisions ?? []).slice().reverse().map(revision =>
@@ -109,6 +127,9 @@ form.addEventListener('submit', event => {
   try {
     const current = JSON.parse(localStorage.getItem(storageKey) ?? '{}');
     const values = [...$('entry-fields').querySelectorAll('input')].map(input => input.value);
+    if (kind.value==='forecast' && current['forecast:'+entryDay.value] && !current['forecast:'+entryDay.value].format &&
+      !forecastBase(advanceCycle(snapshot),entryDay.value) && values.every(value=>!value.trim()))
+      throw Error('Nhập mức tăng/giảm để sửa bản ghi cũ thiếu giá mốc.');
     const next = saveEntry(current, kind.value, entryDay.value, values, new Date().toISOString());
     if (next !== current) localStorage.setItem(storageKey, JSON.stringify(next));
     entries = next;

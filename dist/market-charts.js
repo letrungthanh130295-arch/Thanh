@@ -1,3 +1,4 @@
+import {dieselName, plattsValue} from './model.js?v=rules';
 const colors = ['#ffd076', '#6ee7ba'];
 const number = new Intl.NumberFormat('vi-VN', {maximumFractionDigits: 2});
 const marketDate = new Intl.DateTimeFormat('en-CA', {timeZone: 'America/New_York'});
@@ -131,14 +132,13 @@ export function renderMarket(snapshot) {
     return card;
   }));
   const plattsSeries = name => {
-    const index = snapshot.platts.items.findIndex(item => item.name === name);
     const sessions = (snapshot.platts.sessions ?? []).filter(row => !snapshot.platts.isSample || row.manualUpdatedAt);
-    return {name, points:new Map(sessions.map(row => [row.date, row.values[index] > 0 ? row.values[index] : null]))};
+    return {name, points:new Map(sessions.map(row => [row.date, plattsValue(snapshot.platts.items,row.values,name)]))};
   };
   function draw() {
     chartList.replaceChildren(
       chart('Platts xăng', ['A92','A95'].map(plattsSeries), +range.value, labels.checked),
-      chart('Platts dầu', ['DO 10ppm','DO 50ppm'].map(plattsSeries), +range.value, labels.checked),
+      chart('Platts dầu', ['DO 10ppm',dieselName].map(plattsSeries), +range.value, labels.checked),
       chart('Dầu thô', crude.map(([name, quote])=>({name, points:crudeSeries(quote)})), +range.value, labels.checked)
     );
   }

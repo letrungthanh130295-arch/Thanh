@@ -28,3 +28,4 @@ footer a{color:var(--blue);text-decoration:none}#early-warning{margin-top:18px}#
 .chart-legend span::before{display:inline-block;content:'';width:12px;height:3px;margin-right:5px;vertical-align:middle;background:var(--series-color)}
 .chart-tooltip{display:block;font-size:12px}
 @media(max-width:760px){.price-charts{grid-template-columns:minmax(0,1fr)}}
+.inherit-note{display:block;color:var(--muted);font-size:10px;font-weight:400}
