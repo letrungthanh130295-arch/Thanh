@@ -74,3 +74,12 @@ test('only verified official notices and both correctly ordered regions can adva
   assert.deepEqual(updated.choGiaObservations,s.choGiaObservations);
   assert.equal(applyNotice(updated,notice,prices,release),updated);
 });
+
+import {saveEntry,userForecastAt} from '../dist/manual-prices.js';
+test('user accuracy can use locally stored, inherited forecasts as of publication', () => {
+  const earlier=saveEntry({},'forecast','2026-11-05',['-400','-300','0'],'2026-11-05T10:00:00+07:00');
+  const prior=saveEntry(earlier,'forecast','2026-11-12',['-500','',''],'2026-11-12T12:00:00+07:00');
+  const later=saveEntry(prior,'forecast','2026-11-12',['-700','-600','-550'],'2026-11-12T16:00:00+07:00');
+  const picked=userForecastAt(later,'2026-11-12',Date.parse(release),()=>[20890,21150,28690]);
+  assert.deepEqual(picked.map(item=>item.value),[-500,-300,0]);
+});

@@ -1,4 +1,4 @@
-import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts, manualForecastDeltas, effectiveUserForecast} from './manual-prices.js?v=rules';
+import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts, manualForecastDeltas, effectiveUserForecast, userForecastAt} from './manual-prices.js?v=petrolimex2';
 import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold, plattsValue} from './model.js?v=petrolimex';
 import {renderMarket} from './market-charts.js?v=rules';
 const $=id=>document.getElementById(id);
@@ -16,7 +16,7 @@ function renderPetrolimex() {
  const label=$('petrolimex-status');
  label.dataset.trigger=String(!!status?.trigger);
  label.textContent=!status?'Chưa có lượt kiểm tra Petrolimex':
-   (status.trigger?'Tăng tần suất · '+status.trigger.name:'Theo lịch cơ bản và khung điều hành thứ Năm')+
+   (status.trigger?'Tăng tần suất · '+status.trigger.name:status.signals?.length?'Theo lịch cơ bản và khung điều hành thứ Năm':'Chờ dữ liệu thị trường đủ để tính cảnh báo')+
    ' · Kiểm tra gần nhất '+date(status.lastCheckedAt)+(status.error?' · '+status.error:'');
  const signals=$('petrolimex-signals');
  signals.replaceChildren();
@@ -66,7 +66,22 @@ function render(s){
  }
  $('troo-window').textContent='T-Roo · '+range(c)+' · '+c.count+'/'+c.expected+' phiên'+(!auto?' · Chưa đủ dữ liệu kỳ mới':' · FX 26.040 · thuế hiện hành');
  $('pending-forecast').textContent=s.pendingForecast?'Đã có bản tin kỳ '+day(s.pendingForecast.period)+', chờ xác nhận chuyển kỳ.':'';
- for(const x of historyRows(s.history)){const pred=x.predictions['T-Roo'];row('history-rows',[day(x.period)+(x.isSample?' · mẫu':''),x.actual?x.actual.map(v=>num(v)).join(' / '):'—',pred?pred.map(v=>num(v)).join(' / '):'—',num(score(x.actual,pred),1),bestSources(x).join(', ')||'—']);}
+ for(const x of historyRows(s.history)){
+   const predictions={...x.predictions};
+   const isCurrent=x.effectiveAt===s.official.effectiveAt;
+   const cutoff=Date.parse(x.publishedAt??(isCurrent?s.official.publishedAt:null));
+   const base=x.base??(isCurrent&&s.pump.previous?pumpValues({...s,pump:s.pump.previous}):null);
+   const period=x.forecastPeriod??x.period;
+   if(base?.slice(0,3).every(Number.isFinite)&&Number.isFinite(cutoff)){
+     const local=userForecastAt(entries,period,cutoff,day=>day===period?base:forecastBase(s,day));
+     if(local.every(item=>Number.isFinite(item?.value))){
+       predictions['User cung cấp']=local.map((item,i)=>base[i]+item.value);
+     }
+   }
+   const visible={'Chợ Giá':predictions['Chợ Giá'],'T-Roo':predictions['T-Roo'],'Người dùng':predictions['User cung cấp']};
+   row('history-rows',[day(x.period)+(x.isSample?' · mẫu':''),x.actual?x.actual.map(v=>num(v)).join(' / '):'—',
+     ...Object.values(visible).map(pred=>num(score(x.actual,pred),1)),bestSources({...x,predictions:visible}).join(', ')||'—']);
+ }
  for(const [key,title] of [['platts','Platts'],['forecast','Chợ Giá']]){const source=s.sources?.[key];if(source?.status==='error')$('source-errors').append(el('p',title+': '+source.error+' · giữ số cũ','warning'));}
  $('sample-banner').hidden=!(s.platts.isSample||s.forecast.sources.some(x=>x.isSample));$('sample-banner').textContent='Có dữ liệu mẫu';
 }

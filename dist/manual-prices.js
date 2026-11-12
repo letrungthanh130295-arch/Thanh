@@ -95,3 +95,16 @@ export function effectiveUserForecast(entries, day, baseFor) {
   }
   return result;
 }
+
+
+// Historical scoring uses only revisions already saved when the price was announced.
+export function userForecastAt(entries, day, cutoff, baseFor) {
+  const revisions = Object.fromEntries(Object.entries(entries).flatMap(([key,entry]) => {
+    if (!key.startsWith('forecast:')) return [];
+    const eligible = [...(entry.revisions ?? []),entry]
+      .filter(value => Date.parse(value.updatedAt) < cutoff)
+      .sort((a,b) => Date.parse(b.updatedAt)-Date.parse(a.updatedAt));
+    return eligible.length ? [[key,eligible[0]]] : [];
+  }));
+  return effectiveUserForecast(revisions,day,baseFor);
+}

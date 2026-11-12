@@ -13,7 +13,7 @@
 <div class="chart-controls"><label>Thời gian <select id="chart-range"><option value="30">30 ngày</option><option value="90">90 ngày</option><option value="0">Tất cả</option></select></label><label><input type="checkbox" id="chart-labels"> Hiện giá tại điểm</label></div>
 <div id="price-charts" class="price-charts"></div>
 </section>
-<section id="history"><div class="section-title"><h2>Độ chính xác dự báo</h2><span>10 kỳ gần nhất</span></div><article class="panel"><div class="table-wrap"><table><thead><tr><th>Kỳ</th><th>Giá thật E5 / E10 / DO</th><th>Dự kiến T-Roo</th><th>Sai lệch · MAE</th><th>Nguồn tốt nhất</th></tr></thead><tbody id="history-rows"></tbody></table></div></article></section>
+<section id="history"><div class="section-title"><h2>Độ chính xác dự báo</h2><span>10 kỳ gần nhất</span></div><article class="panel"><div class="table-wrap"><table><thead><tr><th>Kỳ</th><th>Giá thật E5 / E10 / DO</th><th>MAE Chợ Giá</th><th>MAE T-Roo</th><th>MAE Người dùng</th><th>Nguồn tốt nhất</th></tr></thead><tbody id="history-rows"></tbody></table></div></article></section>
 <div class="bottom">TRUNG THÀNH <span>Snapshot · giờ Việt Nam (UTC+7)</span></div></main>
 <dialog id="price-dialog">
 <form id="price-form">
@@ -48,4 +48,4 @@ root.addEventListener('input',renderTroo);
 root.querySelector('[data-preset=current]').addEventListener('click',()=>{for(const key of ['taxa','taxb','env0','env1','nk0','nk1','vat'])inputs[key].value='0';renderTroo();});
 document.addEventListener('snapshot-loaded',event=>{snapshot=event.detail;const cycle=cycleContext(snapshot),base=pumpValues(snapshot);['a','b','c'].forEach((key,i)=>{inputs['base'+key].value=Number.isFinite(base[i])?String(base[i]):'';for(const [prefix,window] of [['p0',cycle.previous],['p1',cycle.current]]){const value=prefix==='p0'&&!window.complete?null:window.trooValues[i];inputs[prefix+key].value=Number.isFinite(value)?String(Math.round(value*1e6)/1e6):'';}});document.getElementById('troo-origin').textContent='BQ kỳ trước '+day(cycle.previous.from)+'–'+day(cycle.previous.to)+' · BQ kỳ mới '+day(cycle.current.from)+'–'+day(cycle.current.to)+' · Phiên ngày điều hành chốt 15:30 thuộc kỳ mới, sau công bố 15:00';renderTroo();});
 renderTroo();
-</script><script type="module" src="app.js?v=petrolimex"></script></body></html>
+</script><script type="module" src="app.js?v=petrolimex2"></script></body></html>
