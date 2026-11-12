@@ -1,7 +1,15 @@
 name: Dashboard giá xăng dầu
 on:
   schedule:
-    - cron: '0 2,5,8,11,14,23 * * *' # 06:00, 09:00, 12:00, 15:00, 18:00, 21:00 ICT
+    - cron: '0 * * * *'
+    - cron: '15 * * * *'
+    - cron: '30 * * * *'
+    - cron: '45 * * * *'
+    # Các mốc bổ sung trong cửa sổ thứ Năm 14:30–16:30 ICT.
+    - cron: '10 8,9 * * 4'
+    - cron: '20 8,9 * * 4'
+    - cron: '40 7,8 * * 4'
+    - cron: '50 7,8 * * 4'
   workflow_dispatch:
   push:
     branches: [main]
@@ -16,10 +24,11 @@ concurrency:
 jobs:
   snapshot:
     permissions:
+      actions: read
       contents: write
     runs-on: ubuntu-latest
     outputs:
-      publish: ${{ github.event_name == 'push' || steps.refresh.outputs.changed == 'true' }}
+      publish: ${{ github.event_name == 'push' || steps.refresh.outputs.publish == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -28,34 +37,99 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm test
-      - name: Lấy dữ liệu thị trường
-        if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
-        id: refresh
+        if: github.event_name == 'push'
+      - uses: actions/cache/restore@v4
+        with:
+          path: .run/petrolimex-status.json
+          key: petrolimex-monitor-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: petrolimex-monitor-v1-
+      - name: Xác định mốc chạy
+        if: github.event_name == 'schedule'
+        id: slot
+        env:
+          SCHEDULE: ${{ github.event.schedule }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          created=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --jq .created_at)
+          CREATED="$created" node --input-type=module <<'JS'
+          import {appendFileSync} from 'node:fs';
+          const [minute,hours] = process.env.SCHEDULE.split(/\s+/);
+          const created = new Date(process.env.CREATED);
+          const slot = new Date(created);
+          slot.setUTCMinutes(+minute,0,0);
+          if (slot > created) slot.setUTCHours(slot.getUTCHours()-1);
+          if (created-slot <= 30*60000 && (hours==='*' || hours.split(',').includes(String(slot.getUTCHours())))) {
+            appendFileSync(process.env.GITHUB_OUTPUT,'at='+slot.toISOString()+'\n');
+          }
+          JS
+      - name: Lấy dữ liệu thị trường và kiểm tra Petrolimex
+        if: github.event_name == 'workflow_dispatch' || steps.slot.outputs.at != ''
+        id: refresh
+        env:
+          SLOT: ${{ steps.slot.outputs.at }}
+          PETROLIMEX_PYTHON: /usr/bin/python3
+        run: |
+          set -euo pipefail
+          mkdir -p .run
+          if [[ -f .run/petrolimex-status.json ]]; then
+            cp .run/petrolimex-status.json .run/original.json
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           for attempt in 1 2 3; do
             git fetch origin main
             git reset --hard origin/main
-            if [[ "$GITHUB_EVENT_NAME" == schedule ]]; then
-              node scripts/fetch-snapshot.mjs --crude-only
+            if [[ -f .run/original.json ]]; then
+              cp .run/original.json .run/petrolimex-status.json
             else
-              node scripts/fetch-snapshot.mjs
+              rm -f .run/petrolimex-status.json
             fi
-            if git diff --quiet -- dist/snapshot.json; then
-              exit 0
+            if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+              node scripts/fetch-snapshot.mjs || true
+              slot=$(date -u +%FT%TZ)
+              args=(--force)
+            else
+              slot="$SLOT"
+              args=()
+              case "${slot:11:5}" in
+                02:00|05:00|08:00|11:00|14:00|23:00)
+                  node scripts/fetch-snapshot.mjs --crude-only || true ;;
+              esac
             fi
-            git add dist/snapshot.json
-            git commit -m "data: cập nhật snapshot thị trường"
-            if git push origin HEAD:main; then
-              echo "changed=true" >> "$GITHUB_OUTPUT"
-              exit 0
+            if node scripts/monitor-petrolimex.mjs "$slot" "${args[@]}" --due; then
+              if ! command -v tesseract >/dev/null || ! /usr/bin/python3 -c 'import PIL' 2>/dev/null; then
+                sudo apt-get update -qq
+                sudo apt-get install -y -qq tesseract-ocr python3-pil
+              fi
+              node scripts/monitor-petrolimex.mjs "$slot" "${args[@]}"
             fi
+            if ! git diff --quiet -- dist/snapshot.json; then
+              git add dist/snapshot.json
+              git commit -m "data: cập nhật snapshot thị trường"
+              git push origin HEAD:main || continue
+              echo "publish=true" >> "$GITHUB_OUTPUT"
+            fi
+            if [[ -f .run/petrolimex-status.json ]] && ! cmp -s .run/petrolimex-status.json .run/original.json; then
+              echo "publish=true" >> "$GITHUB_OUTPUT"
+              echo "checked=true" >> "$GITHUB_OUTPUT"
+            fi
+            exit 0
           done
           exit 1
+      - uses: actions/cache/save@v4
+        if: steps.refresh.outputs.checked == 'true'
+        with:
+          path: .run/petrolimex-status.json
+          key: petrolimex-monitor-v1-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Kèm trạng thái kiểm tra khi xuất bản
+        if: github.event_name == 'push' || steps.refresh.outputs.publish == 'true'
+        run: |
+          if [[ -f .run/petrolimex-status.json ]]; then
+            cp .run/petrolimex-status.json dist/petrolimex-status.json
+          fi
       - uses: actions/upload-pages-artifact@v3
-        if: github.event_name == 'push' || steps.refresh.outputs.changed == 'true'
+        if: github.event_name == 'push' || steps.refresh.outputs.publish == 'true'
         with:
           path: dist
   deploy:
