@@ -11,6 +11,12 @@ on:
     - cron: '40 7,8 * * 4'
     - cron: '50 7,8 * * 4'
   workflow_dispatch:
+    inputs:
+      source:
+        description: Nguồn cập nhật
+        type: choice
+        options: [market, petrolimex]
+        default: market
   push:
     branches: [main]
     paths: ["dist/**", "scripts/**", ".github/workflows/snapshot.yml", "package*.json"]
@@ -69,6 +75,7 @@ jobs:
         env:
           SLOT: ${{ steps.slot.outputs.at }}
           PETROLIMEX_PYTHON: /usr/bin/python3
+          MANUAL_SOURCE: ${{ inputs.source }}
         run: |
           set -euo pipefail
           mkdir -p .run
@@ -85,10 +92,12 @@ jobs:
             else
               rm -f .run/petrolimex-status.json
             fi
-            if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
-              node scripts/fetch-snapshot.mjs || true
+            if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch && "$MANUAL_SOURCE" == petrolimex ]]; then
               slot=$(date -u +%FT%TZ)
               args=(--force)
+            elif [[ "$GITHUB_EVENT_NAME" == workflow_dispatch ]]; then
+              node scripts/fetch-snapshot.mjs || true
+              slot=""
             else
               slot="$SLOT"
               args=()
@@ -97,7 +106,7 @@ jobs:
                   node scripts/fetch-snapshot.mjs --crude-only || true ;;
               esac
             fi
-            if node scripts/monitor-petrolimex.mjs "$slot" "${args[@]}" --due; then
+            if [[ -n "$slot" ]] && node scripts/monitor-petrolimex.mjs "$slot" "${args[@]}" --due; then
               if ! command -v tesseract >/dev/null || ! /usr/bin/python3 -c 'import PIL' 2>/dev/null; then
                 sudo apt-get update -qq
                 sudo apt-get install -y -qq tesseract-ocr python3-pil
