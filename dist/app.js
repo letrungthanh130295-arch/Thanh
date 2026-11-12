@@ -1,5 +1,5 @@
 import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts, manualForecastDeltas, effectiveUserForecast} from './manual-prices.js?v=rules';
-import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold, plattsValue} from './model.js?v=rules';
+import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold, plattsValue} from './model.js?v=petrolimex';
 import {renderMarket} from './market-charts.js?v=rules';
 const $=id=>document.getElementById(id);
 const num=(v,d=0)=>Number.isFinite(v)?new Intl.NumberFormat('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v):'—';
@@ -10,6 +10,23 @@ const tone=v=>v<0?'down':v>0?'up':'';
 const el=(tag,text,cls)=>{const n=document.createElement(tag);n.textContent=text;if(cls)n.className=cls;return n;};
 function row(id,values){const tr=document.createElement('tr');values.forEach((v,i)=>tr.append(el(i?'td':'th',v)));$(id).append(tr);return tr;}
 function validate(s){if(s.schemaVersion!==2||s.platts?.items?.length!==12||s.forecast?.sources?.length!==5||s.history?.length!==10)throw Error('Snapshot không đúng cấu trúc');return s;}
+let petrolimexStatus;
+function renderPetrolimex() {
+ const status=petrolimexStatus;
+ const label=$('petrolimex-status');
+ label.dataset.trigger=String(!!status?.trigger);
+ label.textContent=!status?'Chưa có lượt kiểm tra Petrolimex':
+   (status.trigger?'Tăng tần suất · '+status.trigger.name:'Theo lịch cơ bản và khung điều hành thứ Năm')+
+   ' · Kiểm tra gần nhất '+date(status.lastCheckedAt)+(status.error?' · '+status.error:'');
+ const signals=$('petrolimex-signals');
+ signals.replaceChildren();
+ for(const signal of status?.signals??[]){
+   const box=el('div','');
+   box.append(el('span',signal.name),el('strong',sign(signal.percent,2)+'%',tone(signal.percent)),
+     el('small','Mốc '+signal.reference+' · '+num(signal.referencePrice,2)+' USD/thùng'));
+   signals.append(box);
+ }
+}
 function render(s){
  validate(s);['pump-prices','platts-rows','threshold-estimates','forecast-rows','history-rows','source-errors'].forEach(id=>$(id).replaceChildren());
  $('snapshot').textContent='SNAPSHOT · cập nhật lúc '+date(s.capturedAt)+' · UTC+7';
@@ -25,7 +42,7 @@ function render(s){
  visiblePlatts.forEach((name,i)=>{const price=plattsValue(s.platts.items,s.platts.items.map(item=>item.value),name),change=changes[i];const label=name==='DO 10ppm'?'DO 0,001S · 10ppm':name;const tr=row('platts-rows',[label,num(price,2),num(change.previous,3),num(change.current,3),Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—']);tr.lastElementChild.className=tone(change.percent);const inherited=latest?.inherited?.[name];if(inherited)tr.cells[1].append(el('small','Kế thừa '+day(inherited),'inherit-note'));const box=el('div','');box.append(el('span',label),el('strong',Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—',tone(change.percent)));$('threshold-estimates').append(box);if(['increase','decrease'].includes(threshold(change.percent)))alerts.push(label+' '+sign(change.percent,2)+'%');});
  $('threshold-status').dataset.trigger=String(!!alerts.length);
  $('threshold-status').textContent=!c.count?'Chưa có phiên Platts kỳ mới để tính biến động':alerts.length?'Cảnh báo Platts · '+alerts.join(' · '):'Platts chưa tới ngưỡng cảnh báo sớm';
- $('threshold-note').textContent=c.missingDates.length?'Chưa có phiên '+c.missingDates.map(day).join(', '):'Giảm từ 9% / tăng từ 14% · chỉ báo sớm';
+ $('threshold-note').textContent=c.missingDates.length?'Chưa có phiên '+c.missingDates.map(day).join(', '):'Giảm từ 10% / tăng từ 15% · chỉ báo sớm';
  $('forecast-title').textContent='Dự kiến kỳ '+day(s.forecast.period);
  $('forecast-time').textContent='Chợ Giá · thành phẩm '+day(s.forecast.basisDate);
  const outdated=!!s.forecast.basisDate&&s.forecast.basisDate<c.from;
@@ -156,6 +173,13 @@ async function load() {
   } catch (error) {
     $('status').textContent = 'Chưa tải được snapshot · ' + error.message;
   }
+  try {
+    const monitor = await fetch('./petrolimex-status.json',{cache:'no-store'});
+    if (monitor.ok) petrolimexStatus = await monitor.json();
+  } catch {
+    // Keep the last displayed check when the connection drops.
+  }
+  renderPetrolimex();
 }
 try {
   entries = JSON.parse(localStorage.getItem(storageKey) ?? '{}');
