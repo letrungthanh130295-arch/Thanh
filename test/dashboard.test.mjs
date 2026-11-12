@@ -67,12 +67,11 @@ test('Refresh archives Chợ Giá and both crude series, with identical reruns b
   assert.deepEqual(denied.snapshot.wti,saved.wti);
  } finally { await rm(dir,{recursive:true,force:true}); }
 });
-test('Pages workflow has one six-slot cron and retains manual dispatch and three source columns',async()=>{
+test('Pages workflow retains six crude snapshot slots and retains manual dispatch and three source columns',async()=>{
  const workflow=await readFile(new URL('../.github/workflows/snapshot.yml',import.meta.url),'utf8');
- const schedules=[...workflow.matchAll(/cron: '0 ([\d,]+) \* \* \*'/g)];
- assert.equal(schedules.length,1);
- assert.deepEqual(schedules[0][1].split(',').map(hour=>(+hour+7)%24).sort((a,b)=>a-b),[6,9,12,15,18,21]);
- assert.match(workflow,/if: github.event_name == 'workflow_dispatch' \|\| github.event_name == 'schedule'/);
+ assert.match(workflow,/02:00\|05:00\|08:00\|11:00\|14:00\|23:00/);
+ assert.match(workflow,/workflow_dispatch:/);
+ assert.match(workflow,/--crude-only/);
  const page=await readFile(new URL('../dist/index.html',import.meta.url),'utf8');
  assert.match(page,/<th>Sản phẩm<\/th><th>Chợ Giá .*<\/th><th>T-Roo .*<\/th><th>Người dùng /);
  assert.match(page,/id="price-charts"/);
