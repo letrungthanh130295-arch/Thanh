@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-13T06:00:21.879+07:00",
+  "capturedAt": "2026-11-12T23:15:14.249Z",
   "official": {
     "effectiveAt": "2026-11-12T15:00:00+07:00",
     "publishedAt": "2026-11-12T15:00:00+07:00",
@@ -444,12 +444,12 @@
     "source": "Chợ Giá"
   },
   "wti": {
-    "price": 85.65,
-    "marketTime": "2026-11-12T03:32:52.000Z",
+    "price": 88.85,
+    "marketTime": "2026-11-12T23:05:06.000Z",
     "symbol": "CL=F",
     "exchange": "NYMEX",
     "currency": "USD",
-    "date": "2026-11-11",
+    "date": "2026-11-12",
     "sessions": [
       {
         "date": "2026-08-10",
@@ -846,14 +846,20 @@
         "price": 86.04000091552734,
         "capturedAt": "2026-11-11T12:34:11.630Z",
         "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F?interval=1d&range=3mo"
+      },
+      {
+        "date": "2026-11-11",
+        "price": 86.52999877929688,
+        "capturedAt": "2026-11-12T23:15:14.249Z",
+        "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F?interval=1d&range=3mo"
       }
     ],
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F?interval=1d&range=3mo",
-    "capturedAt": "2026-11-12T03:42:56.201Z",
+    "capturedAt": "2026-11-12T23:15:14.249Z",
     "previous": {
-      "date": "2026-11-10",
-      "price": 86.04000091552734,
-      "capturedAt": "2026-11-11T12:34:11.630Z",
+      "date": "2026-11-11",
+      "price": 86.52999877929688,
+      "capturedAt": "2026-11-12T23:15:14.249Z",
       "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F?interval=1d&range=3mo"
     },
     "isSample": false
@@ -1101,14 +1107,14 @@
     },
     "wti": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-12T03:42:56.201Z",
-      "lastSuccessAt": "2026-11-12T03:42:56.201Z",
+      "lastAttemptAt": "2026-11-12T23:15:14.249Z",
+      "lastSuccessAt": "2026-11-12T23:15:14.249Z",
       "error": null
     },
     "brent": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-12T03:42:56.201Z",
-      "lastSuccessAt": "2026-11-12T03:42:56.201Z",
+      "lastAttemptAt": "2026-11-12T23:15:14.249Z",
+      "lastSuccessAt": "2026-11-12T23:15:14.249Z",
       "error": null
     }
   },
@@ -1117,14 +1123,14 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-13T06:00:21.879+07:00",
+  "lastCheckedAt": "2026-11-12T23:15:14.249Z",
   "brent": {
-    "price": 91.71,
-    "marketTime": "2026-11-12T03:32:48.000Z",
+    "price": 95.77,
+    "marketTime": "2026-11-12T21:59:56.000Z",
     "symbol": "BZ=F",
     "exchange": "NYMEX",
     "currency": "USD",
-    "date": "2026-11-11",
+    "date": "2026-11-12",
     "sessions": [
       {
         "date": "2026-08-10",
@@ -1521,14 +1527,20 @@
         "price": 91.48999786376953,
         "capturedAt": "2026-11-11T12:34:11.630Z",
         "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=3mo"
+      },
+      {
+        "date": "2026-11-11",
+        "price": 92.76000213623047,
+        "capturedAt": "2026-11-12T23:15:14.249Z",
+        "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=3mo"
       }
     ],
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=3mo",
-    "capturedAt": "2026-11-12T03:42:56.201Z",
+    "capturedAt": "2026-11-12T23:15:14.249Z",
     "previous": {
-      "date": "2026-11-10",
-      "price": 91.48999786376953,
-      "capturedAt": "2026-11-11T12:34:11.630Z",
+      "date": "2026-11-11",
+      "price": 92.76000213623047,
+      "capturedAt": "2026-11-12T23:15:14.249Z",
       "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=3mo"
     },
     "isSample": false
