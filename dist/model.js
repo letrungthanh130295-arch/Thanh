@@ -61,7 +61,7 @@ export function calculateTroo(p0,p1,fx,ratio,tax,nk0,nk1,env0,env1,vat,base){
  const price=(base+blended+importEffect+env1-env0)*(1+vat/100);
  return {deltaPlatts,delta:Math.round(price-base),price:Math.round(price),percent:(price-base)/base*100};
 }
-export function threshold(percent){return Number.isFinite(percent)?percent>=14?'increase':percent<=-9?'decrease':'within':null;}
+export function threshold(percent){return Number.isFinite(percent)?percent>=15?'increase':percent<=-10?'decrease':'within':null;}
 
 
 export function plattsChanges(s,now=Date.now()){const c=cycleContext(s,now);return visiblePlatts.map((name,i)=>({name,previous:c.previous.complete?c.previous.values[i]:null,current:c.current.values[i],percent:c.previous.complete&&Number.isFinite(c.previous.values[i])&&c.previous.values[i]>0&&Number.isFinite(c.current.values[i])?(c.current.values[i]/c.previous.values[i]-1)*100:null}));}
