@@ -1,107 +1,110 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-12T15:04:54.031+07:00",
+  "capturedAt": "2026-11-12T08:32:47.313Z",
   "official": {
-    "effectiveAt": "2026-11-03T22:00:00+07:00",
-    "publishedAt": "2026-11-03T21:56:00+07:00",
+    "effectiveAt": "2026-11-12T15:00:00+07:00",
+    "publishedAt": "2026-11-12T15:00:00+07:00",
     "prices": [
-      23203,
-      23231,
-      28876,
-      23974
+      19390,
+      19840,
+      26820,
+      19740
     ],
     "changes": [
-      -1020,
-      -928,
-      -1370,
-      378
+      -1500,
+      -1310,
+      -1870,
+      -2260
     ],
-    "sourceUrl": "https://moit.gov.vn/tin-tuc/thong-tin-ve-dieu-hanh-gia-xang-dau-ngay-3-11-2026.html",
-    "source": "Bộ Công Thương · thông báo 03/11/2026",
+    "sourceUrl": "https://www.petrolimex.com.vn/ndi/thong-cao-bao-chi/petrolimex-dieu-chinh-gia-xang-dau-tu-15-gio-00-phut-ngay-12-11-2026.html",
+    "source": "Petrolimex · Vùng 1",
     "isSample": false,
-    "fund": {
-      "gasolineProvision": 700,
-      "dieselProvision": 0,
-      "fuelOilProvision": 0,
-      "use": 0
-    }
+    "fund": null,
+    "region": 1,
+    "tableUrl": "https://files.petrolimex.com.vn/jpgs/6783dc1271ff449e95b74a9520964169/1575abe600294db2817d362d37ff5ce9/12-11-2026%2014-39-21.jpg"
   },
   "pump": {
-    "effectiveAt": "2026-11-05T15:00:00+07:00",
     "items": [
       [
-        "E5 RON 92-II",
-        20890
+        "E10 RON 95-V",
+        21840
       ],
       [
         "E10 RON 95-III",
-        21150
+        19840
       ],
       [
-        "E10 RON 95-V",
-        22650
-      ],
-      [
-        "DO 0,05S-II",
-        28690
+        "E5 RON 92-II",
+        19390
       ],
       [
         "DO 0,001S-V",
-        30090
+        28620
+      ],
+      [
+        "DO 0,05S-II",
+        26820
       ],
       [
         "Dầu hỏa 2-K",
-        28600
+        26400
       ],
       [
         "FO 3,5S",
-        22000
+        19740
       ],
       [
         "FO 180S-0,5S",
-        27000
+        24740
       ]
     ],
-    "source": "Ảnh thông báo Chi nhánh Petrolimex Vũng Tàu ngày 05/11/2026 do chủ trạm cung cấp",
-    "isSample": false,
+    "source": "Petrolimex · Vùng 1",
+    "sourceUrl": "https://www.petrolimex.com.vn/ndi/thong-cao-bao-chi/petrolimex-dieu-chinh-gia-xang-dau-tu-15-gio-00-phut-ngay-12-11-2026.html",
+    "tableUrl": "https://files.petrolimex.com.vn/jpgs/6783dc1271ff449e95b74a9520964169/1575abe600294db2817d362d37ff5ce9/12-11-2026%2014-39-21.jpg",
+    "region": 1,
     "previous": {
-      "effectiveAt": "2026-11-03T22:00:00+07:00",
+      "effectiveAt": "2026-11-05T15:00:00+07:00",
       "items": [
         [
           "E5 RON 92-II",
-          23200
+          20890
         ],
         [
           "E10 RON 95-III",
-          23230
+          21150
         ],
         [
           "E10 RON 95-V",
-          24230
+          22650
         ],
         [
           "DO 0,05S-II",
-          28870
+          28690
         ],
         [
           "DO 0,001S-V",
-          30270
+          30090
         ],
         [
           "Dầu hỏa 2-K",
-          29010
+          28600
         ],
         [
           "FO 3,5S",
-          23970
+          22000
         ],
         [
           "FO 180S-0,5S",
-          29590
+          27000
         ]
-      ]
+      ],
+      "source": "Ảnh thông báo Chi nhánh Petrolimex Vũng Tàu ngày 05/11/2026 do chủ trạm cung cấp",
+      "isSample": false,
+      "capturedAt": "2026-11-05T07:41:11.283Z"
     },
-    "capturedAt": "2026-11-05T07:41:11.283Z"
+    "capturedAt": "2026-11-12T08:32:47.313Z",
+    "effectiveAt": "2026-11-12T15:00:00+07:00",
+    "isSample": false
   },
   "platts": {
     "date": "2026-11-11",
@@ -836,49 +839,34 @@
     "isSample": false
   },
   "forecast": {
-    "period": "2026-11-12",
+    "period": "2026-11-19",
     "base": [
-      20890,
-      21150,
-      28690,
-      30090
+      19390,
+      19840,
+      26820,
+      28620
     ],
-    "baseEffectiveAt": "2026-11-05T15:00:00+07:00",
-    "marketCycleStart": "2026-11-05",
+    "baseEffectiveAt": "2026-11-12T15:00:00+07:00",
+    "marketCycleStart": "2026-11-12",
     "actual": null,
-    "lockedPredictions": {
-      "Chợ Giá": {
-        "prices": [
-          19330,
-          19750,
-          26790
-        ],
-        "capturedAt": "2026-11-08T03:02:22.089+07:00"
-      }
-    },
-    "capturedAt": "2026-11-12T15:04:54.021+07:00",
-    "basisDate": "2026-11-10",
+    "lockedPredictions": {},
+    "capturedAt": null,
+    "basisDate": null,
     "pageUpdatedAt": null,
     "pageUpdatedKind": "not-provided",
     "sources": [
       {
         "name": "Chợ Giá",
         "deltas": [
-          -770,
-          -670,
-          -2040,
-          -3090
+          null,
+          null,
+          null,
+          null
         ],
         "isSample": false,
-        "capturedAt": "2026-11-12T15:04:54.021+07:00",
+        "capturedAt": null,
         "providedAt": null,
-        "baselineConfirmed": false,
-        "period": "2026-11-12",
-        "basisDate": "2026-11-10",
-        "pageUpdatedAt": null,
-        "pageUpdatedKind": "not-provided",
-        "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
-        "captureMethod": "browser-snapshot"
+        "baselineConfirmed": false
       },
       {
         "name": "User cung cấp",
@@ -935,6 +923,52 @@
     ]
   },
   "history": [
+    {
+      "period": "2026-11-12",
+      "effectiveAt": "2026-11-12T15:00:00+07:00",
+      "actual": [
+        19390,
+        19840,
+        26820
+      ],
+      "predictions": {
+        "Chợ Giá": [
+          20120,
+          20480,
+          26650
+        ],
+        "T-Roo": [
+          19601,
+          20061,
+          26824
+        ]
+      },
+      "source": "https://www.petrolimex.com.vn/ndi/thong-cao-bao-chi/petrolimex-dieu-chinh-gia-xang-dau-tu-15-gio-00-phut-ngay-12-11-2026.html",
+      "isSample": false,
+      "forecastPeriod": "2026-11-12",
+      "accuracy": {
+        "Chợ Giá": {
+          "errors": [
+            -730,
+            -640,
+            170
+          ],
+          "mae": 513.3333333333334
+        },
+        "T-Roo": {
+          "errors": [
+            -211,
+            -221,
+            -4
+          ],
+          "mae": 145.33333333333334
+        },
+        "User cung cấp": {
+          "errors": null,
+          "mae": null
+        }
+      }
+    },
     {
       "period": "2026-11-05",
       "effectiveAt": "2026-11-05T15:00:00+07:00",
@@ -1020,11 +1054,6 @@
     },
     {
       "period": "2026-09-17",
-      "actual": null,
-      "predictions": {}
-    },
-    {
-      "period": "2026-09-10",
       "actual": null,
       "predictions": {}
     }
@@ -1761,6 +1790,13 @@
         "capturedAt": "2026-11-12T15:04:54.021+07:00",
         "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/"
       }
+    }
+  ],
+  "historyArchive": [
+    {
+      "period": "2026-09-10",
+      "actual": null,
+      "predictions": {}
     }
   ]
 }
