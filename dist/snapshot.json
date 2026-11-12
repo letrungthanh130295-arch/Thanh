@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-12T09:02:48.976+07:00",
+  "capturedAt": "2026-11-12T03:42:56.201Z",
   "official": {
     "effectiveAt": "2026-11-03T22:00:00+07:00",
     "publishedAt": "2026-11-03T21:56:00+07:00",
@@ -421,8 +421,8 @@
     "source": "Chợ Giá"
   },
   "wti": {
-    "price": 86.26,
-    "marketTime": "2026-11-11T23:43:08.000Z",
+    "price": 85.65,
+    "marketTime": "2026-11-12T03:32:52.000Z",
     "symbol": "CL=F",
     "exchange": "NYMEX",
     "currency": "USD",
@@ -826,7 +826,7 @@
       }
     ],
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F?interval=1d&range=3mo",
-    "capturedAt": "2026-11-11T23:53:18.556Z",
+    "capturedAt": "2026-11-12T03:42:56.201Z",
     "previous": {
       "date": "2026-11-10",
       "price": 86.04000091552734,
@@ -1049,14 +1049,14 @@
     },
     "wti": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-11T23:53:18.556Z",
-      "lastSuccessAt": "2026-11-11T23:53:18.556Z",
+      "lastAttemptAt": "2026-11-12T03:42:56.201Z",
+      "lastSuccessAt": "2026-11-12T03:42:56.201Z",
       "error": null
     },
     "brent": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-11T23:53:18.556Z",
-      "lastSuccessAt": "2026-11-11T23:53:18.556Z",
+      "lastAttemptAt": "2026-11-12T03:42:56.201Z",
+      "lastSuccessAt": "2026-11-12T03:42:56.201Z",
       "error": null
     }
   },
@@ -1065,10 +1065,10 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-12T09:02:48.976+07:00",
+  "lastCheckedAt": "2026-11-12T03:42:56.201Z",
   "brent": {
-    "price": 92.45,
-    "marketTime": "2026-11-11T23:43:08.000Z",
+    "price": 91.71,
+    "marketTime": "2026-11-12T03:32:48.000Z",
     "symbol": "BZ=F",
     "exchange": "NYMEX",
     "currency": "USD",
@@ -1472,7 +1472,7 @@
       }
     ],
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=3mo",
-    "capturedAt": "2026-11-11T23:53:18.556Z",
+    "capturedAt": "2026-11-12T03:42:56.201Z",
     "previous": {
       "date": "2026-11-10",
       "price": 91.48999786376953,
