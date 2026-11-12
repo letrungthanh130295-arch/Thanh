@@ -138,6 +138,8 @@ export function applyNotice(old, notice, prices, now, oldForecast) {
   if (pending?.basisDate < day) s.pendingForecast = pending;
   const record = s.history.find(row => row.period === day);
   record.forecastPeriod = snapshot.forecast.period;
+  record.base = snapshot.forecast.base;
+  record.publishedAt = notice.publishedAt;
   const replaced = old.history.filter(row =>
     !s.history.some(current => current.period === row.period && current.effectiveAt === row.effectiveAt));
   if (replaced.length) s.historyArchive = [...(old.historyArchive ?? []), ...replaced];
