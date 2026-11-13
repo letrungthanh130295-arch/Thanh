@@ -47,7 +47,7 @@ export function withManualPlatts(snapshot, entries) {
       manualProducts.forEach((name, i) => {
         manual[i] = entry.values[i] ?? (entry.inherit ? prior[i]?.value : null);
         if (entry.inherit && entry.values[i] == null && prior[i]) inherited[name]=prior[i].date;
-        if (manual[i] == null && !entry.inherit) return;
+        if (manual[i] == null) return;
         const index = platts.items.findIndex(item=>item.name===name);
         const alias = name===dieselName ? platts.items.findIndex(item=>item.name==='DO 50ppm') : -1;
         if (index>=0) values[index]=manual[i]??null;
