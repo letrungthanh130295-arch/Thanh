@@ -1,9 +1,4 @@
 import {marketCalendar} from './market-calendar.js?v=session-20261106-3';
-export function historyRows(records){return [...records].sort((a,b)=>b.period.localeCompare(a.period)).slice(0,10);}
-export function differences(actual,pred){return actual?.length===3&&pred?.length===3&&actual.every(Number.isFinite)&&pred.every(Number.isFinite)?actual.map((v,i)=>v-pred[i]):null;}
-export function score(actual,pred){const d=differences(actual,pred);return d?d.reduce((a,v)=>a+Math.abs(v),0)/3:null;}
-export function bestSources(record){const ranked=Object.entries(record.predictions||{}).map(([name,v])=>({name,score:score(record.actual,v)})).filter(x=>x.score!==null).sort((a,b)=>a.score-b.score);return ranked.length?ranked.filter(x=>x.score===ranked[0].score).map(x=>x.name):[];}
-export function illustrative(base,delta){return Number.isFinite(base)&&Number.isFinite(delta)?base+delta:null;}
 
 
 // UI projections only: keep the full snapshot and official records untouched.
@@ -44,7 +39,7 @@ export function cycleContext(s,now=Date.now()){
   const expected=businessDays(start,shiftDay(end,1));
   const sessions=[...new Map((s.platts.sessions||[]).filter(x=>start&&x.date>=start&&x.date<=end&&x.date<=today).map(x=>[x.date,x])).values()].sort((a,b)=>a.date.localeCompare(b.date));
   const missingDates=expected.filter(date=>!sessions.some(x=>x.date===date));
-  const average=prices=>prices.length&&prices.every(v=>Number.isFinite(v)&&v>0)?prices.reduce((a,b)=>a+b,0)/prices.length:null;
+  const average=prices=>{const valid=prices.filter(v=>Number.isFinite(v)&&v>0);return valid.length?valid.reduce((a,b)=>a+b,0)/valid.length:null;};
   const prices=name=>sessions.map(x=>plattsValue(s.platts.items,x.values,name));
   const values=visiblePlatts.map(name=>average(prices(name)));
   const trooValues=[...values.slice(0,2),average(prices('DO 0,05%S').map((value,i)=>sessions[i].manualDiesel??value))];
@@ -68,17 +63,18 @@ export function threshold(percent){
  return percent>=15-tolerance?'increase':percent<=-10+tolerance?'decrease':'within';
 }
 
+
 export function plattsChanges(s,now=Date.now(),cycle=cycleContext(s,now)){
  const {current,previous,hasClosedCycle}=cycle;
- const currentGap=current.missingDates.some(date=>date<current.dates.at(-1));
  return visiblePlatts.map((name,i)=>{
-  const prior=hasClosedCycle&&previous.complete?previous.values[i]:null;
-  const average=currentGap?null:current.values[i];
+  const prior=hasClosedCycle?previous.values[i]:null;
+  const average=current.values[i];
   return {name,previous:prior,current:average,
    percent:Number.isFinite(prior)&&prior>0&&Number.isFinite(average)?(average/prior-1)*100:null};
  });
 }
-export function defaultTroo(s,now=Date.now()){const c=cycleContext(s,now),base=pumpValues(s);if(!c.previous.complete||!c.current.count)return null;const results=[.95,.90,1].map((ratio,i)=>calculateTroo(c.previous.trooValues[i],c.current.trooValues[i],26040,ratio,0,0,0,0,0,0,base[i]));if(results.every(x=>!x))return null;return {name:'T-Roo',period:s.forecast.period,deltas:results.map(x=>x?.delta??null),prices:results.map(x=>x?.price??null),currentDates:c.current.dates,previousDates:c.previous.dates};}
+export function defaultTroo(s,now=Date.now()){const c=cycleContext(s,now),base=pumpValues(s);if(!c.hasClosedCycle||!c.current.count)return null;const results=[.95,.90,1].map((ratio,i)=>calculateTroo(c.previous.trooValues[i],c.current.trooValues[i],26040,ratio,0,0,0,0,0,0,base[i]));if(results.every(x=>!x))return null;return {name:'T-Roo',period:s.forecast.period,deltas:results.map(x=>x?.delta??null),prices:results.map(x=>x?.price??null),currentDates:c.current.dates,previousDates:c.previous.dates};}
+
 
 // Confirmed price events, never wall-clock guesses, advance the market window.
 export function latestPriceEvent(s, now=Date.now()) {
@@ -94,9 +90,3 @@ export function advanceCycle(input,now=Date.now()){
  const period=nextThursday(event.day),pending=s.pendingForecast;
  const fresh=pending?.period===period&&pending.basisDate>=event.day?pending:null;
  s.forecast={period,base:[...event.prices],baseEffectiveAt:event.at,marketCycleStart:event.day,
- actual:null,lockedPredictions:{},capturedAt:fresh?.capturedAt??null,basisDate:fresh?.basisDate??null,
- pageUpdatedAt:fresh?.pageUpdatedAt??null,pageUpdatedKind:fresh?.pageUpdatedKind??null,
- sources:f.sources.map(x=>({name:x.name,deltas:[null,null,null,null],isSample:false,capturedAt:null,providedAt:null,baselineConfirmed:false}))};
- if(fresh){const row=s.forecast.sources.find(x=>x.name==='Chợ Giá');Object.assign(row,fresh,{name:'Chợ Giá',isSample:false,baselineConfirmed:fresh.basisDate>=cycleContext(s,now).from});delete s.pendingForecast;}
- return s;
-}
