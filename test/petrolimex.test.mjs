@@ -30,22 +30,43 @@ test('Petrolimex cadence is 3h, 10 minutes on Thursdays, and 15 minutes during w
   assert(check('2026-11-12','16:45',true));
 });
 
-test('Brent has priority and compares with a trading close before the official cycle', () => {
+test('Only Platts moves Petrolimex between normal and 15-minute checks', () => {
   const s=snapshot();
-  s.pump.effectiveAt='2026-11-05T15:00:00+07:00';
-  s.official.effectiveAt='2026-11-03T22:00:00+07:00';
-  s.platts.date='2026-10-01';
-  const quote = price => ({price,marketTime:'2026-11-10T14:00:00Z',sessions:[
-    {date:'2026-11-04',price:100},{date:'2026-11-05',price:115}
-  ]});
-  s.brent=quote(115); s.wti=quote(90);
-  const now=Date.parse('2026-11-10T14:30:00Z');
-  assert.equal(marketRisk(s,now).trigger.name,'Brent');
-  assert.equal(marketRisk(s,now).trigger.reference,'2026-11-04');
-  s.brent=quote(108); s.wti=quote(108);
-  assert.equal(marketRisk(s,now).trigger,null);
-  s.wti=quote(90);
-  assert.equal(marketRisk(s,now).trigger.name,'WTI');
+  s.official.effectiveAt=release;
+  s.pump.effectiveAt=release;
+  delete s.pump.previous;
+  s.history=[{effectiveAt:'2026-11-05T15:00:00+07:00',actual:[1,2,3]}];
+  s.forecast.period='2026-11-19';
+  s.platts.items=['A92','A95','DO 10ppm','DO 50ppm'].map(name=>({name}));
+  const sessions=['05','06','09','10','11'].map(day=>({date:'2026-11-'+day,values:[100,100,100,100]}));
+  const current={date:'2026-11-12',values:[115,100,100,100]};
+  s.platts.sessions=[...sessions,current];
+  const now=Date.parse('2026-11-14T14:45:00+07:00');
+  s.brent={price:130,marketTime:'2026-11-13T14:00:00Z',sessions:[{date:'2026-11-11',price:100}]};
+  s.wti={...s.brent,price:70};
+  const risk=()=>marketRisk(s,now);
+  assert.deepEqual(risk().alerts.map(x=>x.name),['Platts A92']);
+  assert(monitorDue(now,!!risk().trigger));
+  current.values=[115,100,100,90];
+  assert.deepEqual(risk().alerts.map(x=>x.name),['Platts A92','Platts DO 0,05%S']);
+  assert.equal(risk().alerts[1].referencePrice,100);
+  current.values=[null,100,100,null];
+  assert.equal(risk().trigger,null);
+  assert.equal(risk().signals.find(x=>x.name==='Platts A92').percent,null);
+  assert.equal(risk().signals.find(x=>x.name==='Brent').percent,30);
+  assert.equal(risk().signals.find(x=>x.name==='WTI').percent,-30);
+  assert(!monitorDue(now,!!risk().trigger));
+  current.values=[115,100,100,90];
+  s.platts.sessions=s.platts.sessions.filter(row=>row.date!=='2026-11-09');
+  assert.equal(risk().trigger,null);
+  s.platts.sessions=[...sessions,current,{date:'2026-11-16',values:[130,100,100,90]}];
+  assert.equal(marketRisk(s,Date.parse('2026-11-16T18:00:00+07:00')).trigger,null);
+  s.platts.sessions=[...sessions,current];
+  const entries=saveEntry({},'platts',current.date,['100','100','100','100'],'2026-11-13T10:00:00+07:00');
+  assert.equal(marketRisk(withManualPlatts(s,entries),now).trigger,null);
+  const partial=saveEntry({},'platts',current.date,['100','','',''],'2026-11-13T10:00:00+07:00');
+  s.platts.sessions=[current];
+  assert.deepEqual(withManualPlatts(s,partial).platts.sessions[0].values,[100,100,100,90]);
 });
 
 test('only verified official notices and both correctly ordered regions can advance the cycle', () => {
@@ -75,7 +96,7 @@ test('only verified official notices and both correctly ordered regions can adva
   assert.equal(applyNotice(updated,notice,prices,release),updated);
 });
 
-import {saveEntry,userForecastAt} from '../dist/manual-prices.js';
+import {saveEntry,userForecastAt,withManualPlatts} from '../dist/manual-prices.js';
 test('user accuracy can use locally stored, inherited forecasts as of publication', () => {
   const earlier=saveEntry({},'forecast','2026-11-05',['-400','-300','0'],'2026-11-05T10:00:00+07:00');
   const prior=saveEntry(earlier,'forecast','2026-11-12',['-500','',''],'2026-11-12T12:00:00+07:00');
