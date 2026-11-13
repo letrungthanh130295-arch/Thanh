@@ -50,7 +50,7 @@ export function cycleContext(s,now=Date.now()){
   const trooValues=[...values.slice(0,2),average(prices('DO 0,05%S').map((value,i)=>sessions[i].manualDiesel??value))];
   return {from:start,to:end,until:shiftDay(end,1),dates:sessions.map(x=>x.date),count:sessions.length,expected:expected.length,missingDates,complete:!!expected.length&&!missingDates.length,values,trooValues};
  }
- return {from,until,prior,current:window(from,shiftDay(until,-1)),previous:window(prior,shiftDay(from,-1))};
+ return {from,until,prior,hasClosedCycle:starts.length>=2,current:window(from,shiftDay(until,-1)),previous:window(prior,shiftDay(from,-1))};
 }
 export function calculateTroo(p0,p1,fx,ratio,tax,nk0,nk1,env0,env1,vat,base){
  if(![p0,p1,fx,ratio,tax,nk0,nk1,env0,env1,vat,base].every(Number.isFinite)||base<=0)return null;
@@ -61,10 +61,23 @@ export function calculateTroo(p0,p1,fx,ratio,tax,nk0,nk1,env0,env1,vat,base){
  const price=(base+blended+importEffect+env1-env0)*(1+vat/100);
  return {deltaPlatts,delta:Math.round(price-base),price:Math.round(price),percent:(price-base)/base*100};
 }
-export function threshold(percent){return Number.isFinite(percent)?percent>=15?'increase':percent<=-10?'decrease':'within':null;}
+export function threshold(percent){
+ if(!Number.isFinite(percent))return null;
+ // Absorb floating-point noise at the inclusive boundaries.
+ const tolerance=100*Number.EPSILON;
+ return percent>=15-tolerance?'increase':percent<=-10+tolerance?'decrease':'within';
+}
 
-
-export function plattsChanges(s,now=Date.now()){const c=cycleContext(s,now);return visiblePlatts.map((name,i)=>({name,previous:c.previous.complete?c.previous.values[i]:null,current:c.current.values[i],percent:c.previous.complete&&Number.isFinite(c.previous.values[i])&&c.previous.values[i]>0&&Number.isFinite(c.current.values[i])?(c.current.values[i]/c.previous.values[i]-1)*100:null}));}
+export function plattsChanges(s,now=Date.now(),cycle=cycleContext(s,now)){
+ const {current,previous,hasClosedCycle}=cycle;
+ const currentGap=current.missingDates.some(date=>date<current.dates.at(-1));
+ return visiblePlatts.map((name,i)=>{
+  const prior=hasClosedCycle&&previous.complete?previous.values[i]:null;
+  const average=currentGap?null:current.values[i];
+  return {name,previous:prior,current:average,
+   percent:Number.isFinite(prior)&&prior>0&&Number.isFinite(average)?(average/prior-1)*100:null};
+ });
+}
 export function defaultTroo(s,now=Date.now()){const c=cycleContext(s,now),base=pumpValues(s);if(!c.previous.complete||!c.current.count)return null;const results=[.95,.90,1].map((ratio,i)=>calculateTroo(c.previous.trooValues[i],c.current.trooValues[i],26040,ratio,0,0,0,0,0,0,base[i]));if(results.every(x=>!x))return null;return {name:'T-Roo',period:s.forecast.period,deltas:results.map(x=>x?.delta??null),prices:results.map(x=>x?.price??null),currentDates:c.current.dates,previousDates:c.previous.dates};}
 
 // Confirmed price events, never wall-clock guesses, advance the market window.
