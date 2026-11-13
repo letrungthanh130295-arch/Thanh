@@ -58,7 +58,7 @@ test('Only Platts moves Petrolimex between normal and 15-minute checks', () => {
   assert(!monitorDue(now,!!risk().trigger));
   current.values=[115,100,100,90];
   s.platts.sessions=s.platts.sessions.filter(row=>row.date!=='2026-11-09');
-  assert.deepEqual(risk().alerts.map(x=>x.name),['Platts A92']);
+  assert.deepEqual(risk().alerts.map(x=>x.name),['Platts A92','Platts DO 0,05%S']);
   s.platts.sessions=[...sessions,current,{date:'2026-11-16',values:[130,100,100,90]}];
   assert.equal(marketRisk(s,Date.parse('2026-11-16T18:00:00+07:00')).trigger,null);
   s.platts.sessions=[...sessions,current];
