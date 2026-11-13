@@ -1,7 +1,6 @@
-import {cycleContext, plattsChanges, threshold} from './model.js';
+import {cycleContext, plattsChanges, threshold} from './model.js?v=platts-alert';
 
 const hour = 3600000;
-const localDay = time => new Date(time + 7 * hour).toISOString().slice(0, 10);
 const tradingDay = time => new Intl.DateTimeFormat('en-CA', {timeZone:'America/New_York'}).format(time);
 
 function crudeSignal(quote, name, effectiveAt, now) {
@@ -22,14 +21,14 @@ export function marketRisk(snapshot, now = Date.now()) {
   const effectiveAt = Math.max(...[snapshot.pump?.effectiveAt, snapshot.official?.effectiveAt]
     .map(Date.parse).filter(at => at <= now));
   const cycle = cycleContext(snapshot, now);
-  const platts = snapshot.platts.date >= localDay(now - 96 * hour)
-    ? plattsChanges(snapshot, now).filter(row => Number.isFinite(row.percent)).map(row => ({
-      name:'Platts '+row.name, percent:row.percent, reference:cycle.previous.from+' – '+cycle.previous.to,
-      referencePrice:row.previous, observedAt:snapshot.platts.capturedAt
-    })) : [];
-  const signals = [crudeSignal(snapshot.brent,'Brent',effectiveAt,now),
-    crudeSignal(snapshot.wti,'WTI',effectiveAt,now), ...platts].filter(Boolean);
-  return {signals, trigger:signals.find(signal => ['increase','decrease'].includes(threshold(signal.percent))) ?? null};
+  const platts = plattsChanges(snapshot, now, cycle).map(row => ({
+    name:'Platts '+row.name, percent:row.percent, reference:cycle.previous.from+' – '+cycle.previous.to,
+    referencePrice:row.previous, observedAt:snapshot.platts.capturedAt
+  }));
+  const alerts = platts.filter(({percent}) => ['increase','decrease'].includes(threshold(percent)));
+  const crude = [crudeSignal(snapshot.brent,'Brent',effectiveAt,now),
+    crudeSignal(snapshot.wti,'WTI',effectiveAt,now)].filter(Boolean);
+  return {signals:[...platts,...crude], alerts, trigger:alerts[0] ?? null};
 }
 
 export function isThursdayWindow(slot) {
