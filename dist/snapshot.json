@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-14T06:00:45+07:00",
+  "capturedAt": "2026-11-13T23:14:50.859Z",
   "official": {
     "effectiveAt": "2026-11-12T15:00:00+07:00",
     "publishedAt": "2026-11-12T15:00:00+07:00",
@@ -479,8 +479,8 @@
     "source": "Chợ Giá"
   },
   "wti": {
-    "price": 88.76,
-    "marketTime": "2026-11-13T12:38:35.000Z",
+    "price": 88.92,
+    "marketTime": "2026-11-13T22:00:00.000Z",
     "symbol": "CL=F",
     "exchange": "NYMEX",
     "currency": "USD",
@@ -896,7 +896,7 @@
       }
     ],
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F?interval=1d&range=3mo",
-    "capturedAt": "2026-11-13T12:48:37.141Z",
+    "capturedAt": "2026-11-13T23:14:50.859Z",
     "previous": {
       "date": "2026-11-12",
       "price": 88.73999786376953,
@@ -1128,18 +1128,18 @@
   "schemaVersion": 2,
   "sources": {
     "platts": {
-      "status": "ok",
-      "lastAttemptAt": "2026-11-14T06:00:45+07:00",
+      "status": "error",
+      "lastAttemptAt": "2026-11-13T23:14:50.859Z",
       "lastSuccessAt": "2026-11-14T06:00:45+07:00",
-      "error": null,
+      "error": "HTTP 403",
       "captureMethod": "browser-snapshot",
       "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/"
     },
     "forecast": {
-      "status": "ok",
-      "lastAttemptAt": "2026-11-14T06:00:45+07:00",
+      "status": "error",
+      "lastAttemptAt": "2026-11-13T23:14:50.859Z",
       "lastSuccessAt": "2026-11-14T06:00:45+07:00",
-      "error": null,
+      "error": "HTTP 403",
       "captureMethod": "browser-snapshot",
       "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
       "observedPeriod": "2026-11-12",
@@ -1148,14 +1148,14 @@
     },
     "wti": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-13T12:48:37.141Z",
-      "lastSuccessAt": "2026-11-13T12:48:37.141Z",
+      "lastAttemptAt": "2026-11-13T23:14:50.859Z",
+      "lastSuccessAt": "2026-11-13T23:14:50.859Z",
       "error": null
     },
     "brent": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-13T12:48:37.141Z",
-      "lastSuccessAt": "2026-11-13T12:48:37.141Z",
+      "lastAttemptAt": "2026-11-13T23:14:50.859Z",
+      "lastSuccessAt": "2026-11-13T23:14:50.859Z",
       "error": null
     }
   },
@@ -1164,10 +1164,10 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-14T06:00:45+07:00",
+  "lastCheckedAt": "2026-11-13T23:14:50.859Z",
   "brent": {
-    "price": 96.46,
-    "marketTime": "2026-11-13T12:36:54.000Z",
+    "price": 96.08,
+    "marketTime": "2026-11-13T21:59:30.000Z",
     "symbol": "BZ=F",
     "exchange": "NYMEX",
     "currency": "USD",
@@ -1583,7 +1583,7 @@
       }
     ],
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=3mo",
-    "capturedAt": "2026-11-13T12:48:37.141Z",
+    "capturedAt": "2026-11-13T23:14:50.859Z",
     "previous": {
       "date": "2026-11-12",
       "price": 95.81999969482422,
