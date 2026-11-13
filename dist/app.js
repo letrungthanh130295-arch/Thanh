@@ -1,5 +1,6 @@
-import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts, manualForecastDeltas, effectiveUserForecast, userForecastAt} from './manual-prices.js?v=petrolimex2';
-import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold, plattsValue} from './model.js?v=petrolimex';
+import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts, manualForecastDeltas, effectiveUserForecast, userForecastAt} from './manual-prices.js?v=platts-alert';
+import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold, plattsValue} from './model.js?v=platts-alert';
+import {marketRisk} from './petrolimex-monitor.js?v=platts-alert';
 import {renderMarket} from './market-charts.js?v=rules';
 const $=id=>document.getElementById(id);
 const num=(v,d=0)=>Number.isFinite(v)?new Intl.NumberFormat('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v):'—';
@@ -14,15 +15,19 @@ let petrolimexStatus;
 function renderPetrolimex() {
  const status=petrolimexStatus;
  const label=$('petrolimex-status');
- label.dataset.trigger=String(!!status?.trigger);
- label.textContent=!status?'Chưa có lượt kiểm tra Petrolimex':
-   (status.trigger?'Tăng tần suất · '+status.trigger.name:status.signals?.length?'Theo lịch cơ bản và khung điều hành thứ Năm':'Chờ dữ liệu thị trường đủ để tính cảnh báo')+
-   ' · Kiểm tra gần nhất '+date(status.lastCheckedAt)+(status.error?' · '+status.error:'');
+ const risk=snapshot?marketRisk(snapshot):null;
+ const alerts=risk?.alerts??[];
+ const available=risk?.signals.some(signal=>signal.name.startsWith('Platts ')&&Number.isFinite(signal.percent));
+ label.dataset.trigger=String(alerts.length>0);
+ label.textContent=(alerts.length?'Cảnh báo · '+alerts.map(signal=>signal.name).join(' · '):
+   available?'Theo lịch cơ bản và khung điều hành thứ Năm':'Chưa đủ dữ liệu bình quân Platts')+
+   (status?' · Kiểm tra gần nhất '+date(status.lastCheckedAt)+(status.error?' · '+status.error:''):' · Chưa có lượt kiểm tra Petrolimex');
  const signals=$('petrolimex-signals');
  signals.replaceChildren();
- for(const signal of status?.signals??[]){
+ for(const signal of risk?.signals??[]){
    const box=el('div','');
-   box.append(el('span',signal.name),el('strong',sign(signal.percent,2)+'%',tone(signal.percent)),
+   box.append(el('span',signal.name.startsWith('Platts ')?signal.name:signal.name+' · tham khảo'),
+     el('strong',Number.isFinite(signal.percent)?sign(signal.percent,2)+'%':'Chưa đủ dữ liệu',tone(signal.percent)),
      el('small','Mốc '+signal.reference+' · '+num(signal.referencePrice,2)+' USD/thùng'));
    signals.append(box);
  }
@@ -37,11 +42,11 @@ function render(s){
  $('cycle-context').textContent='Kỳ mới '+range(c)+' · '+c.count+'/'+c.expected+' phiên';
  $('average-period').textContent='BQ kỳ trước '+range(prev)+' · BQ kỳ mới '+range(c)+(c.count?' · Đã có số liệu đến '+day(c.dates.at(-1)):' · Chưa có phiên kỳ mới');
  $('platts-time').textContent='Chốt '+day(s.platts.date)+' · lấy số '+date(s.platts.capturedAt)+' · nguồn cập nhật '+date(s.platts.pageUpdatedAt)+(s.platts.manualUpdatedAt?' · Người dùng '+date(s.platts.manualUpdatedAt):'');
- const changes=plattsChanges(s),alerts=[];
+ const changes=plattsChanges(s,Date.now(),cycle),alerts=[];
  const latest=s.platts.sessions[0];
  visiblePlatts.forEach((name,i)=>{const price=plattsValue(s.platts.items,s.platts.items.map(item=>item.value),name),change=changes[i];const label=name==='DO 10ppm'?'DO 0,001S · 10ppm':name;const tr=row('platts-rows',[label,num(price,2),num(change.previous,3),num(change.current,3),Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—']);tr.lastElementChild.className=tone(change.percent);const inherited=latest?.inherited?.[name];if(inherited)tr.cells[1].append(el('small','Kế thừa '+day(inherited),'inherit-note'));const box=el('div','');box.append(el('span',label),el('strong',Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—',tone(change.percent)));$('threshold-estimates').append(box);if(['increase','decrease'].includes(threshold(change.percent)))alerts.push(label+' '+sign(change.percent,2)+'%');});
  $('threshold-status').dataset.trigger=String(!!alerts.length);
- $('threshold-status').textContent=!c.count?'Chưa có phiên Platts kỳ mới để tính biến động':alerts.length?'Cảnh báo Platts · '+alerts.join(' · '):'Platts chưa tới ngưỡng cảnh báo sớm';
+ $('threshold-status').textContent=!changes.some(change=>Number.isFinite(change.percent))?'Chưa đủ dữ liệu bình quân Platts':alerts.length?'Cảnh báo Platts · '+alerts.join(' · '):'Platts chưa tới ngưỡng cảnh báo sớm';
  $('threshold-note').textContent=c.missingDates.length?'Chưa có phiên '+c.missingDates.map(day).join(', '):'Giảm từ 10% / tăng từ 15% · chỉ báo sớm';
  $('forecast-title').textContent='Dự kiến kỳ '+day(s.forecast.period);
  $('forecast-time').textContent='Chợ Giá · thành phẩm '+day(s.forecast.basisDate);
