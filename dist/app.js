@@ -1,5 +1,5 @@
 import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts, manualForecastDeltas, effectiveUserForecast, userForecastAt} from './manual-prices.js?v=platts-alert';
-import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold, plattsValue} from './model.js?v=platts-average-20261114';
+import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold, plattsValue} from './model.js?v=platts-average-20261114b';
 import {marketRisk} from './petrolimex-monitor.js?v=platts-alert';
 import {renderMarket} from './market-charts.js?v=rules';
 const $=id=>document.getElementById(id);
