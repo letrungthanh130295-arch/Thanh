@@ -677,11 +677,11 @@ test('normal Thursday windows exclude the next announcement date',()=>{
  const s=advanceCycle(original,now);s.official=null;s.pump.previous=null;s.history=s.history.filter(x=>x.period!=='2026-11-03');
  const c=cycleContext(s,now);assert.deepEqual([c.previous.from,c.previous.to,c.current.from,c.current.to],['2026-10-29','2026-11-04','2026-11-05','2026-11-11']);
 });
-test('missing or zero values cannot produce a T-Roo forecast',()=>{
+test('averages available positive sessions even when other sessions are missing',()=>{
  const s=withTwoSessions();s.platts.sessions.find(x=>x.date==='2026-11-06').values[0]=0;
- assert.deepEqual(defaultTroo(s,now).deltas,[null,-852,-1214]);assert.equal(plattsChanges(s,now)[0].current,null);
+ assert.deepEqual(defaultTroo(s,now).deltas,[-1513,-852,-1214]);assert.equal(plattsChanges(s,now)[0].current,102.89);
  s.platts.sessions=s.platts.sessions.filter(x=>x.date!=='2026-11-04');
- assert.equal(cycleContext(s,now).previous.complete,false);assert.equal(defaultTroo(s,now),null);
+ assert.equal(cycleContext(s,now).previous.complete,false);assert.equal(defaultTroo(s,now).previousDates.length,1);
 });
 test('future events do not move early; extraordinary and regular events each open their own date',()=>{
  const s=advanceCycle(original,now);s.pump.previous=structuredClone(s.pump);delete s.pump.previous.previous;
