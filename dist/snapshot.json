@@ -473,10 +473,272 @@
     "pageUpdatedAt": "2026-11-15T07:59:09+07:00",
     "pageUpdatedKind": "table",
     "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
-    "capturedAt": "2026-11-15T09:00:41+07:00",
+    "capturedAt": "2026-11-15T05:02:23.253Z",
     "isSample": false,
     "captureMethod": "browser-snapshot",
-    "source": "Chợ Giá"
+    "source": "Chợ Giá",
+    "selection": {
+      "2026-11-12": {
+        "a92": {
+          "selected": {
+            "product": "a92",
+            "session_date": "2026-11-12",
+            "price": 105.49,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-15T09:00:41+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a92",
+              "session_date": "2026-11-12",
+              "price": 105.49,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "recorded_at": "2026-11-15T05:02:23.253Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "a95": {
+          "selected": {
+            "product": "a95",
+            "session_date": "2026-11-12",
+            "price": 108.28,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-15T09:00:41+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a95",
+              "session_date": "2026-11-12",
+              "price": 108.28,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "recorded_at": "2026-11-15T05:02:23.253Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do10": {
+          "selected": {
+            "product": "do10",
+            "session_date": "2026-11-12",
+            "price": 153.14,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-15T09:00:41+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do10",
+              "session_date": "2026-11-12",
+              "price": 153.14,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "recorded_at": "2026-11-15T05:02:23.253Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do500": {
+          "selected": {
+            "product": "do500",
+            "session_date": "2026-11-12",
+            "price": 151.92,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-15T09:00:41+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do500",
+              "session_date": "2026-11-12",
+              "price": 151.92,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "recorded_at": "2026-11-15T05:02:23.253Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        }
+      },
+      "2026-11-13": {
+        "a92": {
+          "selected": {
+            "product": "a92",
+            "session_date": "2026-11-13",
+            "price": 104.49,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-15T09:00:41+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a92",
+              "session_date": "2026-11-13",
+              "price": 104.49,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "recorded_at": "2026-11-15T05:02:23.253Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "a95": {
+          "selected": {
+            "product": "a95",
+            "session_date": "2026-11-13",
+            "price": 107.08,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-15T09:00:41+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a95",
+              "session_date": "2026-11-13",
+              "price": 107.08,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "recorded_at": "2026-11-15T05:02:23.253Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do10": {
+          "selected": {
+            "product": "do10",
+            "session_date": "2026-11-13",
+            "price": 154.16,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-15T09:00:41+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do10",
+              "session_date": "2026-11-13",
+              "price": 154.16,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "recorded_at": "2026-11-15T05:02:23.253Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do500": {
+          "selected": {
+            "product": "do500",
+            "session_date": "2026-11-13",
+            "price": 153.11,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-15T09:00:41+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do500",
+              "session_date": "2026-11-13",
+              "price": 153.11,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "recorded_at": "2026-11-15T05:02:23.253Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-15T12:00:19+07:00",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        }
+      }
+    }
   },
   "wti": {
     "price": 88.92,
@@ -1136,10 +1398,10 @@
       "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/"
     },
     "forecast": {
-      "status": "ok",
-      "lastAttemptAt": "2026-11-15T09:00:41+07:00",
+      "status": "error",
+      "lastAttemptAt": "2026-11-15T12:00:25+07:00",
       "lastSuccessAt": "2026-11-15T09:00:41+07:00",
-      "error": null,
+      "error": "Trang dự báo vẫn ở kỳ cũ, giữ số cũ",
       "captureMethod": "browser-snapshot",
       "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
       "observedPeriod": "2026-11-12",
@@ -1164,7 +1426,7 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-15T09:00:41+07:00",
+  "lastCheckedAt": "2026-11-15T12:00:25+07:00",
   "brent": {
     "price": 96.08,
     "marketTime": "2026-11-13T21:59:30.000Z",
@@ -2396,6 +2658,43 @@
           -2040,
           -3090
         ]
+      }
+    },
+    {
+      "scheduledAt": "2026-11-15T12:00:00+07:00",
+      "platts": {
+        "capturedAt": "2026-11-15T12:00:19+07:00",
+        "date": "2026-11-13",
+        "previousDate": "2026-11-12",
+        "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
+        "values": [
+          104.49,
+          107.08,
+          null,
+          153.11,
+          null,
+          154.16,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "forecast": {
+        "capturedAt": "2026-11-15T12:00:25+07:00",
+        "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
+        "period": "2026-11-12",
+        "basisDate": "2026-11-10",
+        "deltas": [
+          -770,
+          -670,
+          -2040,
+          -3090
+        ],
+        "pageUpdatedAt": null,
+        "pageUpdatedKind": "not-provided"
       }
     }
   ],
