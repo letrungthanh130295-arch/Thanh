@@ -1,4 +1,4 @@
-import {dieselName, plattsValue} from './model.js?v=rules';
+import {dieselName, plattsValue} from './model.js?v=diesel-forecast-1';
 const colors = ['#ffd076', '#6ee7ba'];
 const number = new Intl.NumberFormat('vi-VN', {maximumFractionDigits: 2});
 const marketDate = new Intl.DateTimeFormat('en-CA', {timeZone: 'America/New_York'});

@@ -1,7 +1,7 @@
-import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts, manualForecastDeltas, effectiveUserForecast, userForecastAt} from './manual-prices.js?v=platts-alert';
-import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold, plattsValue} from './model.js?v=platts-average-20261114c';
-import {marketRisk} from './petrolimex-monitor.js?v=platts-alert';
-import {renderMarket} from './market-charts.js?v=rules';
+import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts, manualForecastDeltas, manualPlattsValues, effectiveUserForecast, userForecastAt} from './manual-prices.js?v=diesel-forecast-1';
+import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold, plattsValue,sourceDeltas,differences,retailForecastBase} from './model.js?v=diesel-forecast-1';
+import {marketRisk} from './petrolimex-monitor.js?v=diesel-forecast-1';
+import {renderMarket} from './market-charts.js?v=diesel-forecast-1';
 const $=id=>document.getElementById(id);
 const num=(v,d=0)=>Number.isFinite(v)?new Intl.NumberFormat('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v):'—';
 const sign=(v,d=0)=>Number.isFinite(v)?(v<0?'−':v>0?'+':'')+num(Math.abs(v),d):'—';
@@ -57,13 +57,13 @@ function render(s){
  const cho=s.forecast.sources.find(x=>x.name==='Chợ Giá');
  const entered=entries['forecast:'+s.forecast.period];
  const legacy=s.forecast.sources.find(x=>x.name==='User cung cấp');
- const choDeltas=cho?.period&&cho.period!==s.forecast.period?[]:cho?.deltas;
+ const choDeltas=cho?.period&&cho.period!==s.forecast.period?[]:sourceDeltas(cho);
  const user=effectiveUserForecast(entries,s.forecast.period,day=>forecastBase(s,day));
- const userDeltas=user.map((value,i)=>value?.value??(entered?null:legacy?.deltas[i]));
+ const userDeltas=user.map((value,i)=>value?.value??(entered?null:sourceDeltas(legacy)[i]));
  $('cho-time').textContent=date(cho?.capturedAt);
  $('troo-time').textContent=auto?date(lastCalculation):'—';
  $('user-time').textContent=date(entered?.updatedAt??user.map(value=>value?.updatedAt).filter(Boolean).sort().at(-1)??legacy?.capturedAt);
- for(const i of [1,0,2]){
+ for(const i of [0,1,3,2]){
    const changes=[choDeltas?.[i],auto?.deltas[i],userDeltas?.[i]];
    const tr=row('forecast-rows',[forecastProducts[i],...changes.map(v=>Number.isFinite(v)?sign(v)+' đ/lít':'—')]);
    changes.forEach((value,index)=>{tr.cells[index+1].className=tone(value);});
@@ -79,13 +79,20 @@ function render(s){
    const period=x.forecastPeriod??x.period;
    if(base?.slice(0,3).every(Number.isFinite)&&Number.isFinite(cutoff)){
      const local=userForecastAt(entries,period,cutoff,day=>day===period?base:forecastBase(s,day));
-     if(local.every(item=>Number.isFinite(item?.value))){
-       predictions['User cung cấp']=local.map((item,i)=>base[i]+item.value);
+     if(local.some(item=>Number.isFinite(item?.value))){
+       predictions['User cung cấp']=local.map((item,i)=>Number.isFinite(base[i])&&Number.isFinite(item?.value)?base[i]+item.value:predictions['User cung cấp']?.[i]??null);
      }
    }
    const visible={'Chợ Giá':predictions['Chợ Giá'],'T-Roo':predictions['T-Roo'],'Người dùng':predictions['User cung cấp']};
-   row('history-rows',[day(x.period)+(x.isSample?' · mẫu':''),x.actual?x.actual.map(v=>num(v)).join(' / '):'—',
+   const historyRow=row('history-rows',[day(x.period)+(x.isSample?' · mẫu':''),x.actual?x.actual.map(v=>num(v)).join(' / '):'—',
      ...Object.values(visible).map(pred=>num(score(x.actual,pred),1)),bestSources({...x,predictions:visible}).join(', ')||'—']);
+   if(x.actual?.length===4){
+     Object.values(visible).forEach((pred,i)=>{
+       const errors=differences(x.actual,pred);
+       for(const grade of [3,2]) historyRow.cells[2+i].append(el('small',forecastProducts[grade]+' · '+sign(errors?.[grade]),'inherit-note'));
+     });
+   }
+
  }
  for(const [key,title] of [['platts','Platts'],['forecast','Chợ Giá']]){const source=s.sources?.[key];if(source?.status==='error')$('source-errors').append(el('p',title+': '+source.error+' · giữ số cũ','warning'));}
  $('sample-banner').hidden=!(s.platts.isSample||s.forecast.sources.some(x=>x.isSample));$('sample-banner').textContent='Có dữ liệu mẫu';
@@ -107,7 +114,7 @@ function showSnapshot() {
 }
 
 function forecastBase(data, day) {
-  return day===data.forecast.period ? data.forecast.base : data.history.find(row=>row.period===day)?.base;
+  return day===data.forecast.period ? retailForecastBase(data) : data.history.find(row=>row.period===day)?.base;
 }
 
 function populateForm() {
@@ -116,14 +123,14 @@ function populateForm() {
   const entry = entries[kind.value + ':' + entryDay.value];
   const data = advanceCycle(snapshot);
   const selected = entryDay.value;
-  const values = isPlatts ? entry?.values : manualForecastDeltas(entry,forecastBase(data,selected));
+  const values = isPlatts ? manualPlattsValues(entry) : manualForecastDeltas(entry,forecastBase(data,selected));
   const past = Object.fromEntries(Object.entries(entries).filter(([key])=>key.slice(key.indexOf(':')+1)<selected));
   const inherited = isPlatts
     ? withManualPlatts(data,past).platts.sessions.filter(row=>row.date<selected)
     : effectiveUserForecast(past,selected,day=>forecastBase(data,day));
   $('entry-hint').textContent = !isPlatts && entry && !entry.format && !forecastBase(data,selected)
     ? 'Kỳ cũ thiếu giá mốc. Giá tuyệt đối vẫn còn trong lịch sử chỉnh sửa.'
-    : 'Ô trống lấy số gần nhất trước ngày đã chọn.';
+    : isPlatts ? 'Ô trống A92/A95 lấy số gần nhất. Mỗi loại DO cần giá đúng phiên.' : 'Ô trống lấy số gần nhất trước ngày đã chọn.';
   $('entry-date-label').textContent = isPlatts ? 'Ngày phiên' : 'Ngày điều hành dự kiến';
   $('entry-fields').replaceChildren(...products.map((name, i) => {
     const label = el('label', name + (isPlatts ? ' · USD/thùng' : ' · Tăng/giảm (đ/lít)'));
@@ -132,7 +139,7 @@ function populateForm() {
     input.inputMode = isPlatts ? 'decimal' : 'text';
     input.value = values?.[i] ?? '';
     const priorRow = isPlatts ? inherited.find(row=>plattsValue(data.platts.items,row.values,name)!==null) : null;
-    const prior = isPlatts ? priorRow && {date:priorRow.inherited?.[name]??priorRow.date,
+    const prior = isPlatts ? i<2 && priorRow && {date:priorRow.inherited?.[name]??priorRow.date,
       value:plattsValue(data.platts.items,priorRow.values,name)} : inherited[i];
     input.placeholder = prior ? (isPlatts ? num(prior.value,2) : sign(prior.value)) : 'Chưa có số';
     label.append(input);
@@ -141,7 +148,7 @@ function populateForm() {
   }));
   $('entry-history').replaceChildren(...(entry?.revisions ?? []).slice().reverse().map(revision =>
     el('li', date(revision.updatedAt) + (!isPlatts && !revision.format ? ' · Giá tuyệt đối · ' : ' · ') +
-      products.map((name,i)=>name+' '+(revision.format ? sign(revision.values[i]) : revision.values[i]??'—')).join(' · '))
+      products.map((name,i)=>(i===2&&!isPlatts&&revision.values.length===3?'DO cũ':i===3&&isPlatts&&!revision.dieselGrades?'DO cũ':name)+' '+(revision.format ? sign(revision.values[i]) : revision.values[i]??'—')).join(' · '))
   ));
   $('entry-error').textContent = '';
 }

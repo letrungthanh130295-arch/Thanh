@@ -1,7 +1,7 @@
-import {dieselName, plattsValue} from './model.js?v=rules';
+import {dieselName, forecastProducts, plattsValue} from './model.js?v=diesel-forecast-1';
 
 export const manualProducts = ['A92', 'A95', 'DO 10ppm', dieselName];
-export const forecastProducts = ['E5', 'E10', 'DO'];
+export {forecastProducts};
 export const storageKey = 'trung-thanh.manual-prices.v1';
 
 export function saveEntry(entries, kind, day, fields, at) {
@@ -24,44 +24,60 @@ export function saveEntry(entries, kind, day, fields, at) {
   const key = kind + ':' + day;
   const previous = entries[key];
   const format = kind === 'forecast' ? 'delta-vnd-per-litre' : undefined;
-  if (previous?.inherit === true && previous.format === format && JSON.stringify(previous?.values) === JSON.stringify(values)) return entries;
-  const revision = {values, inherit:true, updatedAt: at, source: 'Người dùng', ...(format && {format})};
+  if (previous?.inherit === true && (kind!=='platts'||previous.dieselGrades) && previous.format === format && JSON.stringify(previous?.values) === JSON.stringify(values)) return entries;
+  const revision = {values, ...(kind==='platts' && {dieselGrades:true}), inherit:true, updatedAt: at, source: 'Người dùng', ...(format && {format})};
   return {...entries, [key]: {...revision, revisions: [...(previous?.revisions ?? []), revision]}};
 }
 
 export function withManualPlatts(snapshot, entries) {
   const platts = snapshot.platts;
+  const items = [...platts.items];
+  if (!items.some(item=>[dieselName,'DO 500ppm'].includes(item.name))) items.push({name:dieselName,unit:'USD/thùng'});
   const byDate = new Map((platts.sessions ?? []).map(row => [row.date, row]));
   for (const [day, field] of [[platts.date,'value'],[platts.previousDate,'previous']]) {
-    if (day && !byDate.has(day)) byDate.set(day,{date:day,values:platts.items.map(item=>item[field])});
+    if (day && !byDate.has(day)) byDate.set(day,{date:day,values:items.map(item=>item[field])});
   }
   const dates = new Set([...byDate.keys(),...Object.keys(entries).filter(key=>key.startsWith('platts:')).map(key=>key.slice(7))]);
   const prior = manualProducts.map(()=>null);
+  const observations = new Map();
+  for (const {platts: quote} of snapshot.choGiaObservations ?? []) {
+    if (!quote?.date || !Number.isFinite(Date.parse(quote.capturedAt))) continue;
+    quote.values?.forEach((price,index)=>{
+      if (!Number.isFinite(price) || price<=0) return;
+      const key=JSON.stringify([quote.date,index,price]);
+      if (Date.parse(quote.capturedAt)<Date.parse(observations.get(key) ?? '9999-01-01')) observations.set(key,quote.capturedAt);
+    });
+  }
   for (const date of [...dates].sort()) {
     const row = byDate.get(date);
     const entry = entries['platts:'+date];
-    const values = row ? [...row.values] : platts.items.map(() => null);
+    const values = row ? [...row.values] : items.map(() => null);
     const inherited = {};
     const manual = [];
     if (entry) {
+      const explicit = manualPlattsValues(entry);
       manualProducts.forEach((name, i) => {
-        manual[i] = entry.values[i] ?? (entry.inherit ? prior[i]?.value : null);
-        if (entry.inherit && entry.values[i] == null && prior[i]) inherited[name]=prior[i].date;
+        const entered = explicit[i];
+        manual[i] = entered ?? (i<2 && entry.inherit && plattsValue(items,values,name)===null ? prior[i]?.value : null);
+        if (entered == null && Number.isFinite(manual[i])) inherited[name]=prior[i].date;
         if (manual[i] == null) return;
-        const index = platts.items.findIndex(item=>item.name===name);
-        const alias = name===dieselName ? platts.items.findIndex(item=>item.name==='DO 50ppm') : -1;
-        if (index>=0) values[index]=manual[i]??null;
-        if (alias>=0) values[alias]=index>=0?null:manual[i]??null;
+        const index = items.findIndex(item=>item.name===name || (name===dieselName && item.name==='DO 500ppm'));
+        const stored = plattsValue(items,values,name);
+        const observedAt=observations.get(JSON.stringify([date,index,stored]));
+        const capturedAt = row?.valueCapturedAt?.[index] ?? observedAt ?? row?.capturedAt;
+        const firstEntry = (entry.revisions ?? []).find(revision=>Number.isFinite(manualPlattsValues(revision)[i])) ?? entry;
+        if (stored!==null && (!capturedAt || Date.parse(capturedAt)<=Date.parse(firstEntry.updatedAt))) return;
+        values[index]=manual[i];
       });
     }
     if (entry || row) {
       manualProducts.forEach((name,i)=>{
-        const value=plattsValue(platts.items,values,name);
-        if(value!==null) prior[i]={value,date:inherited[name]??date,manual:entry?.values[i]!=null || !!(inherited[name] && prior[i]?.manual)};
+        const value=plattsValue(items,values,name);
+        if(value!==null) prior[i]={value,date:inherited[name]??date};
       });
     }
     if (entry && (row || manual.some(Number.isFinite))) {
-      byDate.set(date,{...row,date,values,manualDiesel:entry.values[2]??entry.values[3]??(inherited[manualProducts[2]] && prior[2]?.manual ? manual[2] : undefined),
+      byDate.set(date,{...row,date,values,
         inherited,manualUpdatedAt:entry.updatedAt});
     }
   }
@@ -70,13 +86,18 @@ export function withManualPlatts(snapshot, entries) {
   if (!current) return snapshot;
   return {...snapshot, platts: {...platts, sessions, date: current.date,
     previousDate: previous?.date ?? null, manualUpdatedAt: current.manualUpdatedAt,
-    items: platts.items.map((item, i) => ({...item, value: current.values[i], previous: previous?.values[i] ?? null}))}};
+    items: items.map((item, i) => ({...item, value: current.values[i], previous: previous?.values[i] ?? null}))}};
+}
+
+// Older entries allowed the 500ppm field to represent 50ppm. Require a confirmed grade.
+export function manualPlattsValues(entry) {
+  return entry ? entry.values.map((value,i)=>i===3&&!entry.dieselGrades?null:value) : [];
 }
 
 // Untagged browser records from v1 are projected retail prices.
 export function manualForecastDeltas(entry, base) {
   return entry?.values.map((price, i) => {
-    if (!Number.isFinite(price)) return null;
+    if (!Number.isFinite(price) || (i===2 && entry.values.length===3)) return null;
     if (entry.format === 'delta-vnd-per-litre') return price;
     return Number.isFinite(base?.[i]) ? price - base[i] : null;
   });

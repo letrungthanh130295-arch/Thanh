@@ -658,7 +658,7 @@ test('05 November close belongs only to 12 November; two-session averages and T-
  assert.ok(!c.current.dates.some(d=>c.previous.dates.includes(d)));
  close(c.previous.values.slice(0,3),[112.615,113.865,163.595]);
  close(c.current.values.slice(0,3),[106.385,108.085,156.18]);
- const t=defaultTroo(s,now);assert.equal(t.period,'2026-11-12');assert.deepEqual(t.deltas,[-969,-852,-1214]);
+ const t=defaultTroo(s,now);assert.equal(t.period,'2026-11-12');assert.deepEqual(t.deltas,[-969,-852,-1214,-1274]);
  assert.deepEqual(t.previousDates,c.previous.dates);assert.deepEqual(t.currentDates,c.current.dates);
  const changes=plattsChanges(s,now);assert.ok(changes.slice(0,4).every(x=>x.percent<0));assert.equal(changes.length,4);
  assert.equal(changes[0].percent,(c.current.values[0]/c.previous.values[0]-1)*100);
@@ -679,7 +679,7 @@ test('normal Thursday windows exclude the next announcement date',()=>{
 });
 test('averages available positive sessions even when other sessions are missing',()=>{
  const s=withTwoSessions();s.platts.sessions.find(x=>x.date==='2026-11-06').values[0]=0;
- assert.deepEqual(defaultTroo(s,now).deltas,[-1513,-852,-1214]);assert.equal(plattsChanges(s,now)[0].current,102.89);
+ assert.deepEqual(defaultTroo(s,now).deltas,[-1513,-852,-1214,-1274]);assert.equal(plattsChanges(s,now)[0].current,102.89);
  s.platts.sessions=s.platts.sessions.filter(x=>x.date!=='2026-11-04');
  assert.equal(cycleContext(s,now).previous.complete,false);assert.equal(defaultTroo(s,now).previousDates.length,1);
 });
@@ -714,12 +714,43 @@ test('Manual edits are dated, auditable and preserve prior values per product',(
  const edited=saveEntry(initial,'platts','2026-11-06',['121','','','159'],at);
  assert.equal(Object.keys(edited).length,1);
  assert.equal(edited['platts:2026-11-06'].revisions.length,2);
- const withForecast=saveEntry(edited,'forecast','2026-11-12',['21000','','28000'],at);
+ const withForecast=saveEntry(edited,'forecast','2026-11-12',['21000','','28000',''],at);
  const result=withManualPlatts(snapshot,withForecast);
  assert.equal(result.platts.sessions.length,snapshot.platts.sessions.length);
- close(cycleContext(result,now).current.trooValues,[111.945,104.68,155.76]);
+ close(cycleContext(result,now).current.trooValues,[106.385,108.085,156.18,158.535]);
  assert.deepEqual(defaultTroo(result,now),defaultTroo(withManualPlatts(snapshot,edited),now));
  assert.deepEqual(result.history,snapshot.history);
  assert.throws(()=>saveEntry({},'platts','2026-11-31',['0','','',''],at));
- assert.equal(saveEntry({},'forecast','2026-11-12',['0','',''],at)['forecast:2026-11-12'].values[0],0);
+ assert.equal(saveEntry({},'forecast','2026-11-12',['0','','',''],at)['forecast:2026-11-12'].values[0],0);
+});
+
+test('Diesel forecasts move independently and a 50ppm quote cannot fill a missing 500ppm quote',()=>{
+ const s=withTwoSessions(), baseline=defaultTroo(s,now).deltas;
+ const row=s.platts.sessions.find(item=>item.date==='2026-11-06');
+ row.values[5]+=10;
+ const after10=defaultTroo(s,now).deltas;
+ assert.equal(after10[2],baseline[2]);
+ assert.notEqual(after10[3],baseline[3]);
+ row.values[3]+=10;
+ assert.equal(defaultTroo(s,now).deltas[3],after10[3]);
+ assert.notEqual(defaultTroo(s,now).deltas[2],baseline[2]);
+ for(const session of s.platts.sessions) {
+   session.values[3]=null;
+   session.values[6]=150;
+ }
+ assert.equal(defaultTroo(s,now).deltas[2],null);
+ assert.equal(defaultTroo(s,now).deltas[3],after10[3]);
+});
+
+test('A manual first observation beats a later quote but never fills the unreported diesel grade',()=>{
+ const s=withTwoSessions();
+ const session=s.platts.sessions.find(item=>item.date==='2026-11-06');
+ session.capturedAt='2026-11-06T15:55:00+07:00';
+ session.values[3]=null;
+ const early=saveEntry({},'platts',session.date,['','','160',''],'2026-11-06T15:45:00+07:00');
+ const late=saveEntry({},'platts',session.date,['','','160',''],'2026-11-06T16:00:00+07:00');
+ const latest=entries=>withManualPlatts(s,entries).platts.sessions[0].values;
+ assert.equal(latest(early)[5],160);
+ assert.equal(latest(late)[5],161.83);
+ assert.equal(latest(early)[3],null);
 });

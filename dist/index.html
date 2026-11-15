@@ -64,7 +64,7 @@
 <div class="chart-controls"><label>Thời gian <select id="chart-range"><option value="30">30 ngày</option><option value="90">90 ngày</option><option value="0">Tất cả</option></select></label><label><input type="checkbox" id="chart-labels"> Hiện giá tại điểm</label></div>
 <div id="price-charts" class="price-charts"></div>
 </section>
-<section id="history"><div class="section-title"><h2>Độ chính xác dự báo</h2><span>10 kỳ gần nhất</span></div><article class="panel"><div class="table-wrap"><table><thead><tr><th>Kỳ</th><th>Giá thật E5 / E10 / DO</th><th>MAE Chợ Giá</th><th>MAE T-Roo</th><th>MAE Người dùng</th><th>Nguồn tốt nhất</th></tr></thead><tbody id="history-rows"></tbody></table></div></article></section>
+<section id="history"><div class="section-title"><h2>Độ chính xác dự báo</h2><span>10 kỳ gần nhất</span></div><article class="panel"><div class="table-wrap"><table><thead><tr><th>Kỳ</th><th>Giá thật E5 / E10 / DO 0,05%S / DO 0,001%S</th><th>MAE Chợ Giá</th><th>MAE T-Roo</th><th>MAE Người dùng</th><th>Nguồn tốt nhất</th></tr></thead><tbody id="history-rows"></tbody></table></div></article></section>
 <div class="bottom">TRUNG THÀNH <span>Snapshot · giờ Việt Nam (UTC+7)</span></div></main>
 <dialog id="price-dialog">
 <form id="price-form">
@@ -78,25 +78,26 @@
 </form>
 </dialog>
 <script type="module">
-import {pumpValues,cycleContext,calculateTroo} from './model.js?v=rules';
+import {pumpValues,cycleContext,calculateTroo} from './model.js?v=diesel-forecast-1';
 const root=document.getElementById('troo');
-const fields=[['p0a','A92 bình quân kỳ trước · USD/thùng',null],['p0b','A95 bình quân kỳ trước · USD/thùng',null],['p0c','DO 0,05%S bình quân kỳ trước · USD/thùng',null],['p1a','A92 bình quân kỳ mới · USD/thùng',null],['p1b','A95 bình quân kỳ mới · USD/thùng',null],['p1c','DO 0,05%S bình quân kỳ mới · USD/thùng',null],['fx','FX bình quân · đ/USD',26040],['taxa','TTĐB E5 kỳ này · %',0],['taxb','TTĐB E10 kỳ này · %',0],['env0','BVMT kỳ trước · đ/lít',0],['env1','BVMT kỳ này · đ/lít',0],['nk0','Thuế NK kỳ trước · %',0],['nk1','Thuế NK kỳ này · %',0],['vat','VAT kỳ này · %',0],['basea','Giá mốc E5 tự động · đ/lít',null],['baseb','Giá mốc E10 tự động · đ/lít',null],['basec','Giá mốc DO tự động · đ/lít',null]];
+const fields=[['p0a','A92 bình quân kỳ trước · USD/thùng',null],['p0b','A95 bình quân kỳ trước · USD/thùng',null],['p0c','DO 0,05%S bình quân kỳ trước · USD/thùng',null],['p0d','DO 10ppm bình quân kỳ trước · USD/thùng',null],['p1a','A92 bình quân kỳ mới · USD/thùng',null],['p1b','A95 bình quân kỳ mới · USD/thùng',null],['p1c','DO 0,05%S bình quân kỳ mới · USD/thùng',null],['p1d','DO 10ppm bình quân kỳ mới · USD/thùng',null],['fx','FX bình quân · đ/USD',26040],['taxa','TTĐB E5 kỳ này · %',0],['taxb','TTĐB E10 kỳ này · %',0],['env0','BVMT kỳ trước · đ/lít',0],['env1','BVMT kỳ này · đ/lít',0],['nk0','Thuế NK kỳ trước · %',0],['nk1','Thuế NK kỳ này · %',0],['vat','VAT kỳ này · %',0],['basea','Giá mốc E5 tự động · đ/lít',null],['baseb','Giá mốc E10 tự động · đ/lít',null],['basec','Giá mốc DO 0,05%S tự động · đ/lít',null],['based','Giá mốc DO 0,001%S tự động · đ/lít',null]];
 const inputs={};let snapshot=null;
-for(const [key,label,value] of fields){const wrap=document.createElement('label');wrap.textContent=label;const input=document.createElement('input');input.id='troo-'+key;input.type='text';input.inputMode='decimal';input.value=value==null?'':String(value);input.autocomplete='off';input.readOnly=key.startsWith('base')||/^p[01][abc]$/.test(key);inputs[key]=input;wrap.append(input);root.querySelector('.troo-fields').append(wrap);}
+for(const [key,label,value] of fields){const wrap=document.createElement('label');wrap.textContent=label;const input=document.createElement('input');input.id='troo-'+key;input.type='text';input.inputMode='decimal';input.value=value==null?'':String(value);input.autocomplete='off';input.readOnly=key.startsWith('base')||/^p[01][abcd]$/.test(key);inputs[key]=input;wrap.append(input);root.querySelector('.troo-fields').append(wrap);}
 
 
 const parse=v=>{const t=v.trim().replace(',','.');return /^\d+(?:\.\d+)?$/.test(t)?Number(t):NaN;};
 const fmt=(v,d=0)=>new Intl.NumberFormat('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v);
 const signed=(v,d=0)=>(v<0?'−':v>0?'+':'')+fmt(Math.abs(v),d);
 const day=v=>v?v.split('-').reverse().join('/'):'—';
+const inputIsPrice=key=>key.startsWith('base')||/^p[01][abcd]$/.test(key);
 function renderTroo(){
- const v={};let valid=true;for(const [key] of fields){v[key]=parse(inputs[key].value);const ok=Number.isFinite(v[key])&&(!['taxa','taxb','nk0','nk1','vat'].includes(key)||v[key]<=100)&&(!['fx','basea','baseb','basec'].includes(key)||v[key]>0);inputs[key].setAttribute('aria-invalid',String(!ok));valid=valid&&ok;}
+ const v={};let valid=true;for(const [key] of fields){v[key]=parse(inputs[key].value);const ok=Number.isFinite(v[key])&&(!['taxa','taxb','nk0','nk1','vat'].includes(key)||v[key]<=100)&&(!['fx','basea','baseb','basec','based'].includes(key)||v[key]>0);inputs[key].setAttribute('aria-invalid',String(!ok));if(!inputIsPrice(key))valid=valid&&ok;}
  document.getElementById('troo-error').textContent=valid?'':'Chưa đủ dữ liệu hoặc ô nhập không hợp lệ.';
  const body=document.getElementById('troo-results');body.replaceChildren();
- for(const [key,name,ratio,tax] of [['a','E5',.95,v.taxa],['b','E10 RON 95-III',.90,v.taxb],['c','DO 0,05%S',1,0]]){const r=valid?calculateTroo(v['p0'+key],v['p1'+key],v.fx,ratio,tax,v.nk0,v.nk1,v.env0,v.env1,v.vat,v['base'+key]):null;const tr=document.createElement('tr');[name,r?signed(r.deltaPlatts,2):'—',r?signed(r.delta):'—',r?fmt(r.price):'—'].forEach((text,i)=>{const cell=document.createElement(i?'td':'th');cell.textContent=text;if(i>=2&&r)cell.className=r.delta<0?'down':r.delta>0?'up':'';tr.append(cell);});body.append(tr);}
+ for(const [key,name,ratio,tax] of [['a','E5',.95,v.taxa],['b','E10 RON 95-III',.90,v.taxb],['c','DO 0,05%S',1,0],['d','DO 0,001%S',1,0]]){const r=valid?calculateTroo(v['p0'+key],v['p1'+key],v.fx,ratio,tax,v.nk0,v.nk1,v.env0,v.env1,v.vat,v['base'+key]):null;const tr=document.createElement('tr');[name,r?signed(r.deltaPlatts,2):'—',r?signed(r.delta):'—',r?fmt(r.price):'—'].forEach((text,i)=>{const cell=document.createElement(i?'td':'th');cell.textContent=text;if(i>=2&&r)cell.className=r.delta<0?'down':r.delta>0?'up':'';tr.append(cell);});body.append(tr);}
 }
 root.addEventListener('input',renderTroo);
 root.querySelector('[data-preset=current]').addEventListener('click',()=>{for(const key of ['taxa','taxb','env0','env1','nk0','nk1','vat'])inputs[key].value='0';renderTroo();});
-document.addEventListener('snapshot-loaded',event=>{snapshot=event.detail;const cycle=cycleContext(snapshot),base=pumpValues(snapshot);['a','b','c'].forEach((key,i)=>{inputs['base'+key].value=Number.isFinite(base[i])?String(base[i]):'';for(const [prefix,window] of [['p0',cycle.previous],['p1',cycle.current]]){const value=prefix==='p0'&&!window.complete?null:window.trooValues[i];inputs[prefix+key].value=Number.isFinite(value)?String(Math.round(value*1e6)/1e6):'';}});document.getElementById('troo-origin').textContent='BQ kỳ trước '+day(cycle.previous.from)+'–'+day(cycle.previous.to)+' · BQ kỳ mới '+day(cycle.current.from)+'–'+day(cycle.current.to)+' · Phiên ngày điều hành chốt 15:30 thuộc kỳ mới, sau công bố 15:00';renderTroo();});
+document.addEventListener('snapshot-loaded',event=>{snapshot=event.detail;const cycle=cycleContext(snapshot),base=pumpValues(snapshot);['a','b','c','d'].forEach((key,i)=>{inputs['base'+key].value=Number.isFinite(base[i])?String(base[i]):'';for(const [prefix,window] of [['p0',cycle.previous],['p1',cycle.current]]){const value=prefix==='p0'&&!cycle.hasClosedCycle?null:window.trooValues[i];inputs[prefix+key].value=Number.isFinite(value)?String(Math.round(value*1e6)/1e6):'';}});document.getElementById('troo-origin').textContent='BQ kỳ trước '+day(cycle.previous.from)+'–'+day(cycle.previous.to)+' · BQ kỳ mới '+day(cycle.current.from)+'–'+day(cycle.current.to)+' · Phiên ngày điều hành chốt 15:30 thuộc kỳ mới, sau công bố 15:00';renderTroo();});
 renderTroo();
-</script><script type="module" src="app.js?v=platts-alert"></script></body></html>
+</script><script type="module" src="app.js?v=diesel-forecast-1"></script></body></html>

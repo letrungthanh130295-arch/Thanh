@@ -37,9 +37,9 @@ test('Only Platts moves Petrolimex between normal and 15-minute checks', () => {
   delete s.pump.previous;
   s.history=[{effectiveAt:'2026-11-05T15:00:00+07:00',actual:[1,2,3]}];
   s.forecast.period='2026-11-19';
-  s.platts.items=['A92','A95','DO 10ppm','DO 50ppm'].map(name=>({name}));
+  s.platts.items=['A92','A95','DO 10ppm','DO 500ppm'].map(name=>({name}));
   const sessions=['05','06','09','10','11'].map(day=>({date:'2026-11-'+day,values:[100,100,100,100]}));
-  const current={date:'2026-11-12',values:[115,100,100,100]};
+  const current={date:'2026-11-12',capturedAt:'2026-11-13T11:00:00+07:00',values:[115,100,100,100]};
   s.platts.sessions=[...sessions,current];
   const now=Date.parse('2026-11-14T14:45:00+07:00');
   s.brent={price:130,marketTime:'2026-11-13T14:00:00Z',sessions:[{date:'2026-11-11',price:100}]};
@@ -86,13 +86,15 @@ test('only verified official notices and both correctly ordered regions can adva
   s.forecast.period='2026-11-12';
   s.forecast.marketCycleStart='2026-11-05';
   s.forecast.base=[20890,21150,28690,30090];
-  s.forecast.lockedPredictions={'User cung cấp':{prices:[19400,19850,26830],capturedAt:'2026-11-12T12:00:00+07:00'}};
+  s.forecast.lockedPredictions={'User cung cấp':{prices:[19400,19850,26830,28600],dieselGrades:true,capturedAt:'2026-11-12T12:00:00+07:00'}};
   const notice=parseNotice(detail,candidate,candidate.at);
   const prices=verifyPrices(table);
   const updated=applyNotice(s,notice,prices,release);
   assert.equal(updated.forecast.period,'2026-11-19');
   assert.deepEqual(updated.forecast.base,[19390,19840,26820,28620]);
-  assert.equal(updated.history[0].accuracy['User cung cấp'].mae,10);
+  assert.deepEqual(updated.history[0].actual,[19390,19840,26820,28620]);
+  assert.deepEqual(updated.history[0].accuracy['User cung cấp'].errors,[-10,-10,-10,20]);
+  assert.equal(updated.history[0].accuracy['User cung cấp'].mae,12.5);
   assert.deepEqual(updated.platts,s.platts);
   assert.deepEqual(updated.choGiaObservations,s.choGiaObservations);
   assert.equal(applyNotice(updated,notice,prices,release),updated);
@@ -100,9 +102,9 @@ test('only verified official notices and both correctly ordered regions can adva
 
 import {saveEntry,userForecastAt,withManualPlatts} from '../dist/manual-prices.js';
 test('user accuracy can use locally stored, inherited forecasts as of publication', () => {
-  const earlier=saveEntry({},'forecast','2026-11-05',['-400','-300','0'],'2026-11-05T10:00:00+07:00');
-  const prior=saveEntry(earlier,'forecast','2026-11-12',['-500','',''],'2026-11-12T12:00:00+07:00');
-  const later=saveEntry(prior,'forecast','2026-11-12',['-700','-600','-550'],'2026-11-12T16:00:00+07:00');
+  const earlier=saveEntry({},'forecast','2026-11-05',['-400','-300','0','120'],'2026-11-05T10:00:00+07:00');
+  const prior=saveEntry(earlier,'forecast','2026-11-12',['-500','','',''],'2026-11-12T12:00:00+07:00');
+  const later=saveEntry(prior,'forecast','2026-11-12',['-700','-600','-550','-100'],'2026-11-12T16:00:00+07:00');
   const picked=userForecastAt(later,'2026-11-12',Date.parse(release),()=>[20890,21150,28690]);
-  assert.deepEqual(picked.map(item=>item.value),[-500,-300,0]);
+  assert.deepEqual(picked.map(item=>item.value),[-500,-300,0,120]);
 });
