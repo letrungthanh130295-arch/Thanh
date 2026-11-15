@@ -1399,7 +1399,7 @@
     },
     "forecast": {
       "status": "error",
-      "lastAttemptAt": "2026-11-15T18:01:39+07:00",
+      "lastAttemptAt": "2026-11-15T21:01:21+07:00",
       "lastSuccessAt": "2026-11-15T09:00:41+07:00",
       "error": "Trang dự báo vẫn ở kỳ cũ, giữ số cũ",
       "captureMethod": "browser-snapshot",
@@ -1426,7 +1426,7 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-15T18:01:39+07:00",
+  "lastCheckedAt": "2026-11-15T21:01:21+07:00",
   "brent": {
     "price": 96.08,
     "marketTime": "2026-11-13T21:59:30.000Z",
@@ -2721,6 +2721,43 @@
       },
       "forecast": {
         "capturedAt": "2026-11-15T18:01:39+07:00",
+        "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
+        "period": "2026-11-12",
+        "basisDate": "2026-11-10",
+        "deltas": [
+          -770,
+          -670,
+          -2040,
+          -3090
+        ],
+        "pageUpdatedAt": null,
+        "pageUpdatedKind": "not-provided"
+      }
+    },
+    {
+      "scheduledAt": "2026-11-15T21:00:00+07:00",
+      "platts": {
+        "capturedAt": "2026-11-15T21:01:14+07:00",
+        "date": "2026-11-13",
+        "previousDate": "2026-11-12",
+        "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
+        "values": [
+          104.49,
+          107.08,
+          null,
+          153.11,
+          null,
+          154.16,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "forecast": {
+        "capturedAt": "2026-11-15T21:01:21+07:00",
         "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
         "period": "2026-11-12",
         "basisDate": "2026-11-10",
