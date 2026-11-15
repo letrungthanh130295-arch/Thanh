@@ -1,5 +1,6 @@
-import {manualProducts, forecastProducts, storageKey, saveEntry, withManualPlatts, manualForecastDeltas, manualPlattsValues, effectiveUserForecast, userForecastAt} from './manual-prices.js?v=diesel-forecast-1';
+import {manualProducts, forecastProducts, storageKey, saveEntry, manualForecastDeltas, manualPlattsValues, effectiveUserForecast, userForecastAt} from './manual-prices.js?v=diesel-forecast-1';
 import {advanceCycle,historyRows,score,bestSources,visiblePlatts,pumpValues,cycleContext,plattsChanges,defaultTroo,threshold, plattsValue,sourceDeltas,differences,retailForecastBase} from './model.js?v=diesel-forecast-1';
+import {sourceLabels} from './platts-selection.js?v=first-valid-platts';
 import {marketRisk} from './petrolimex-monitor.js?v=diesel-forecast-1';
 import {renderMarket} from './market-charts.js?v=diesel-forecast-1';
 const $=id=>document.getElementById(id);
@@ -44,7 +45,17 @@ function render(s){
  $('platts-time').textContent='Chốt '+day(s.platts.date)+' · lấy số '+date(s.platts.capturedAt)+' · nguồn cập nhật '+date(s.platts.pageUpdatedAt)+(s.platts.manualUpdatedAt?' · Người dùng '+date(s.platts.manualUpdatedAt):'');
  const changes=plattsChanges(s,Date.now(),cycle),alerts=[];
  const latest=s.platts.sessions[0];
- visiblePlatts.forEach((name,i)=>{const price=plattsValue(s.platts.items,s.platts.items.map(item=>item.value),name),change=changes[i];const label=name==='DO 10ppm'?'DO 0,001S · 10ppm':name;const tr=row('platts-rows',[label,num(price,2),num(change.previous,3),num(change.current,3),Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—']);tr.lastElementChild.className=tone(change.percent);const inherited=latest?.inherited?.[name];if(inherited)tr.cells[1].append(el('small','Kế thừa '+day(inherited),'inherit-note'));const box=el('div','');box.append(el('span',label),el('strong',Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—',tone(change.percent)));$('threshold-estimates').append(box);if(['increase','decrease'].includes(threshold(change.percent)))alerts.push(label+' '+sign(change.percent,2)+'%');});
+ visiblePlatts.forEach((name,i)=>{const price=plattsValue(s.platts.items,s.platts.items.map(item=>item.value),name),change=changes[i];const label=name==='DO 10ppm'?'DO 0,001S · 10ppm':name;const tr=row('platts-rows',[label,num(price,2),num(change.previous,3),num(change.current,3),Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—']);tr.lastElementChild.className=tone(change.percent);const product=['a92','a95','do500','do10'][i];
+ const selection=s.platts.selection?.[latest?.date]?.[product];
+ const chosen=selection?.selected;
+ if(!chosen&&Number.isFinite(price)&&latest?.sourceUrl?.startsWith('https://chogia.vn/'))
+   tr.cells[1].append(el('small',['Chợ Giá',day(latest.date),date(latest.valueCapturedAt?.[s.platts.items.findIndex(item=>item.name===name)]??latest.capturedAt),'Bản ghi cũ'].join(' · '),'inherit-note'));
+ if(chosen)tr.cells[1].append(el('small',[sourceLabels[chosen.source],day(chosen.session_date),date(chosen.first_seen_at),
+   {provisional:'Tạm xác nhận',confirmed:'Đã đối chiếu',corrected:'Đã hiệu chỉnh'}[chosen.status]].join(' · '),'inherit-note'));
+ const compared=[...new Set(selection?.comparisons?.map(item=>sourceLabels[item.source]).filter(src=>src!==sourceLabels[chosen?.source])??[])];
+ if(compared.length)tr.cells[1].append(el('small','Đối chiếu: '+compared.join(', '),'inherit-note'));
+ if(selection?.needsReview)tr.cells[1].append(el('small','Có chênh lệch nguồn · cần kiểm tra','inherit-note'));
+ const box=el('div','');box.append(el('span',label),el('strong',Number.isFinite(change.percent)?sign(change.percent,2)+'%':'—',tone(change.percent)));$('threshold-estimates').append(box);if(['increase','decrease'].includes(threshold(change.percent)))alerts.push(label+' '+sign(change.percent,2)+'%');});
  $('threshold-status').dataset.trigger=String(!!alerts.length);
  $('threshold-status').textContent=!changes.some(change=>Number.isFinite(change.percent))?'Chưa đủ dữ liệu bình quân Platts':alerts.length?'Cảnh báo Platts · '+alerts.join(' · '):'Platts chưa tới ngưỡng cảnh báo sớm';
  $('threshold-note').textContent=c.missingDates.length?'Chưa có phiên '+c.missingDates.map(day).join(', '):'Giảm từ 10% / tăng từ 15% · chỉ báo sớm';
@@ -107,7 +118,7 @@ const workflow = 'https://github.com/letrungthanh130295-arch/Thanh/actions/workf
 
 function showSnapshot() {
   lastCalculation = new Date().toISOString();
-  const data = withManualPlatts(advanceCycle(snapshot), entries);
+  const data = advanceCycle(snapshot);
   render(data);
  renderMarket(data);
   document.dispatchEvent(new CustomEvent('snapshot-loaded',{detail:data}));
@@ -119,18 +130,18 @@ function forecastBase(data, day) {
 
 function populateForm() {
   const isPlatts = kind.value === 'platts';
+  $('platts-submit').hidden=!isPlatts;
+  $('platts-handoff').hidden=true;
   const products = isPlatts ? manualProducts : forecastProducts;
   const entry = entries[kind.value + ':' + entryDay.value];
   const data = advanceCycle(snapshot);
   const selected = entryDay.value;
   const values = isPlatts ? manualPlattsValues(entry) : manualForecastDeltas(entry,forecastBase(data,selected));
   const past = Object.fromEntries(Object.entries(entries).filter(([key])=>key.slice(key.indexOf(':')+1)<selected));
-  const inherited = isPlatts
-    ? withManualPlatts(data,past).platts.sessions.filter(row=>row.date<selected)
-    : effectiveUserForecast(past,selected,day=>forecastBase(data,day));
+  const inherited = isPlatts ? [] : effectiveUserForecast(past,selected,day=>forecastBase(data,day));
   $('entry-hint').textContent = !isPlatts && entry && !entry.format && !forecastBase(data,selected)
     ? 'Kỳ cũ thiếu giá mốc. Giá tuyệt đối vẫn còn trong lịch sử chỉnh sửa.'
-    : isPlatts ? 'Ô trống A92/A95 lấy số gần nhất. Mỗi loại DO cần giá đúng phiên.' : 'Ô trống lấy số gần nhất trước ngày đã chọn.';
+    : isPlatts ? 'Nhập số Zalo đúng phiên. Ô trống không gửi dữ liệu.' : 'Ô trống lấy số gần nhất trước ngày đã chọn.';
   $('entry-date-label').textContent = isPlatts ? 'Ngày phiên' : 'Ngày điều hành dự kiến';
   $('entry-fields').replaceChildren(...products.map((name, i) => {
     const label = el('label', name + (isPlatts ? ' · USD/thùng' : ' · Tăng/giảm (đ/lít)'));
@@ -138,9 +149,7 @@ function populateForm() {
     input.name = 'price-' + i;
     input.inputMode = isPlatts ? 'decimal' : 'text';
     input.value = values?.[i] ?? '';
-    const priorRow = isPlatts ? inherited.find(row=>plattsValue(data.platts.items,row.values,name)!==null) : null;
-    const prior = isPlatts ? i<2 && priorRow && {date:priorRow.inherited?.[name]??priorRow.date,
-      value:plattsValue(data.platts.items,priorRow.values,name)} : inherited[i];
+    const prior = inherited[i];
     input.placeholder = prior ? (isPlatts ? num(prior.value,2) : sign(prior.value)) : 'Chưa có số';
     label.append(input);
     if(prior) label.append(el('small','Kế thừa nếu để trống · '+day(prior.date),'inherit-note'));
@@ -175,6 +184,17 @@ form.addEventListener('submit', event => {
       !forecastBase(advanceCycle(snapshot),entryDay.value) && values.every(value=>!value.trim()))
       throw Error('Nhập mức tăng/giảm để sửa bản ghi cũ thiếu giá mốc.');
     const next = saveEntry(current, kind.value, entryDay.value, values, new Date().toISOString());
+    if(kind.value==='platts'){
+      const row=next['platts:'+entryDay.value];
+      const prices=Object.fromEntries(['a92','a95','do10','do500'].flatMap((code,i)=>Number.isFinite(row.values[i])?[[code,row.values[i]]]:[]));
+      if(!Object.keys(prices).length)throw Error('Nhập ít nhất một giá Zalo.');
+      const correction=form.elements.correction.checked, evidence=form.elements.evidence.value.trim();
+      if(correction&&!evidence)throw Error('Bản sửa cần bằng chứng công khai.');
+      $('platts-payload').value=JSON.stringify({source:'zalo',session_date:entryDay.value,prices,...(correction&&{correction,evidence})});
+      $('platts-handoff').hidden=false;
+      $('platts-payload').select();
+      return;
+    }
     if (next !== current) localStorage.setItem(storageKey, JSON.stringify(next));
     entries = next;
     populateForm();
