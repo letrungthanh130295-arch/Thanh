@@ -15,9 +15,9 @@ test('Small WTI compares previous check, not previous deployment',()=>{let s=str
 test('Old source rows do not overwrite data; next forecast does not overwrite actual',()=>{const p=parsePlatts(html);p.date='2026-10-01';const r=updateSnapshot(seed,{...failures,platts:{value:p},forecast:{value:{...parseForecast(forecastHtml),period:'2026-11-12'}}},now);assert.deepEqual(r.snapshot.platts,seed.platts);assert.equal(r.snapshot.forecast.period,seed.forecast.period);assert.equal(r.snapshot.forecast.actual,seed.forecast.actual);assert.equal(r.snapshot.pendingForecast.period,'2026-11-12');});
 test('History window, signed errors, MAE, ties and missing forecasts',()=>{assert.equal(seed.history.length,10);assert.equal(historyRows([{period:'2026-11-05'},...seed.history]).length,10);assert.equal(historyRows([{period:'2026-11-05'},...seed.history])[0].period,'2026-11-05');assert.equal(score([10,20,30],[13,14,30]),3);assert.deepEqual(differences([10,20,30],[13,14,30]),[-3,6,0]);assert.equal(score([10,20,30],[13,null,30]),null);assert.deepEqual(bestSources({actual:[10,20,30],predictions:{a:[10,20,31],b:[10,20,29],c:[null,20,30]}}),['a','b']);assert.equal(illustrative(23203,-2940),20263);assert.equal(illustrative(null,-2940),null);});
 test('Manual Petro input requires evidence and rejects historical edits',()=>{const input={type:'forecast',source:'Petro Connect',period:seed.forecast.period,providedAt:'2026-11-04T08:00:00+07:00',evidence:'bản tin chủ trạm',deltas:[-100,-200,0,null],baselineConfirmed:true};const s=applyManual(seed,input,now);assert.equal(s.forecast.sources[2].deltas[0],-100);assert.deepEqual(s.official,seed.official);assert.throws(()=>applyManual(seed,{...input,evidence:null},now));assert.throws(()=>applyManual(seed,input,'2026-11-06T00:00:00+07:00'));});
-test('Official manual rollover retains exactly ten, never invents predictions',()=>{const r=applyManual(seed,{type:'official',prices:[23000,23100,28000,24000],effectiveAt:'2026-11-05T15:00:00+07:00',publishedAt:'2026-11-05T15:00:00+07:00',sourceUrl:'https://moit.gov.vn/',nextPeriod:'2026-11-12'},'2026-11-05T16:00:00+07:00');assert.equal(r.history.length,10);assert.equal(r.history[0].period,'2026-11-05');assert.deepEqual(r.history[0].predictions,{});assert.equal(r.forecast.actual,null);assert.equal(r.forecast.period,'2026-11-12');assert.deepEqual(r.forecast.base,[23000,23100,28000,24000]);});
+test('Official manual rollover retains exactly ten, never invents predictions',()=>{const r=applyManual(seed,{type:'official',prices:[23000,23100,28000,24000],effectiveAt:'2026-11-05T15:00:00+07:00',publishedAt:'2026-11-05T15:00:00+07:00',sourceUrl:'https://moit.gov.vn/',nextPeriod:'2026-11-12'},'2026-11-05T16:00:00+07:00');assert.equal(r.history.length,10);assert.equal(r.history[0].period,'2026-11-05');assert.deepEqual(r.history[0].predictions,{});assert.equal(r.forecast.actual,null);assert.equal(r.forecast.period,'2026-11-12');assert.deepEqual(r.forecast.base,[23000,23100,28000,null]);});
 test('Correction matches attached notice and official counterparts',()=>{assert.deepEqual(seed.official.prices,[23203,23231,28876,23974]);assert.equal(seed.pump.items.find(([n])=>n==='E10 RON 95-III')[1],23230);assert.equal(seed.pump.items.find(([n])=>n==='FO 180S-0,5S')[1],29590);});
-test('Pre-publication forecasts freeze; late changes cannot replace scored values',()=>{const f=parseForecast(forecastHtml);f.basisDate='2026-11-04';const r=updateSnapshot(seed,{...failures,forecast:{value:f}},now);assert.deepEqual(r.snapshot.forecast.lockedPredictions['Chợ Giá'].prices,[20263,20441,27496]);const late=updateSnapshot(r.snapshot,{...failures,forecast:{value:{...f,deltas:[100,200,300,0]}}},'2026-11-05T15:01:00+07:00');assert.deepEqual(late.snapshot.forecast.lockedPredictions,r.snapshot.forecast.lockedPredictions);const done=applyManual(late.snapshot,{type:'official',prices:[23000,23100,28000,24000],effectiveAt:'2026-11-05T15:00:00+07:00',publishedAt:'2026-11-05T15:00:00+07:00',sourceUrl:'https://moit.gov.vn/'},'2026-11-05T16:00:00+07:00');assert.deepEqual(done.history[0].predictions['Chợ Giá'],[20263,20441,27496]);});
+test('Pre-publication forecasts freeze; late changes cannot replace scored values',()=>{const f=parseForecast(forecastHtml);f.basisDate='2026-11-04';const r=updateSnapshot(seed,{...failures,forecast:{value:f}},now);assert.deepEqual(r.snapshot.forecast.lockedPredictions['Chợ Giá'].prices,[20263,20441,27496,null]);const late=updateSnapshot(r.snapshot,{...failures,forecast:{value:{...f,deltas:[100,200,300,0]}}},'2026-11-05T15:01:00+07:00');assert.deepEqual(late.snapshot.forecast.lockedPredictions,r.snapshot.forecast.lockedPredictions);const done=applyManual(late.snapshot,{type:'official',prices:[23000,23100,28000,24000],effectiveAt:'2026-11-05T15:00:00+07:00',publishedAt:'2026-11-05T15:00:00+07:00',sourceUrl:'https://moit.gov.vn/'},'2026-11-05T16:00:00+07:00');assert.deepEqual(done.history[0].predictions['Chợ Giá'],[20263,20441,27496,null]);});
 
 import {mkdtemp, writeFile, rm} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -57,7 +57,7 @@ test('Refresh archives Chợ Giá and both crude series, with identical reruns b
   assert.deepEqual(saved.history,seed.history);
   assert.deepEqual(saved.pump,seed.pump);
   assert.equal(saved.forecastSnapshots.length,1);
-  assert.deepEqual(saved.forecastSnapshots[0].deltas,[-2940,-2790,-1380]);
+  assert.deepEqual(saved.forecastSnapshots[0].deltas,[-2940,-2790,-1380,null]);
   assert.equal(saved.wti.price,96.33);
   assert.equal(saved.brent.price,101);
   assert.deepEqual(saved.wti.sessions.map(({date,price})=>[date,price]),[['2026-11-02',95]]);
@@ -85,12 +85,12 @@ test('Signed forecasts retain legacy absolute revisions and never infer a missin
  const legacy={values:[20550,21320,28000],updatedAt:now,source:'Người dùng'};
  const key='forecast:2026-11-05';
  const entries={[key]:{...legacy,revisions:[legacy]}};
- assert.deepEqual(manualForecastDeltas(legacy,[21000,21000,28000]),[-450,320,0]);
+ assert.deepEqual(manualForecastDeltas(legacy,[21000,21000,28000]),[-450,320,null]);
  assert.deepEqual(manualForecastDeltas(legacy,null),[null,null,null]);
- const next=saveEntry(entries,'forecast','2026-11-05',['-450','+320','0'],now);
- assert.deepEqual(manualForecastDeltas(next[key],null),[-450,320,0]);
+ const next=saveEntry(entries,'forecast','2026-11-05',['-450','+320','0','100'],now);
+ assert.deepEqual(manualForecastDeltas(next[key],null),[-450,320,0,100]);
  assert.deepEqual(next[key].revisions[0],legacy);
- assert.equal(saveEntry(next,'forecast','2026-11-05',['−450','320','0'],now),next);
+ assert.equal(saveEntry(next,'forecast','2026-11-05',['−450','320','0','100'],now),next);
 });
 
 test('Chart dates retain missing weekdays and skip weekends without a quote',()=>{
@@ -99,10 +99,10 @@ test('Chart dates retain missing weekdays and skip weekends without a quote',()=
 });
 
 test('Blank forecast fields inherit per product and keep an explicit zero',()=>{
- const earlier=saveEntry({},'forecast','2026-11-05',['-450','320',''],now);
- const entries=saveEntry(earlier,'forecast','2026-11-12',['','0',''],now);
+ const earlier=saveEntry({},'forecast','2026-11-05',['-450','320','','21'],now);
+ const entries=saveEntry(earlier,'forecast','2026-11-12',['','0','',''],now);
  const amounts=effectiveUserForecast(entries,'2026-11-12',()=>null);
- assert.deepEqual(amounts.map(x=>x?.value??null),[-450,0,null]);
+ assert.deepEqual(amounts.map(x=>x?.value??null),[-450,0,null,21]);
  assert.equal(amounts[0].date,'2026-11-05');
  assert.equal(amounts[1].date,'2026-11-12');
  assert.deepEqual(entries['forecast:2026-11-05'],earlier['forecast:2026-11-05']);
@@ -110,7 +110,8 @@ test('Blank forecast fields inherit per product and keep an explicit zero',()=>{
 
 test('DO aliases resolve one product with canonical precedence',()=>{
  const items=[{name:'DO 50ppm'},{name:'DO 0,05%S'},{name:'DO 10ppm'}];
- assert.equal(plattsValue(items,[155,null,170],dieselName),155);
+ assert.equal(plattsValue(items,[155,null,170],dieselName),null);
+ assert.equal(plattsValue([{name:'DO 500ppm'}],[155],dieselName),155);
  assert.equal(plattsValue(items,[155,160,170],dieselName),160);
  assert.equal(plattsValue(items,[155,160,170],'DO 10ppm'),170);
 });
@@ -129,4 +130,14 @@ test('Scheduled workflow does not duplicate the browser reads for Chợ Giá',as
   assert.ok(urls.every(url=>new URL(url).hostname.endsWith('.finance.yahoo.com')));
   assert.deepEqual(JSON.parse(await readFile(path,'utf8')),seed);
  } finally { await rm(dir,{recursive:true,force:true}); }
+});
+
+test('Chợ Giá only assigns labelled diesel forecasts to their respective grades',()=>{
+ const only500=parseForecast(forecastHtml);
+ const only10=parseForecast(forecastHtml.replace('Điêzen 0.05S-II','Điêzen 0.001S-V'));
+ assert.equal(only500.deltas[2],-1380);
+ assert.equal(only500.diesel10Delta,null);
+ assert.equal(only10.deltas[2],null);
+ assert.equal(only10.diesel10Delta,-1380);
+ assert.equal(parseForecast(forecastHtml.replace('Điêzen 0.05S-II','Điêzen 50ppm')).deltas[2],null);
 });
