@@ -27,15 +27,21 @@ async function yahoo(symbol, fetcher, now) {
   return {error:errors.join('; ')};
 }
 
-export function fillMissingPlatts(old, incoming) {
+export function fillMissingPlatts(old, incoming, capturedAt) {
   const sessions = new Map((old.sessions ?? []).map(row => [row.date, row]));
   for (const [date, key] of [[old.date, 'value'], [old.previousDate, 'previous']]) {
     if (date && !sessions.has(date)) sessions.set(date, {date, values:old.items.map(item => item[key])});
   }
   for (const row of incoming.sessions) {
     const stored = sessions.get(row.date);
-    const values = row.values.map((price, i) => stored?.values[i] || price);
-    sessions.set(row.date, {...row, ...stored, values});
+    const values = old.items.map(({name},i) => {
+      const price = stored?.values[i];
+      return Number.isFinite(price)&&price>0 ? price : row.values[incoming.items.findIndex(item=>item.name===name)]??null;
+    });
+    const valueCapturedAt = values.map((value,i) => Number.isFinite(stored?.values[i])&&stored.values[i]>0
+      ? stored.valueCapturedAt?.[i] ?? stored.capturedAt ?? old.capturedAt ?? null
+      : value==null ? null : capturedAt ?? null);
+    sessions.set(row.date, {...row, ...stored, values, valueCapturedAt, capturedAt:stored?.capturedAt??capturedAt});
   }
   const ordered = [...sessions.values()].sort((a,b) => b.date.localeCompare(a.date));
   const [current, previous] = ordered;
@@ -53,7 +59,7 @@ export async function run({path='dist/snapshot.json', fetcher=fetch, now=new Dat
     yahoo('CL=F', fetcher, now),
     yahoo('BZ=F', fetcher, now)
   ]);
-  if (platts.value) platts.value = fillMissingPlatts(old.platts, platts.value);
+  if (platts.value) platts.value = fillMissingPlatts(old.platts, platts.value, now.toISOString());
   const result = updateSnapshot(old, {platts, forecast, wti, brent}, now.toISOString());
   for (const error of result.errors) console.error(error);
   if (result.errors.length === (crudeOnly ? 2 : 4)) throw Error('Không đọc được dữ liệu từ các nguồn đã yêu cầu.');

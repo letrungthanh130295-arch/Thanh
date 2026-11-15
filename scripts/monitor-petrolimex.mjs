@@ -4,7 +4,7 @@ import {dirname} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {load} from 'cheerio';
 import {applyManual} from './admin.mjs';
-import {defaultTroo,differences,nextThursday,pumpNames,pumpValues,score} from '../dist/model.js';
+import {defaultTroo,differences,forecastPrices,sourceDeltas,nextThursday,pumpNames,pumpValues,retailForecastBase,score} from '../dist/model.js';
 import {marketRisk,monitorDue} from '../dist/petrolimex-monitor.js';
 
 const index = 'https://www.petrolimex.com.vn/ndi/thong-cao-bao-chi.html';
@@ -86,25 +86,29 @@ function lockForecast(snapshot, notice, oldForecast) {
   const forecast = snapshot.forecast;
   const observations = (snapshot.choGiaObservations ?? []).map(row => row.forecast)
     .filter(row => row?.period === forecast.period && row.basisDate >= forecast.marketCycleStart &&
-      row.basisDate < date && before(row.capturedAt,cutoff) && row.deltas?.slice(0,3).every(Number.isFinite))
+      row.basisDate < date && before(row.capturedAt,cutoff) && sourceDeltas(row,'Chợ Giá').some(Number.isFinite))
     .sort((a,b) => Date.parse(b.capturedAt)-Date.parse(a.capturedAt));
   const row = observations[0];
   const locked = forecast.lockedPredictions ??= {};
   const existing = locked['Chợ Giá'];
   if (row && (!existing || Date.parse(existing.capturedAt) < Date.parse(row.capturedAt))) {
-    locked['Chợ Giá'] = {prices:row.deltas.slice(0,3).map((v,i) => forecast.base[i]+v),capturedAt:row.capturedAt};
+    locked['Chợ Giá'] = {prices:forecastPrices(retailForecastBase(snapshot),sourceDeltas(row,'Chợ Giá')),capturedAt:row.capturedAt,dieselGrades:true};
   }
 
   if (oldForecast?.period === forecast.period && before(oldForecast.capturedAt,cutoff) &&
-      oldForecast.prices.every(Number.isFinite)) locked['T-Roo'] = oldForecast;
-  if (!locked['T-Roo']) {
+      oldForecast.dieselGrades && oldForecast.prices.some(Number.isFinite)) locked['T-Roo'] = oldForecast;
+  if (!locked['T-Roo']?.dieselGrades) {
     const source = structuredClone(snapshot);
-    source.platts.sessions = source.platts.sessions.filter(session => session.date < date &&
-      (session.date < forecast.marketCycleStart || before(session.capturedAt,cutoff)));
+    source.platts.sessions = source.platts.sessions.filter(session => session.date < date).map(session => {
+      if (session.date < forecast.marketCycleStart) return session;
+      const values=session.values.map((value,i)=>before(session.valueCapturedAt?.[i] ?? session.capturedAt,cutoff)?value:null);
+      return {...session,values};
+    });
     const troo = defaultTroo(source,cutoff-1);
     const capturedAt = source.platts.sessions.filter(session => troo?.currentDates.includes(session.date))
-      .map(session => session.capturedAt).sort((a,b) => Date.parse(b)-Date.parse(a))[0];
-    if (capturedAt && troo?.prices.every(Number.isFinite)) locked['T-Roo'] = {prices:troo.prices,capturedAt};
+      .flatMap(session => session.values.flatMap((value,i)=>Number.isFinite(value)?[session.valueCapturedAt?.[i] ?? session.capturedAt]:[]))
+      .filter(at=>before(at,cutoff)).sort((a,b) => Date.parse(b)-Date.parse(a))[0];
+    if (capturedAt && troo?.prices.some(Number.isFinite)) locked['T-Roo'] = {prices:troo.prices,capturedAt,dieselGrades:true};
   }
 }
 
@@ -135,25 +139,23 @@ export function applyNotice(old, notice, prices, now, oldForecast) {
     changes:[...pumpValues(old).slice(0,3),old.pump.items.find(([name])=>name==='FO 3,5S')?.[1]]
       .map((value,i) => Number.isFinite(value)?s.official.prices[i]-value:null)});
   s.forecast.base = pumpValues(s);
+  s.official.diesel10Price = prices.get(pumpNames[3]);
   if (pending?.basisDate < day) s.pendingForecast = pending;
   const record = s.history.find(row => row.period === day);
   record.forecastPeriod = snapshot.forecast.period;
-  record.base = snapshot.forecast.base;
+  record.base = retailForecastBase(snapshot);
   record.publishedAt = notice.publishedAt;
-  const replaced = old.history.filter(row =>
-    !s.history.some(current => current.period === row.period && current.effectiveAt === row.effectiveAt));
-  if (replaced.length) s.historyArchive = [...(old.historyArchive ?? []), ...replaced];
   const cutoff = Date.parse(notice.publishedAt);
   const forecasts = snapshot.forecast;
   record.predictions = Object.fromEntries(Object.entries(forecasts.lockedPredictions)
-    .filter(([,value]) => before(value.capturedAt,cutoff) && value.prices?.every(Number.isFinite))
-    .map(([name,value]) => [name,value.prices]));
+    .filter(([,value]) => before(value.capturedAt,cutoff) && value.prices?.some(Number.isFinite))
+    .map(([name,value]) => [name,value.dieselGrades||name==='Chợ Giá'?value.prices:value.prices.slice(0,2)]));
   for (const row of forecasts.sources) {
     if (row.baselineConfirmed && !row.isSample && before(row.capturedAt,cutoff) &&
-        row.deltas?.slice(0,3).every(Number.isFinite)) {
+        sourceDeltas(row).some(Number.isFinite)) {
       const locked = forecasts.lockedPredictions[row.name];
       if (!locked || !before(row.capturedAt,Date.parse(locked.capturedAt))) {
-        record.predictions[row.name] = row.deltas.slice(0,3).map((v,i) => forecasts.base[i]+v);
+        record.predictions[row.name] = forecastPrices(retailForecastBase(snapshot),sourceDeltas(row));
       }
     }
   }
@@ -215,8 +217,8 @@ export async function run(slot, {force=false, now=new Date()}={}) {
     snapshot = original;
   }
   const troo = defaultTroo(snapshot,+now);
-  if (troo?.prices.every(Number.isFinite) && Date.parse(snapshot.forecast.period+'T15:00:00+07:00') > +now)
-    status.forecast = {period:troo.period,prices:troo.prices,capturedAt:observedAt};
+  if (troo?.prices.some(Number.isFinite) && Date.parse(snapshot.forecast.period+'T15:00:00+07:00') > +now)
+    status.forecast = {period:troo.period,prices:troo.prices,capturedAt:observedAt,dieselGrades:true};
   await writeJson(statePath,status);
   return true;
 }
