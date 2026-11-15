@@ -1,7 +1,23 @@
 import {marketCalendar} from './market-calendar.js?v=session-20261106-3';
 export function historyRows(records){return [...records].sort((a,b)=>b.period.localeCompare(a.period)).slice(0,10);}
-export function differences(actual,pred){return actual?.length===3&&pred?.length===3&&actual.every(Number.isFinite)&&pred.every(Number.isFinite)?actual.map((v,i)=>v-pred[i]):null;}
-export function score(actual,pred){const d=differences(actual,pred);return d?d.reduce((a,v)=>a+Math.abs(v),0)/3:null;}
+export function differences(actual,pred){
+ if(!actual||!pred)return null;
+ const errors=actual.map((value,i)=>Number.isFinite(value)&&Number.isFinite(pred[i])?value-pred[i]:null);
+ return errors.some(Number.isFinite)?errors:null;
+}
+export function score(actual,pred){
+ const errors=differences(actual,pred);
+ return errors?.every(Number.isFinite)?errors.reduce((sum,value)=>sum+Math.abs(value),0)/errors.length:null;
+}
+export const forecastProducts=['E5','E10','DO 0,05%S','DO 0,001%S'];
+export function sourceDeltas(row, name=row?.name){
+ if(!row?.deltas)return [];
+ const [e5,e10,diesel500]=row.deltas;
+ return [e5,e10,name==='Chợ Giá'||row.dieselGrades===true?diesel500:null,row.diesel10Delta??null];
+}
+export function forecastPrices(base,deltas){
+ return deltas.map((delta,i)=>illustrative(base?.[i],delta));
+}
 export function bestSources(record){const ranked=Object.entries(record.predictions||{}).map(([name,v])=>({name,score:score(record.actual,v)})).filter(x=>x.score!==null).sort((a,b)=>a.score-b.score);return ranked.length?ranked.filter(x=>x.score===ranked[0].score).map(x=>x.name):[];}
 export function illustrative(base,delta){return Number.isFinite(base)&&Number.isFinite(delta)?base+delta:null;}
 
@@ -13,11 +29,15 @@ export function plattsValue(items, values, name) {
  const read=label=>values[items.findIndex(item=>item.name===label)];
  const value=read(name);
  if(Number.isFinite(value)&&value>0)return value;
- const alias=name===dieselName?read('DO 50ppm'):null;
+ const alias=name===dieselName?read('DO 500ppm'):null;
  return Number.isFinite(alias)&&alias>0?alias:null;
 }
 export const pumpNames=['E5 RON 92-II','E10 RON 95-III','DO 0,05S-II','DO 0,001S-V'];
 export function pumpValues(s){return pumpNames.map(name=>s.pump.items.find(x=>x[0]===name)?.[1]??null);}
+export function retailForecastBase(s){
+ const pump=[s.pump,s.pump.previous].find(p=>p?.effectiveAt===s.forecast.baseEffectiveAt);
+ return [...s.forecast.base.slice(0,3),s.forecast.dieselGrades?s.forecast.base[3]:pump?.items.find(([name])=>name===pumpNames[3])?.[1]??null];
+}
 function vnDay(value){return value?new Date(value).toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}):null;}
 function businessDays(from,to){const out=[];if(!from||!to||from>=to)return out;for(let d=new Date(from+'T00:00:00Z');d.toISOString().slice(0,10)<to;d.setUTCDate(d.getUTCDate()+1)){if(d.getUTCDay()!==0&&d.getUTCDay()!==6)out.push(d.toISOString().slice(0,10));if(out.length>370)break;}return out;}
 function shiftDay(day,days){const d=new Date(day+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);}
@@ -47,7 +67,7 @@ export function cycleContext(s,now=Date.now()){
   const average=prices=>{const valid=prices.filter(v=>Number.isFinite(v)&&v>0);return valid.length?valid.reduce((a,b)=>a+b,0)/valid.length:null;};
   const prices=name=>sessions.map(x=>plattsValue(s.platts.items,x.values,name));
   const values=visiblePlatts.map(name=>average(prices(name)));
-  const trooValues=[...values.slice(0,2),average(prices('DO 0,05%S').map((value,i)=>sessions[i].manualDiesel??value))];
+  const trooValues=values;
   return {from:start,to:end,until:shiftDay(end,1),dates:sessions.map(x=>x.date),count:sessions.length,expected:expected.length,missingDates,complete:!!expected.length&&!missingDates.length,values,trooValues};
  }
  return {from,until,prior,hasClosedCycle:starts.length>=2,current:window(from,shiftDay(until,-1)),previous:window(prior,shiftDay(from,-1))};
@@ -77,7 +97,7 @@ export function plattsChanges(s,now=Date.now(),cycle=cycleContext(s,now)){
    percent:Number.isFinite(prior)&&prior>0&&Number.isFinite(average)?(average/prior-1)*100:null};
  });
 }
-export function defaultTroo(s,now=Date.now()){const c=cycleContext(s,now),base=pumpValues(s);if(!c.hasClosedCycle||!c.current.count)return null;const results=[.95,.90,1].map((ratio,i)=>calculateTroo(c.previous.trooValues[i],c.current.trooValues[i],26040,ratio,0,0,0,0,0,0,base[i]));if(results.every(x=>!x))return null;return {name:'T-Roo',period:s.forecast.period,deltas:results.map(x=>x?.delta??null),prices:results.map(x=>x?.price??null),currentDates:c.current.dates,previousDates:c.previous.dates};}
+export function defaultTroo(s,now=Date.now()){const c=cycleContext(s,now),base=pumpValues(s);if(!c.hasClosedCycle||!c.current.count)return null;const results=[.95,.90,1,1].map((ratio,i)=>calculateTroo(c.previous.trooValues[i],c.current.trooValues[i],26040,ratio,0,0,0,0,0,0,base[i]));if(results.every(x=>!x))return null;return {name:'T-Roo',period:s.forecast.period,deltas:results.map(x=>x?.delta??null),prices:results.map(x=>x?.price??null),currentDates:c.current.dates,previousDates:c.previous.dates};}
 
 // Confirmed price events, never wall-clock guesses, advance the market window.
 export function latestPriceEvent(s, now=Date.now()) {
@@ -92,10 +112,10 @@ export function advanceCycle(input,now=Date.now()){
  // Historical actuals and predictions remain in history; do not relabel them.
  const period=nextThursday(event.day),pending=s.pendingForecast;
  const fresh=pending?.period===period&&pending.basisDate>=event.day?pending:null;
- s.forecast={period,base:[...event.prices],baseEffectiveAt:event.at,marketCycleStart:event.day,
+ s.forecast={period,base:[...event.prices.slice(0,3),pumpValues(s)[3]],dieselGrades:true,baseEffectiveAt:event.at,marketCycleStart:event.day,
  actual:null,lockedPredictions:{},capturedAt:fresh?.capturedAt??null,basisDate:fresh?.basisDate??null,
  pageUpdatedAt:fresh?.pageUpdatedAt??null,pageUpdatedKind:fresh?.pageUpdatedKind??null,
- sources:f.sources.map(x=>({name:x.name,deltas:[null,null,null,null],isSample:false,capturedAt:null,providedAt:null,baselineConfirmed:false}))};
+ sources:f.sources.map(x=>({name:x.name,deltas:[null,null,null,null],diesel10Delta:null,isSample:false,capturedAt:null,providedAt:null,baselineConfirmed:false}))};
  if(fresh){const row=s.forecast.sources.find(x=>x.name==='Chợ Giá');Object.assign(row,fresh,{name:'Chợ Giá',isSample:false,baselineConfirmed:fresh.basisDate>=cycleContext(s,now).from});delete s.pendingForecast;}
  return s;
 }

@@ -1,4 +1,4 @@
-import {cycleContext, plattsChanges, threshold} from './model.js?v=platts-alert';
+import {cycleContext, plattsChanges, threshold} from './model.js?v=diesel-forecast-1';
 
 const hour = 3600000;
 const tradingDay = time => new Intl.DateTimeFormat('en-CA', {timeZone:'America/New_York'}).format(time);
