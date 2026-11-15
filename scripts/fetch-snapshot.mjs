@@ -3,6 +3,7 @@ import {resolve} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {parsePlatts, parseForecast, parseCrude, PLATTS_URL, FORECAST_URL} from './parsers.mjs';
 import {updateSnapshot} from './update.mjs';
+import {applyObservations,trackedSessions} from './ingest-platts.mjs';
 
 async function readSource(url, parse, fetcher, accept='text/html') {
   try {
@@ -51,16 +52,28 @@ export function fillMissingPlatts(old, incoming, capturedAt) {
     items:old.items.map((item,i) => ({...item,value:current.values[i],previous:previous?.values[i] ?? null}))};
 }
 
-export async function run({path='dist/snapshot.json', fetcher=fetch, now=new Date(), crudeOnly=false}={}) {
+export async function run({path='dist/snapshot.json', fetcher=fetch, now, crudeOnly=false}={}) {
+  const startedAt=now??new Date();
   const old = JSON.parse(await readFile(path,'utf8'));
   const [platts, forecast, wti, brent] = await Promise.all([
     crudeOnly ? {skip:true} : readSource(PLATTS_URL, parsePlatts, fetcher),
     crudeOnly ? {skip:true} : readSource(FORECAST_URL, parseForecast, fetcher),
-    yahoo('CL=F', fetcher, now),
-    yahoo('BZ=F', fetcher, now)
+    yahoo('CL=F', fetcher, startedAt),
+    yahoo('BZ=F', fetcher, startedAt)
   ]);
-  if (platts.value) platts.value = fillMissingPlatts(old.platts, platts.value, now.toISOString());
-  const result = updateSnapshot(old, {platts, forecast, wti, brent}, now.toISOString());
+  const checkedAt=(now??new Date()).toISOString();
+  if (platts.value) {
+    try {
+      const incoming=platts.value;
+      const capturedAt=checkedAt;
+      const recorded=applyObservations(old,{source:'chogia',platts:{...incoming,capturedAt,sessions:trackedSessions(incoming)}},capturedAt);
+      platts.value={...recorded.platts,pageUpdatedAt:incoming.pageUpdatedAt,pageUpdatedKind:incoming.pageUpdatedKind,sourceUrl:incoming.sourceUrl};
+    } catch(error) {
+      platts.error=error.message;
+      delete platts.value;
+    }
+  }
+  const result = updateSnapshot(old, {platts, forecast, wti, brent}, checkedAt);
   for (const error of result.errors) console.error(error);
   if (result.errors.length === (crudeOnly ? 2 : 4)) throw Error('Không đọc được dữ liệu từ các nguồn đã yêu cầu.');
   const numbers = value => JSON.stringify((value.sessions ?? []).map(({date,values})=>[date,values]));
@@ -70,7 +83,8 @@ export async function run({path='dist/snapshot.json', fetcher=fetch, now=new Dat
   };
   const crudeData = quote => JSON.stringify([quote?.marketTime,quote?.price,quote?.sessions?.map(({date,price})=>[date,price])]);
   const crudeChanged = ['wti','brent'].some(key=>crudeData(old[key]) !== crudeData(result.snapshot[key]));
-  const changed = crudeChanged || result.shouldDeploy || publishedForecast(old) !== publishedForecast(result.snapshot) || (!result.errors.some(error=>error.startsWith('platts:')) &&
+  const ledgerChanged=JSON.stringify(old.platts.selection)!==JSON.stringify(result.snapshot.platts.selection);
+  const changed = ledgerChanged || crudeChanged || result.shouldDeploy || publishedForecast(old) !== publishedForecast(result.snapshot) || (!result.errors.some(error=>error.startsWith('platts:')) &&
     numbers(old.platts) !== numbers(result.snapshot.platts));
   if (changed) {
     await writeFile(path+'.tmp', JSON.stringify(result.snapshot,null,2)+'\n');

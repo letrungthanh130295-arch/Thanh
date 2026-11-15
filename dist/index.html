@@ -72,6 +72,13 @@
 <label>Loại dữ liệu <select name="kind"><option value="platts">Giá Platts</option><option value="forecast">Dự báo bán lẻ</option></select></label>
 <label><span id="entry-date-label">Ngày phiên</span> <input name="day" type="date" required></label>
 <p id="entry-hint"></p><div id="entry-fields" class="troo-fields"></div>
+<div id="platts-submit" hidden>
+  <label><input type="checkbox" name="correction"> Sửa giá đã chọn</label>
+  <label>Bằng chứng công khai (bắt buộc khi sửa) <input name="evidence" maxlength="400"></label>
+  <div id="platts-handoff" hidden><p>Sao chép JSON, mở GitHub Actions, chọn <b>Run workflow → platts</b> và dán vào ô <b>platts_payload</b>.</p>
+  <textarea id="platts-payload" aria-label="JSON gửi GitHub Actions" readonly rows="4"></textarea>
+  <a href="https://github.com/letrungthanh130295-arch/Thanh/actions/workflows/snapshot.yml" target="_blank" rel="noreferrer">Mở GitHub Actions ↗</a></div>
+</div>
 <p id="entry-error" class="warning" role="alert"></p>
 <details><summary>Lịch sử chỉnh sửa</summary><ul id="entry-history"></ul></details>
 <p><button type="submit">Lưu giá</button> <button type="button" id="close-prices">Đóng</button></p>
@@ -100,4 +107,4 @@ root.addEventListener('input',renderTroo);
 root.querySelector('[data-preset=current]').addEventListener('click',()=>{for(const key of ['taxa','taxb','env0','env1','nk0','nk1','vat'])inputs[key].value='0';renderTroo();});
 document.addEventListener('snapshot-loaded',event=>{snapshot=event.detail;const cycle=cycleContext(snapshot),base=pumpValues(snapshot);['a','b','c','d'].forEach((key,i)=>{inputs['base'+key].value=Number.isFinite(base[i])?String(base[i]):'';for(const [prefix,window] of [['p0',cycle.previous],['p1',cycle.current]]){const value=prefix==='p0'&&!cycle.hasClosedCycle?null:window.trooValues[i];inputs[prefix+key].value=Number.isFinite(value)?String(Math.round(value*1e6)/1e6):'';}});document.getElementById('troo-origin').textContent='BQ kỳ trước '+day(cycle.previous.from)+'–'+day(cycle.previous.to)+' · BQ kỳ mới '+day(cycle.current.from)+'–'+day(cycle.current.to)+' · Phiên ngày điều hành chốt 15:30 thuộc kỳ mới, sau công bố 15:00';renderTroo();});
 renderTroo();
-</script><script type="module" src="app.js?v=diesel-forecast-1"></script></body></html>
+</script><script type="module" src="app.js?v=first-valid-platts"></script></body></html>
