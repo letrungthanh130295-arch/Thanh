@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-16T06:01:59+07:00",
+  "capturedAt": "2026-11-16T09:03:25+07:00",
   "official": {
     "effectiveAt": "2026-11-12T15:00:00+07:00",
     "publishedAt": "2026-11-12T15:00:00+07:00",
@@ -1186,11 +1186,11 @@
           26990,
           null
         ],
-        "capturedAt": "2026-11-16T06:01:59+07:00",
+        "capturedAt": "2026-11-16T09:03:25+07:00",
         "dieselGrades": true
       }
     },
-    "capturedAt": "2026-11-16T06:01:59+07:00",
+    "capturedAt": "2026-11-16T09:03:25+07:00",
     "basisDate": "2026-11-13",
     "pageUpdatedAt": null,
     "pageUpdatedKind": "not-provided",
@@ -1204,7 +1204,7 @@
           -430
         ],
         "isSample": false,
-        "capturedAt": "2026-11-16T06:01:59+07:00",
+        "capturedAt": "2026-11-16T09:03:25+07:00",
         "providedAt": null,
         "baselineConfirmed": true,
         "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
@@ -1415,8 +1415,8 @@
     },
     "forecast": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-16T06:01:59+07:00",
-      "lastSuccessAt": "2026-11-16T06:01:59+07:00",
+      "lastAttemptAt": "2026-11-16T09:03:25+07:00",
+      "lastSuccessAt": "2026-11-16T09:03:25+07:00",
       "error": null
     },
     "wti": {
@@ -1437,7 +1437,7 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-16T06:01:59+07:00",
+  "lastCheckedAt": "2026-11-16T09:03:25+07:00",
   "brent": {
     "price": 96.08,
     "marketTime": "2026-11-13T21:59:30.000Z",
@@ -2806,6 +2806,43 @@
       },
       "forecast": {
         "capturedAt": "2026-11-16T06:01:59+07:00",
+        "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
+        "period": "2026-11-19",
+        "basisDate": "2026-11-13",
+        "deltas": [
+          160,
+          240,
+          170,
+          -430
+        ],
+        "pageUpdatedAt": null,
+        "pageUpdatedKind": "not-provided"
+      }
+    },
+    {
+      "scheduledAt": "2026-11-16T09:00:00+07:00",
+      "platts": {
+        "capturedAt": "2026-11-16T09:03:19+07:00",
+        "date": "2026-11-13",
+        "previousDate": "2026-11-12",
+        "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
+        "values": [
+          104.49,
+          107.08,
+          null,
+          153.11,
+          null,
+          154.16,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
+      "forecast": {
+        "capturedAt": "2026-11-16T09:03:25+07:00",
         "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
         "period": "2026-11-19",
         "basisDate": "2026-11-13",
