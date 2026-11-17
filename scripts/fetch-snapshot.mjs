@@ -55,10 +55,9 @@ export function fillMissingPlatts(old, incoming, capturedAt) {
 export async function run({path='dist/snapshot.json', fetcher=fetch, now, crudeOnly=false}={}) {
   const startedAt=now??new Date();
   const old = JSON.parse(await readFile(path,'utf8'));
-  const [platts, forecast, wti, brent] = await Promise.all([
+  const [platts, forecast, brent] = await Promise.all([
     crudeOnly ? {skip:true} : readSource(PLATTS_URL, parsePlatts, fetcher),
     crudeOnly ? {skip:true} : readSource(FORECAST_URL, parseForecast, fetcher),
-    yahoo('CL=F', fetcher, startedAt),
     yahoo('BZ=F', fetcher, startedAt)
   ]);
   const checkedAt=(now??new Date()).toISOString();
@@ -73,16 +72,16 @@ export async function run({path='dist/snapshot.json', fetcher=fetch, now, crudeO
       delete platts.value;
     }
   }
-  const result = updateSnapshot(old, {platts, forecast, wti, brent}, checkedAt);
+  const result = updateSnapshot(old, {platts, forecast, brent}, checkedAt);
   for (const error of result.errors) console.error(error);
-  if (result.errors.length === (crudeOnly ? 2 : 4)) throw Error('Không đọc được dữ liệu từ các nguồn đã yêu cầu.');
+  if ((!crudeOnly && ['platts','forecast'].every(key=>result.errors.some(error=>error.startsWith(key+':')))) || result.errors.length === (crudeOnly ? 1 : 3)) throw Error('Không đọc được dữ liệu từ các nguồn đã yêu cầu.');
   const numbers = value => JSON.stringify((value.sessions ?? []).map(({date,values})=>[date,values]));
   const publishedForecast = value => {
     const source = value.forecast.sources.find(row => row.name === 'Chợ Giá');
     return JSON.stringify([source?.period, source?.basisDate, source?.deltas, value.pendingForecast?.period, value.pendingForecast?.basisDate, value.pendingForecast?.deltas]);
   };
   const crudeData = quote => JSON.stringify([quote?.marketTime,quote?.price,quote?.sessions?.map(({date,price})=>[date,price])]);
-  const crudeChanged = ['wti','brent'].some(key=>crudeData(old[key]) !== crudeData(result.snapshot[key]));
+  const crudeChanged = ['brent'].some(key=>crudeData(old[key]) !== crudeData(result.snapshot[key]));
   const ledgerChanged=JSON.stringify(old.platts.selection)!==JSON.stringify(result.snapshot.platts.selection);
   const changed = ledgerChanged || crudeChanged || result.shouldDeploy || publishedForecast(old) !== publishedForecast(result.snapshot) || (!result.errors.some(error=>error.startsWith('platts:')) &&
     numbers(old.platts) !== numbers(result.snapshot.platts));
