@@ -107,32 +107,32 @@
     "isSample": false
   },
   "platts": {
-    "date": "2026-11-13",
-    "previousDate": "2026-11-12",
+    "date": "2026-11-16",
+    "previousDate": "2026-11-13",
     "items": [
       {
         "name": "A92",
         "unit": "USD/thùng",
-        "value": 104.49,
-        "previous": 105.49
+        "value": 101.96,
+        "previous": 104.49
       },
       {
         "name": "A95",
         "unit": "USD/thùng",
-        "value": 107.08,
-        "previous": 108.28
+        "value": 104.22,
+        "previous": 107.08
       },
       {
         "name": "97",
         "unit": "USD/thùng",
-        "value": 108.45,
-        "previous": null
+        "value": null,
+        "previous": 108.45
       },
       {
         "name": "DO 0,05%S",
         "unit": "USD/thùng",
-        "value": 153.11,
-        "previous": 151.92
+        "value": 153.55,
+        "previous": 153.11
       },
       {
         "name": "DO 0,25%S",
@@ -143,8 +143,8 @@
       {
         "name": "DO 10ppm",
         "unit": "USD/thùng",
-        "value": 154.16,
-        "previous": 153.14
+        "value": 154.34,
+        "previous": 154.16
       },
       {
         "name": "DO 50ppm",
@@ -167,8 +167,8 @@
       {
         "name": "FO180",
         "unit": "USD/tấn",
-        "value": 603.4,
-        "previous": 598.95
+        "value": null,
+        "previous": 603.4
       },
       {
         "name": "FO380",
@@ -184,6 +184,37 @@
       }
     ],
     "sessions": [
+      {
+        "date": "2026-11-16",
+        "values": [
+          101.96,
+          104.22,
+          null,
+          153.55,
+          null,
+          154.34,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "valueCapturedAt": [
+          "2026-11-17T00:01:14Z",
+          "2026-11-17T00:01:14Z",
+          null,
+          "2026-11-17T00:01:14Z",
+          null,
+          "2026-11-17T00:01:14Z",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
       {
         "date": "2026-11-13",
         "values": [
@@ -473,7 +504,7 @@
     "pageUpdatedAt": "2026-11-15T07:59:09+07:00",
     "pageUpdatedKind": "table",
     "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
-    "capturedAt": "2026-11-15T05:02:23.253Z",
+    "capturedAt": "2026-11-17T00:01:23.649Z",
     "isSample": false,
     "captureMethod": "browser-snapshot",
     "source": "Chợ Giá",
@@ -735,6 +766,112 @@
               "difference": 0
             }
           ],
+          "needsReview": false
+        }
+      },
+      "2026-11-16": {
+        "a92": {
+          "selected": {
+            "product": "a92",
+            "session_date": "2026-11-16",
+            "price": 101.96,
+            "source": "zalo",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-17T00:01:14Z",
+            "recorded_at": "2026-11-17T00:01:23.649Z",
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a92",
+              "session_date": "2026-11-16",
+              "price": 101.96,
+              "source": "zalo",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T00:01:14Z",
+              "recorded_at": "2026-11-17T00:01:23.649Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [],
+          "needsReview": false
+        },
+        "a95": {
+          "selected": {
+            "product": "a95",
+            "session_date": "2026-11-16",
+            "price": 104.22,
+            "source": "zalo",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-17T00:01:14Z",
+            "recorded_at": "2026-11-17T00:01:23.649Z",
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a95",
+              "session_date": "2026-11-16",
+              "price": 104.22,
+              "source": "zalo",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T00:01:14Z",
+              "recorded_at": "2026-11-17T00:01:23.649Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [],
+          "needsReview": false
+        },
+        "do10": {
+          "selected": {
+            "product": "do10",
+            "session_date": "2026-11-16",
+            "price": 154.34,
+            "source": "zalo",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-17T00:01:14Z",
+            "recorded_at": "2026-11-17T00:01:23.649Z",
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do10",
+              "session_date": "2026-11-16",
+              "price": 154.34,
+              "source": "zalo",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T00:01:14Z",
+              "recorded_at": "2026-11-17T00:01:23.649Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [],
+          "needsReview": false
+        },
+        "do500": {
+          "selected": {
+            "product": "do500",
+            "session_date": "2026-11-16",
+            "price": 153.55,
+            "source": "zalo",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-17T00:01:14Z",
+            "recorded_at": "2026-11-17T00:01:23.649Z",
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do500",
+              "session_date": "2026-11-16",
+              "price": 153.55,
+              "source": "zalo",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T00:01:14Z",
+              "recorded_at": "2026-11-17T00:01:23.649Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [],
           "needsReview": false
         }
       }
