@@ -60,6 +60,7 @@ test('A correction needs evidence and cannot rewrite a closed session',()=>{
 
 test('Shared Zalo input uses server receipt time without changing forecasts or closed history',()=>{
   const snapshot=JSON.parse(readFileSync(new URL('../dist/snapshot.json',import.meta.url)));
+  snapshot.platts=initial();
   const payload={source:'zalo',session_date:'2026-11-16',prices:{a95:103},first_seen_at:'2026-11-12T00:00:00Z'};
   const result=applyObservations(snapshot,payload,now,{zaloReceivedAt:'2026-11-16T16:05:00+07:00'});
   assert.equal(selected(result.platts).selected.first_seen_at,'2026-11-16T16:05:00+07:00');

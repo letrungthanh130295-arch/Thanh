@@ -52,26 +52,22 @@ test('Refresh archives Chợ Giá and both crude series, with identical reruns b
   const before=await readFile(path,'utf8');
   assert.equal((await run({path,fetcher,now:new Date(Date.parse(now)+60000)})).changed,false);
   assert.equal(await readFile(path,'utf8'),before);
-  assert.equal(urls.length,8);
+  assert.equal(urls.length,6);
   const saved=JSON.parse(before);
   assert.deepEqual(saved.history,seed.history);
   assert.deepEqual(saved.pump,seed.pump);
   assert.equal(saved.forecastSnapshots.length,1);
   assert.deepEqual(saved.forecastSnapshots[0].deltas,[-2940,-2790,-1380,null]);
-  assert.equal(saved.wti.price,96.33);
+  assert.ok(urls.every(url=>!url.includes('CL=F')));
   assert.equal(saved.brent.price,101);
-  assert.deepEqual(saved.wti.sessions.map(({date,price})=>[date,price]),[['2026-11-02',95]]);
-  const denied=await run({path,fetcher:async url=>url.includes('CL=F')?new Response(null,{status:403}):fetcher(url),now:new Date(now)});
-  assert.equal(denied.changed,false);
-  assert.equal(denied.snapshot.sources.wti.status,'error');
-  assert.deepEqual(denied.snapshot.wti,saved.wti);
+  assert.deepEqual(saved.wti,initial.wti);
  } finally { await rm(dir,{recursive:true,force:true}); }
 });
 test('Pages workflow retains six crude snapshot slots and retains manual dispatch and three source columns',async()=>{
  const workflow=await readFile(new URL('../.github/workflows/snapshot.yml',import.meta.url),'utf8');
- assert.match(workflow,/02:00\|05:00\|08:00\|11:00\|14:00\|23:00/);
+ assert.ok(workflow.includes("cron: '0 2,5,8,11,14,23 * * *'"));
  assert.match(workflow,/workflow_dispatch:/);
- assert.match(workflow,/--crude-only/);
+ assert.doesNotMatch(workflow,/--crude-only/);
  const page=await readFile(new URL('../dist/index.html',import.meta.url),'utf8');
  assert.match(page,/<th>Sản phẩm<\/th><th>Chợ Giá .*<\/th><th>T-Roo .*<\/th><th>Người dùng /);
  assert.match(page,/id="price-charts"/);
@@ -126,7 +122,7 @@ test('Scheduled workflow does not duplicate the browser reads for Chợ Giá',as
     urls.push(url);
     return new Response(null,{status:503});
   },now:new Date(now)}),/Không đọc được/);
-  assert.equal(urls.length,4);
+  assert.equal(urls.length,2);
   assert.ok(urls.every(url=>new URL(url).hostname.endsWith('.finance.yahoo.com')));
   assert.deepEqual(JSON.parse(await readFile(path,'utf8')),seed);
  } finally { await rm(dir,{recursive:true,force:true}); }

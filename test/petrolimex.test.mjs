@@ -54,7 +54,7 @@ test('Only Platts moves Petrolimex between normal and 15-minute checks', () => {
   assert.equal(risk().trigger,null);
   assert.equal(risk().signals.find(x=>x.name==='Platts A92').percent,null);
   assert.equal(risk().signals.find(x=>x.name==='Brent').percent,30);
-  assert.equal(risk().signals.find(x=>x.name==='WTI').percent,-30);
+  assert.equal(risk().signals.some(x=>x.name==='WTI'),false);
   assert(!monitorDue(now,!!risk().trigger));
   current.values=[115,100,100,90];
   s.platts.sessions=s.platts.sessions.filter(row=>row.date!=='2026-11-09');
