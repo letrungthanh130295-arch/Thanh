@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-17T07:38:21.805Z",
+  "capturedAt": "2026-11-17T07:38:39.294Z",
   "official": {
     "effectiveAt": "2026-11-12T15:00:00+07:00",
     "publishedAt": "2026-11-12T15:00:00+07:00",
@@ -878,8 +878,8 @@
     }
   },
   "wti": {
-    "price": 85.07,
-    "marketTime": "2026-11-17T07:27:59.000Z",
+    "price": 85.04,
+    "marketTime": "2026-11-17T07:28:30.000Z",
     "symbol": "CL=F",
     "exchange": "NYMEX",
     "currency": "USD",
@@ -1307,7 +1307,7 @@
       }
     ],
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/CL=F?interval=1d&range=3mo",
-    "capturedAt": "2026-11-17T07:38:21.805Z",
+    "capturedAt": "2026-11-17T07:38:39.294Z",
     "previous": {
       "date": "2026-11-16",
       "price": 85.72000122070312,
@@ -1556,7 +1556,7 @@
   "sources": {
     "platts": {
       "status": "error",
-      "lastAttemptAt": "2026-11-17T07:38:21.805Z",
+      "lastAttemptAt": "2026-11-17T07:38:39.294Z",
       "lastSuccessAt": "2026-11-15T09:00:41+07:00",
       "error": "HTTP 403",
       "captureMethod": "browser-snapshot",
@@ -1564,20 +1564,20 @@
     },
     "forecast": {
       "status": "error",
-      "lastAttemptAt": "2026-11-17T07:38:21.805Z",
+      "lastAttemptAt": "2026-11-17T07:38:39.294Z",
       "lastSuccessAt": "2026-11-16T21:08:23+07:00",
       "error": "HTTP 403"
     },
     "wti": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-17T07:38:21.805Z",
-      "lastSuccessAt": "2026-11-17T07:38:21.805Z",
+      "lastAttemptAt": "2026-11-17T07:38:39.294Z",
+      "lastSuccessAt": "2026-11-17T07:38:39.294Z",
       "error": null
     },
     "brent": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-17T07:38:21.805Z",
-      "lastSuccessAt": "2026-11-17T07:38:21.805Z",
+      "lastAttemptAt": "2026-11-17T07:38:39.294Z",
+      "lastSuccessAt": "2026-11-17T07:38:39.294Z",
       "error": null
     }
   },
@@ -1586,7 +1586,7 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-17T07:38:21.805Z",
+  "lastCheckedAt": "2026-11-17T07:38:39.294Z",
   "brent": {
     "price": 91.78,
     "marketTime": "2026-11-17T07:27:49.000Z",
