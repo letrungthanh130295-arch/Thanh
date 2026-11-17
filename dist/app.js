@@ -233,7 +233,9 @@ try {
 } catch {
   $('status').textContent = 'Không đọc được giá đã lưu trên trình duyệt.';
 }
+const refreshStorageKey = 'troo-github-refresh-token';
 let refreshKey = '';
+try { refreshKey = localStorage.getItem(refreshStorageKey) ?? ''; } catch {}
 const auth = $('refresh-auth');
 $('reload').addEventListener('click', () => {
   if (refreshKey) refreshMarket();
@@ -242,7 +244,11 @@ $('reload').addEventListener('click', () => {
 auth.addEventListener('close', () => {
   const key = $('refresh-key').value.trim();
   $('refresh-key').value = '';
-  if (auth.returnValue === 'run' && key) { refreshKey = key; refreshMarket(); }
+  if (auth.returnValue === 'run' && key) {
+    refreshKey = key;
+    try { localStorage.setItem(refreshStorageKey, key); } catch {}
+    refreshMarket();
+  }
 });
 async function refreshMarket() {
   const button = $('reload');
@@ -252,7 +258,13 @@ async function refreshMarket() {
     const response = await fetch(actionsApi+'/workflows/snapshot.yml/dispatches', {
       method:'POST', headers, body:JSON.stringify({ref:'main', inputs:{source:'market'}, return_run_details:true})
     });
-    if (!response.ok) { refreshKey = ''; throw Error('GitHub HTTP '+response.status); }
+    if (!response.ok) {
+      if ([401,403].includes(response.status)) {
+        refreshKey = '';
+        try { localStorage.removeItem(refreshStorageKey); } catch {}
+      }
+      throw Error('GitHub HTTP '+response.status);
+    }
     const {workflow_run_id:id} = await response.json();
     $('status').textContent = 'Đã yêu cầu cập nhật Chợ Giá. Đang chờ GitHub Pages…';
     for (let attempt=0; attempt<120; attempt++) {
