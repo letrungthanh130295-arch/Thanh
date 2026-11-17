@@ -118,7 +118,7 @@ export function renderMarket(snapshot) {
   const labels = document.getElementById('chart-labels');
   const chartList = document.getElementById('price-charts');
   const quotes = document.getElementById('crude-quotes');
-  const crude = [['Brent', snapshot.brent], ['WTI', snapshot.wti]];
+  const crude = [['Brent', snapshot.brent]];
   quotes.replaceChildren(...crude.map(([name, quote]) => {
     const card = node('article', null, 'market-chart');
     card.append(node('h3', name), node('strong', quote && !quote.isSample ? number.format(quote.price)+' USD/thùng' : '—'));

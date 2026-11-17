@@ -114,7 +114,7 @@ let lastCalculation;
 const form = $('price-form');
 const dialog = $('price-dialog');
 const {kind, day: entryDay} = form.elements;
-const workflow = 'https://github.com/letrungthanh130295-arch/Thanh/actions/workflows/snapshot.yml';
+const actionsApi = 'https://api.github.com/repos/letrungthanh130295-arch/Thanh/actions';
 
 function showSnapshot() {
   lastCalculation = new Date().toISOString();
@@ -233,9 +233,43 @@ try {
 } catch {
   $('status').textContent = 'Không đọc được giá đã lưu trên trình duyệt.';
 }
+let refreshKey = '';
+const auth = $('refresh-auth');
 $('reload').addEventListener('click', () => {
-  window.open(workflow, '_blank', 'noopener,noreferrer');
-  $('status').textContent = 'Chọn Run workflow trên GitHub để lấy Chợ Giá, Brent và WTI. Quay lại sau khi GitHub Pages xuất bản.';
+  if (refreshKey) refreshMarket();
+  else { auth.returnValue = ''; auth.showModal(); }
 });
+auth.addEventListener('close', () => {
+  const key = $('refresh-key').value.trim();
+  $('refresh-key').value = '';
+  if (auth.returnValue === 'run' && key) { refreshKey = key; refreshMarket(); }
+});
+async function refreshMarket() {
+  const button = $('reload');
+  button.disabled = true;
+  const headers = {Authorization:'Bearer '+refreshKey, 'Content-Type':'application/json'};
+  try {
+    const response = await fetch(actionsApi+'/workflows/snapshot.yml/dispatches', {
+      method:'POST', headers, body:JSON.stringify({ref:'main', inputs:{source:'market'}, return_run_details:true})
+    });
+    if (!response.ok) { refreshKey = ''; throw Error('GitHub HTTP '+response.status); }
+    const {workflow_run_id:id} = await response.json();
+    $('status').textContent = 'Đã yêu cầu cập nhật Chợ Giá. Đang chờ GitHub Pages…';
+    for (let attempt=0; attempt<120; attempt++) {
+      await new Promise(done=>setTimeout(done,5000));
+      const check=await fetch(actionsApi+'/runs/'+id,{headers,cache:'no-store'});
+      if (!check.ok) throw Error('GitHub HTTP '+check.status);
+      const run=await check.json();
+      if (run.status!=='completed') continue;
+      if (run.conclusion!=='success') throw Error('Workflow: '+run.conclusion);
+      $('status').textContent='Đã kiểm tra Chợ Giá.';
+      await load();
+      return;
+    }
+    $('status').textContent='GitHub vẫn đang xử lý yêu cầu. Tải lại trang để xem snapshot mới nhất.';
+  } catch (error) {
+    $('status').textContent='Chưa xác nhận được cập nhật · '+error.message;
+  } finally { button.disabled=false; }
+}
 document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
 load();

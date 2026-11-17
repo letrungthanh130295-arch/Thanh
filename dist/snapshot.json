@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-17T07:38:39.294Z",
+  "capturedAt": "2026-11-17T22:55:00.349Z",
   "official": {
     "effectiveAt": "2026-11-12T15:00:00+07:00",
     "publishedAt": "2026-11-12T15:00:00+07:00",
@@ -107,32 +107,32 @@
     "isSample": false
   },
   "platts": {
-    "date": "2026-11-16",
-    "previousDate": "2026-11-13",
+    "date": "2026-11-17",
+    "previousDate": "2026-11-16",
     "items": [
       {
         "name": "A92",
         "unit": "USD/thùng",
-        "value": 101.96,
-        "previous": 104.49
+        "value": 96.6,
+        "previous": 101.96
       },
       {
         "name": "A95",
         "unit": "USD/thùng",
-        "value": 104.22,
-        "previous": 107.08
+        "value": 98.86,
+        "previous": 104.22
       },
       {
         "name": "97",
         "unit": "USD/thùng",
         "value": null,
-        "previous": 108.45
+        "previous": null
       },
       {
         "name": "DO 0,05%S",
         "unit": "USD/thùng",
-        "value": 153.55,
-        "previous": 153.11
+        "value": 142.73,
+        "previous": 153.55
       },
       {
         "name": "DO 0,25%S",
@@ -143,8 +143,8 @@
       {
         "name": "DO 10ppm",
         "unit": "USD/thùng",
-        "value": 154.34,
-        "previous": 154.16
+        "value": 143.52,
+        "previous": 154.34
       },
       {
         "name": "DO 50ppm",
@@ -168,7 +168,7 @@
         "name": "FO180",
         "unit": "USD/tấn",
         "value": null,
-        "previous": 603.4
+        "previous": null
       },
       {
         "name": "FO380",
@@ -184,6 +184,37 @@
       }
     ],
     "sessions": [
+      {
+        "date": "2026-11-17",
+        "values": [
+          96.6,
+          98.86,
+          null,
+          142.73,
+          null,
+          143.52,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "valueCapturedAt": [
+          "2026-11-17T22:55:00.349Z",
+          "2026-11-17T22:55:00.349Z",
+          null,
+          "2026-11-17T22:55:00.349Z",
+          null,
+          "2026-11-17T22:55:00.349Z",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ]
+      },
       {
         "date": "2026-11-16",
         "values": [
@@ -501,10 +532,10 @@
         ]
       }
     ],
-    "pageUpdatedAt": "2026-11-15T07:59:09+07:00",
+    "pageUpdatedAt": "2026-11-18T05:26:13+07:00",
     "pageUpdatedKind": "table",
     "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/",
-    "capturedAt": "2026-11-17T00:01:23.649Z",
+    "capturedAt": "2026-11-17T22:55:00.349Z",
     "isSample": false,
     "captureMethod": "browser-snapshot",
     "source": "Chợ Giá",
@@ -779,7 +810,7 @@
             "source_published_at": null,
             "first_seen_at": "2026-11-17T00:01:14Z",
             "recorded_at": "2026-11-17T00:01:23.649Z",
-            "status": "provisional"
+            "status": "confirmed"
           },
           "observations": [
             {
@@ -791,9 +822,25 @@
               "first_seen_at": "2026-11-17T00:01:14Z",
               "recorded_at": "2026-11-17T00:01:23.649Z",
               "status": "provisional"
+            },
+            {
+              "product": "a92",
+              "session_date": "2026-11-16",
+              "price": 101.96,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
             }
           ],
-          "comparisons": [],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
           "needsReview": false
         },
         "a95": {
@@ -805,7 +852,7 @@
             "source_published_at": null,
             "first_seen_at": "2026-11-17T00:01:14Z",
             "recorded_at": "2026-11-17T00:01:23.649Z",
-            "status": "provisional"
+            "status": "confirmed"
           },
           "observations": [
             {
@@ -817,9 +864,25 @@
               "first_seen_at": "2026-11-17T00:01:14Z",
               "recorded_at": "2026-11-17T00:01:23.649Z",
               "status": "provisional"
+            },
+            {
+              "product": "a95",
+              "session_date": "2026-11-16",
+              "price": 104.22,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
             }
           ],
-          "comparisons": [],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
           "needsReview": false
         },
         "do10": {
@@ -831,7 +894,7 @@
             "source_published_at": null,
             "first_seen_at": "2026-11-17T00:01:14Z",
             "recorded_at": "2026-11-17T00:01:23.649Z",
-            "status": "provisional"
+            "status": "confirmed"
           },
           "observations": [
             {
@@ -843,9 +906,25 @@
               "first_seen_at": "2026-11-17T00:01:14Z",
               "recorded_at": "2026-11-17T00:01:23.649Z",
               "status": "provisional"
+            },
+            {
+              "product": "do10",
+              "session_date": "2026-11-16",
+              "price": 154.34,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
             }
           ],
-          "comparisons": [],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
           "needsReview": false
         },
         "do500": {
@@ -857,7 +936,7 @@
             "source_published_at": null,
             "first_seen_at": "2026-11-17T00:01:14Z",
             "recorded_at": "2026-11-17T00:01:23.649Z",
-            "status": "provisional"
+            "status": "confirmed"
           },
           "observations": [
             {
@@ -868,6 +947,908 @@
               "source_published_at": null,
               "first_seen_at": "2026-11-17T00:01:14Z",
               "recorded_at": "2026-11-17T00:01:23.649Z",
+              "status": "provisional"
+            },
+            {
+              "product": "do500",
+              "session_date": "2026-11-16",
+              "price": 153.55,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        }
+      },
+      "2026-11-03": {
+        "a92": {
+          "selected": {
+            "product": "a92",
+            "session_date": "2026-11-03",
+            "price": 114.28,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-14T06:00:45+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a92",
+              "session_date": "2026-11-03",
+              "price": 114.28,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "a95": {
+          "selected": {
+            "product": "a95",
+            "session_date": "2026-11-03",
+            "price": 115.53,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-14T06:00:45+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a95",
+              "session_date": "2026-11-03",
+              "price": 115.53,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do10": {
+          "selected": {
+            "product": "do10",
+            "session_date": "2026-11-03",
+            "price": 166.8,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-14T06:00:45+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do10",
+              "session_date": "2026-11-03",
+              "price": 166.8,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do500": {
+          "selected": {
+            "product": "do500",
+            "session_date": "2026-11-03",
+            "price": 164.08,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-14T06:00:45+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do500",
+              "session_date": "2026-11-03",
+              "price": 164.08,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        }
+      },
+      "2026-11-04": {
+        "a92": {
+          "selected": {
+            "product": "a92",
+            "session_date": "2026-11-04",
+            "price": 110.95,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-14T06:00:45+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a92",
+              "session_date": "2026-11-04",
+              "price": 110.95,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "a95": {
+          "selected": {
+            "product": "a95",
+            "session_date": "2026-11-04",
+            "price": 112.2,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-14T06:00:45+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a95",
+              "session_date": "2026-11-04",
+              "price": 112.2,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do10": {
+          "selected": {
+            "product": "do10",
+            "session_date": "2026-11-04",
+            "price": 165.83,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-14T06:00:45+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do10",
+              "session_date": "2026-11-04",
+              "price": 165.83,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do500": {
+          "selected": {
+            "product": "do500",
+            "session_date": "2026-11-04",
+            "price": 163.11,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-14T06:00:45+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do500",
+              "session_date": "2026-11-04",
+              "price": 163.11,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        }
+      },
+      "2026-11-05": {
+        "a92": {
+          "selected": {
+            "product": "a92",
+            "session_date": "2026-11-05",
+            "price": 102.89,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-14T06:00:45+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a92",
+              "session_date": "2026-11-05",
+              "price": 102.89,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "a95": {
+          "selected": {
+            "product": "a95",
+            "session_date": "2026-11-05",
+            "price": 104.68,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-14T06:00:45+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a95",
+              "session_date": "2026-11-05",
+              "price": 104.68,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do10": {
+          "selected": {
+            "product": "do10",
+            "session_date": "2026-11-05",
+            "price": 155.24,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-14T06:00:45+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do10",
+              "session_date": "2026-11-05",
+              "price": 155.24,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do500": {
+          "selected": {
+            "product": "do500",
+            "session_date": "2026-11-05",
+            "price": 152.52,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-14T06:00:45+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do500",
+              "session_date": "2026-11-05",
+              "price": 152.52,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        }
+      },
+      "2026-11-06": {
+        "a92": {
+          "selected": {
+            "product": "a92",
+            "session_date": "2026-11-06",
+            "price": 109.88,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-08T03:02:21.906+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a92",
+              "session_date": "2026-11-06",
+              "price": 109.88,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "a95": {
+          "selected": {
+            "product": "a95",
+            "session_date": "2026-11-06",
+            "price": 111.49,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-08T03:02:21.906+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a95",
+              "session_date": "2026-11-06",
+              "price": 111.49,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do10": {
+          "selected": {
+            "product": "do10",
+            "session_date": "2026-11-06",
+            "price": 161.83,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-08T03:02:21.906+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do10",
+              "session_date": "2026-11-06",
+              "price": 161.83,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do500": {
+          "selected": {
+            "product": "do500",
+            "session_date": "2026-11-06",
+            "price": 159.84,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-08T03:02:21.906+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do500",
+              "session_date": "2026-11-06",
+              "price": 159.84,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        }
+      },
+      "2026-11-10": {
+        "a92": {
+          "selected": {
+            "product": "a92",
+            "session_date": "2026-11-10",
+            "price": 101.07,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-11T12:00:16.854+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a92",
+              "session_date": "2026-11-10",
+              "price": 101.07,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "a95": {
+          "selected": {
+            "product": "a95",
+            "session_date": "2026-11-10",
+            "price": 102.9,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-11T12:00:16.854+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a95",
+              "session_date": "2026-11-10",
+              "price": 102.9,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do10": {
+          "selected": {
+            "product": "do10",
+            "session_date": "2026-11-10",
+            "price": 149.27,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-11T12:00:16.854+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do10",
+              "session_date": "2026-11-10",
+              "price": 149.27,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do500": {
+          "selected": {
+            "product": "do500",
+            "session_date": "2026-11-10",
+            "price": 147.28,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-11T12:00:16.854+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do500",
+              "session_date": "2026-11-10",
+              "price": 147.28,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        }
+      },
+      "2026-11-11": {
+        "a92": {
+          "selected": {
+            "product": "a92",
+            "session_date": "2026-11-11",
+            "price": 102.05,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-11T21:05:50.403+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a92",
+              "session_date": "2026-11-11",
+              "price": 102.05,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "a95": {
+          "selected": {
+            "product": "a95",
+            "session_date": "2026-11-11",
+            "price": 105.04,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-11T21:05:50.403+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a95",
+              "session_date": "2026-11-11",
+              "price": 105.04,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do10": {
+          "selected": {
+            "product": "do10",
+            "session_date": "2026-11-11",
+            "price": 150.94,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-11T21:05:50.403+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do10",
+              "session_date": "2026-11-11",
+              "price": 150.94,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        },
+        "do500": {
+          "selected": {
+            "product": "do500",
+            "session_date": "2026-11-11",
+            "price": 149.48,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-11T21:05:50.403+07:00",
+            "recorded_at": null,
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do500",
+              "session_date": "2026-11-11",
+              "price": 149.48,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [
+            {
+              "source": "chogia",
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "difference": 0
+            }
+          ],
+          "needsReview": false
+        }
+      },
+      "2026-11-17": {
+        "a92": {
+          "selected": {
+            "product": "a92",
+            "session_date": "2026-11-17",
+            "price": 96.6,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-17T22:55:00.349Z",
+            "recorded_at": "2026-11-17T22:55:00.349Z",
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a92",
+              "session_date": "2026-11-17",
+              "price": 96.6,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [],
+          "needsReview": false
+        },
+        "a95": {
+          "selected": {
+            "product": "a95",
+            "session_date": "2026-11-17",
+            "price": 98.86,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-17T22:55:00.349Z",
+            "recorded_at": "2026-11-17T22:55:00.349Z",
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "a95",
+              "session_date": "2026-11-17",
+              "price": 98.86,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [],
+          "needsReview": false
+        },
+        "do10": {
+          "selected": {
+            "product": "do10",
+            "session_date": "2026-11-17",
+            "price": 143.52,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-17T22:55:00.349Z",
+            "recorded_at": "2026-11-17T22:55:00.349Z",
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do10",
+              "session_date": "2026-11-17",
+              "price": 143.52,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
+              "status": "provisional"
+            }
+          ],
+          "comparisons": [],
+          "needsReview": false
+        },
+        "do500": {
+          "selected": {
+            "product": "do500",
+            "session_date": "2026-11-17",
+            "price": 142.73,
+            "source": "chogia",
+            "source_published_at": null,
+            "first_seen_at": "2026-11-17T22:55:00.349Z",
+            "recorded_at": "2026-11-17T22:55:00.349Z",
+            "status": "provisional"
+          },
+          "observations": [
+            {
+              "product": "do500",
+              "session_date": "2026-11-17",
+              "price": 142.73,
+              "source": "chogia",
+              "source_published_at": null,
+              "first_seen_at": "2026-11-17T22:55:00.349Z",
+              "recorded_at": "2026-11-17T22:55:00.349Z",
               "status": "provisional"
             }
           ],
@@ -1330,37 +2311,38 @@
     "lockedPredictions": {
       "Chợ Giá": {
         "prices": [
-          19550,
-          20080,
-          26990,
+          19010,
+          19540,
+          26370,
           null
         ],
-        "capturedAt": "2026-11-16T21:08:23+07:00",
+        "capturedAt": "2026-11-17T22:55:00.349Z",
         "dieselGrades": true
       }
     },
-    "capturedAt": "2026-11-16T21:08:23+07:00",
-    "basisDate": "2026-11-13",
-    "pageUpdatedAt": null,
-    "pageUpdatedKind": "not-provided",
+    "capturedAt": "2026-11-17T22:55:00.349Z",
+    "basisDate": "2026-11-17",
+    "pageUpdatedAt": "2026-08-09T21:39:05+07:00",
+    "pageUpdatedKind": "article-metadata",
     "sources": [
       {
         "name": "Chợ Giá",
         "deltas": [
-          160,
-          240,
-          170,
-          -430
+          -380,
+          -300,
+          -450,
+          -880
         ],
         "isSample": false,
-        "capturedAt": "2026-11-16T21:08:23+07:00",
+        "capturedAt": "2026-11-17T22:55:00.349Z",
         "providedAt": null,
         "baselineConfirmed": true,
         "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
         "period": "2026-11-19",
-        "basisDate": "2026-11-13",
-        "pageUpdatedAt": null,
-        "pageUpdatedKind": "not-provided"
+        "basisDate": "2026-11-17",
+        "pageUpdatedAt": "2026-08-09T21:39:05+07:00",
+        "pageUpdatedKind": "article-metadata",
+        "diesel10Delta": null
       },
       {
         "name": "User cung cấp",
@@ -1555,18 +2537,16 @@
   "schemaVersion": 2,
   "sources": {
     "platts": {
-      "status": "error",
-      "lastAttemptAt": "2026-11-17T07:38:39.294Z",
-      "lastSuccessAt": "2026-11-15T09:00:41+07:00",
-      "error": "HTTP 403",
-      "captureMethod": "browser-snapshot",
-      "sourceUrl": "https://chogia.vn/gia-xang-dau-singapore-hom-nay-38348/"
+      "status": "ok",
+      "lastAttemptAt": "2026-11-17T22:55:00.349Z",
+      "lastSuccessAt": "2026-11-17T22:55:00.349Z",
+      "error": null
     },
     "forecast": {
-      "status": "error",
-      "lastAttemptAt": "2026-11-17T07:38:39.294Z",
-      "lastSuccessAt": "2026-11-16T21:08:23+07:00",
-      "error": "HTTP 403"
+      "status": "ok",
+      "lastAttemptAt": "2026-11-17T22:55:00.349Z",
+      "lastSuccessAt": "2026-11-17T22:55:00.349Z",
+      "error": null
     },
     "wti": {
       "status": "ok",
@@ -1576,8 +2556,8 @@
     },
     "brent": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-17T07:38:39.294Z",
-      "lastSuccessAt": "2026-11-17T07:38:39.294Z",
+      "lastAttemptAt": "2026-11-17T22:55:00.349Z",
+      "lastSuccessAt": "2026-11-17T22:55:00.349Z",
       "error": null
     }
   },
@@ -1586,10 +2566,10 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-17T07:38:39.294Z",
+  "lastCheckedAt": "2026-11-17T22:55:00.349Z",
   "brent": {
-    "price": 91.78,
-    "marketTime": "2026-11-17T07:27:49.000Z",
+    "price": 93.07,
+    "marketTime": "2026-11-17T21:59:30.000Z",
     "symbol": "BZ=F",
     "exchange": "NYMEX",
     "currency": "USD",
@@ -2017,7 +2997,7 @@
       }
     ],
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=3mo",
-    "capturedAt": "2026-11-17T07:38:21.805Z",
+    "capturedAt": "2026-11-17T22:55:00.349Z",
     "previous": {
       "date": "2026-11-16",
       "price": 92.44000244140625,
@@ -3162,6 +4142,20 @@
         160,
         240,
         170,
+        null
+      ]
+    },
+    {
+      "id": "[\"https://chogia.vn/du-bao-gia-xang-dau-37804/\",\"2026-11-19\",\"2026-11-17\",[-380,-300,-450]]",
+      "source": "Chợ Giá",
+      "sourceUrl": "https://chogia.vn/du-bao-gia-xang-dau-37804/",
+      "capturedAt": "2026-11-17T22:55:00.349Z",
+      "period": "2026-11-19",
+      "basisDate": "2026-11-17",
+      "deltas": [
+        -380,
+        -300,
+        -450,
         null
       ]
     }

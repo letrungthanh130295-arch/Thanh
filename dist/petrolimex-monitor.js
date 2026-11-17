@@ -26,8 +26,7 @@ export function marketRisk(snapshot, now = Date.now()) {
     referencePrice:row.previous, observedAt:snapshot.platts.capturedAt
   }));
   const alerts = platts.filter(({percent}) => ['increase','decrease'].includes(threshold(percent)));
-  const crude = [crudeSignal(snapshot.brent,'Brent',effectiveAt,now),
-    crudeSignal(snapshot.wti,'WTI',effectiveAt,now)].filter(Boolean);
+  const crude = [crudeSignal(snapshot.brent,'Brent',effectiveAt,now)].filter(Boolean);
   return {signals:[...platts,...crude], alerts, trigger:alerts[0] ?? null};
 }
 
