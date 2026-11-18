@@ -7,7 +7,7 @@ import {applyObservations,trackedSessions} from './ingest-platts.mjs';
 
 async function readSource(url, parse, fetcher, accept='text/html') {
   try {
-    const response = await fetcher(url, {headers:{Accept:accept}, signal:AbortSignal.timeout(25000)});
+    const response = await fetcher(url, {headers:{Accept:accept,'User-Agent':'T-Roo/1.0 (+https://github.com/letrungthanh130295-arch/Thanh)'}, signal:AbortSignal.timeout(25000)});
     if (!response.ok) throw Error('HTTP ' + response.status);
     const body = await response.text();
     if (body.length > 6_000_000) throw Error('Phản hồi quá lớn');
@@ -52,7 +52,7 @@ export function fillMissingPlatts(old, incoming, capturedAt) {
     items:old.items.map((item,i) => ({...item,value:current.values[i],previous:previous?.values[i] ?? null}))};
 }
 
-export async function run({path='dist/snapshot.json', fetcher=fetch, now, crudeOnly=false}={}) {
+export async function run({path='dist/snapshot.json', fetcher=fetch, now, crudeOnly=false, recordCheck=false}={}) {
   const startedAt=now??new Date();
   const old = JSON.parse(await readFile(path,'utf8'));
   const [platts, forecast, brent] = await Promise.all([
@@ -74,7 +74,7 @@ export async function run({path='dist/snapshot.json', fetcher=fetch, now, crudeO
   }
   const result = updateSnapshot(old, {platts, forecast, brent}, checkedAt);
   for (const error of result.errors) console.error(error);
-  if ((!crudeOnly && ['platts','forecast'].every(key=>result.errors.some(error=>error.startsWith(key+':')))) || result.errors.length === (crudeOnly ? 1 : 3)) throw Error('Không đọc được dữ liệu từ các nguồn đã yêu cầu.');
+  if (!recordCheck && ((!crudeOnly && ['platts','forecast'].every(key=>result.errors.some(error=>error.startsWith(key+':')))) || result.errors.length === (crudeOnly ? 1 : 3))) throw Error('Không đọc được dữ liệu từ các nguồn đã yêu cầu.');
   const numbers = value => JSON.stringify((value.sessions ?? []).map(({date,values})=>[date,values]));
   const publishedForecast = value => {
     const source = value.forecast.sources.find(row => row.name === 'Chợ Giá');
@@ -83,7 +83,7 @@ export async function run({path='dist/snapshot.json', fetcher=fetch, now, crudeO
   const crudeData = quote => JSON.stringify([quote?.marketTime,quote?.price,quote?.sessions?.map(({date,price})=>[date,price])]);
   const crudeChanged = ['brent'].some(key=>crudeData(old[key]) !== crudeData(result.snapshot[key]));
   const ledgerChanged=JSON.stringify(old.platts.selection)!==JSON.stringify(result.snapshot.platts.selection);
-  const changed = ledgerChanged || crudeChanged || result.shouldDeploy || publishedForecast(old) !== publishedForecast(result.snapshot) || (!result.errors.some(error=>error.startsWith('platts:')) &&
+  const changed = recordCheck || ledgerChanged || crudeChanged || result.shouldDeploy || publishedForecast(old) !== publishedForecast(result.snapshot) || (!result.errors.some(error=>error.startsWith('platts:')) &&
     numbers(old.platts) !== numbers(result.snapshot.platts));
   if (changed) {
     await writeFile(path+'.tmp', JSON.stringify(result.snapshot,null,2)+'\n');
@@ -92,4 +92,4 @@ export async function run({path='dist/snapshot.json', fetcher=fetch, now, crudeO
   return {...result, changed};
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) await run({crudeOnly:process.argv.includes('--crude-only')});
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) await run({recordCheck:!process.argv.includes('--crude-only'),crudeOnly:process.argv.includes('--crude-only')});
