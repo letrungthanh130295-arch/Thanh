@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-18T02:51:39.023Z",
+  "capturedAt": "2026-11-18T04:10:13.725Z",
   "official": {
     "effectiveAt": "2026-11-12T15:00:00+07:00",
     "publishedAt": "2026-11-12T15:00:00+07:00",
@@ -2538,13 +2538,13 @@
   "sources": {
     "platts": {
       "status": "error",
-      "lastAttemptAt": "2026-11-18T02:51:39.023Z",
+      "lastAttemptAt": "2026-11-18T04:10:13.725Z",
       "lastSuccessAt": "2026-11-17T22:55:00.349Z",
       "error": "HTTP 403"
     },
     "forecast": {
       "status": "error",
-      "lastAttemptAt": "2026-11-18T02:51:39.023Z",
+      "lastAttemptAt": "2026-11-18T04:10:13.725Z",
       "lastSuccessAt": "2026-11-17T22:55:00.349Z",
       "error": "HTTP 403"
     },
@@ -2556,8 +2556,8 @@
     },
     "brent": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-18T02:51:39.023Z",
-      "lastSuccessAt": "2026-11-18T02:51:39.023Z",
+      "lastAttemptAt": "2026-11-18T04:10:13.725Z",
+      "lastSuccessAt": "2026-11-18T04:10:13.725Z",
       "error": null
     }
   },
@@ -2566,10 +2566,10 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-18T02:51:39.023Z",
+  "lastCheckedAt": "2026-11-18T04:10:13.725Z",
   "brent": {
-    "price": 92.74,
-    "marketTime": "2026-11-18T02:40:21.000Z",
+    "price": 92.4,
+    "marketTime": "2026-11-18T03:58:47.000Z",
     "symbol": "BZ=F",
     "exchange": "NYMEX",
     "currency": "USD",
@@ -2997,7 +2997,7 @@
       }
     ],
     "sourceUrl": "https://query2.finance.yahoo.com/v8/finance/chart/BZ=F?interval=1d&range=3mo",
-    "capturedAt": "2026-11-18T02:51:39.023Z",
+    "capturedAt": "2026-11-18T04:10:13.725Z",
     "previous": {
       "date": "2026-11-16",
       "price": 92.44000244140625,
