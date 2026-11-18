@@ -212,11 +212,13 @@ window.addEventListener('storage', event => {
 });
 
 async function load() {
+  let loaded = false;
   try {
     const response = await fetch('./snapshot.json',{cache:'no-store'});
     if (!response.ok) throw Error('HTTP ' + response.status);
     snapshot = validate(await response.json());
     showSnapshot();
+    loaded = true;
   } catch (error) {
     $('status').textContent = 'Chưa tải được snapshot · ' + error.message;
   }
@@ -227,6 +229,7 @@ async function load() {
     // Keep the last displayed check when the connection drops.
   }
   renderPetrolimex();
+  return loaded;
 }
 try {
   entries = JSON.parse(localStorage.getItem(storageKey) ?? '{}');
@@ -253,6 +256,7 @@ auth.addEventListener('close', () => {
 async function refreshMarket() {
   const button = $('reload');
   button.disabled = true;
+  $('status').textContent = 'Đang yêu cầu lấy snapshot…';
   const headers = {Authorization:'Bearer '+refreshKey, 'Content-Type':'application/json'};
   try {
     const response = await fetch(actionsApi+'/workflows/snapshot.yml/dispatches', {
@@ -274,8 +278,17 @@ async function refreshMarket() {
       const run=await check.json();
       if (run.status!=='completed') continue;
       if (run.conclusion!=='success') throw Error('Workflow: '+run.conclusion);
-      $('status').textContent='Đã kiểm tra Chợ Giá.';
-      await load();
+      if (await load()) {
+        const attemptedAt = Date.parse(snapshot.lastCheckedAt);
+        if (!(attemptedAt >= Date.parse(run.created_at))) {
+          throw Error('Trang đang phục vụ snapshot trước lượt yêu cầu.');
+        }
+        const failed = ['platts','forecast'].filter(key=>snapshot.sources?.[key]?.status==='error');
+        const when = date(snapshot.lastCheckedAt);
+        $('status').textContent = failed.length
+          ? 'Đã kiểm tra lúc '+when+' · Chưa lấy được '+failed.map(k=>k==='platts'?'Platts':'dự báo').join(' và ')+'. Đang hiển thị giá gần nhất.'
+          : 'Đã lấy snapshot Chợ Giá lúc '+when+'.';
+      }
       return;
     }
     $('status').textContent='GitHub vẫn đang xử lý yêu cầu. Tải lại trang để xem snapshot mới nhất.';

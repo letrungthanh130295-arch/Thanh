@@ -107,4 +107,4 @@ root.addEventListener('input',renderTroo);
 root.querySelector('[data-preset=current]').addEventListener('click',()=>{for(const key of ['taxa','taxb','env0','env1','nk0','nk1','vat'])inputs[key].value='0';renderTroo();});
 document.addEventListener('snapshot-loaded',event=>{snapshot=event.detail;const cycle=cycleContext(snapshot),base=pumpValues(snapshot);['a','b','c','d'].forEach((key,i)=>{inputs['base'+key].value=Number.isFinite(base[i])?String(base[i]):'';for(const [prefix,window] of [['p0',cycle.previous],['p1',cycle.current]]){const value=prefix==='p0'&&!cycle.hasClosedCycle?null:window.trooValues[i];inputs[prefix+key].value=Number.isFinite(value)?String(Math.round(value*1e6)/1e6):'';}});document.getElementById('troo-origin').textContent='BQ kỳ trước '+day(cycle.previous.from)+'–'+day(cycle.previous.to)+' · BQ kỳ mới '+day(cycle.current.from)+'–'+day(cycle.current.to)+' · Phiên ngày điều hành chốt 15:30 thuộc kỳ mới, sau công bố 15:00';renderTroo();});
 renderTroo();
-</script><script type="module" src="app.js?v=remember-refresh"></script></body></html>
+</script><script type="module" src="app.js?v=refresh-attempt-2"></script></body></html>
