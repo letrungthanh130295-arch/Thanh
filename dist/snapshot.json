@@ -1,6 +1,6 @@
 {
   "mode": "mixed",
-  "capturedAt": "2026-11-21T13:16:22.469Z",
+  "capturedAt": "2026-11-21T20:24:10.893Z",
   "official": {
     "effectiveAt": "2026-11-12T15:00:00+07:00",
     "publishedAt": "2026-11-12T15:00:00+07:00",
@@ -2675,13 +2675,13 @@
   "sources": {
     "platts": {
       "status": "error",
-      "lastAttemptAt": "2026-11-21T13:16:22.469Z",
+      "lastAttemptAt": "2026-11-21T20:24:10.893Z",
       "lastSuccessAt": "2026-11-17T22:55:00.349Z",
       "error": "HTTP 403"
     },
     "forecast": {
       "status": "error",
-      "lastAttemptAt": "2026-11-21T13:16:22.469Z",
+      "lastAttemptAt": "2026-11-21T20:24:10.893Z",
       "lastSuccessAt": "2026-11-17T22:55:00.349Z",
       "error": "HTTP 403"
     },
@@ -2693,8 +2693,8 @@
     },
     "brent": {
       "status": "ok",
-      "lastAttemptAt": "2026-11-21T13:16:22.469Z",
-      "lastSuccessAt": "2026-11-21T13:16:22.469Z",
+      "lastAttemptAt": "2026-11-21T20:24:10.893Z",
+      "lastSuccessAt": "2026-11-21T20:24:10.893Z",
       "error": null
     }
   },
@@ -2703,7 +2703,7 @@
     "hosting": "GitHub Pages",
     "note": "Chợ Giá: mỗi giờ phút 00 qua web; WTI: mỗi giờ phút 05 (UTC+7)"
   },
-  "lastCheckedAt": "2026-11-21T13:16:22.469Z",
+  "lastCheckedAt": "2026-11-21T20:24:10.893Z",
   "brent": {
     "price": 89.95,
     "marketTime": "2026-11-20T21:59:18.000Z",
